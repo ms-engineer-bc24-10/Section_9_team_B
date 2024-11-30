@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16.5
+    image: postgres:16.6
     container_name: sec9_database
     restart: always
     environment:
