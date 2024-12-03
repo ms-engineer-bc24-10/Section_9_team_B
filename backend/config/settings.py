@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .envファイルのパスを指定
-dotenv_path = os.path.join(BASE_DIR.parent, '.env')
+dotenv_path = os.path.join(BASE_DIR,'.env')
 load_dotenv(dotenv_path)
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -37,7 +37,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'teamproject.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -55,7 +55,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'teamproject.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
