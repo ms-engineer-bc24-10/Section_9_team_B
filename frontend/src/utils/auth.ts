@@ -1,48 +1,86 @@
-import { auth } from './firebase';
+import { firebaseConfig } from './firebase';
 import {
+  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  User,
+  UserCredential,
 } from 'firebase/auth';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 
-export async function signUp(email: string, password: string) {
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+
+// ユーザー情報をDjangoバックエンドに送信
+const sendUserToDjango = async (user: User) => {
+  try {
+    const idToken = await user.getIdToken();
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error('===ユーザーデータのバックエンド送信失敗===');
+    }
+  } catch (e) {
+    console.error('===ユーザーデータのバックエンド送信でエラー発生===', e);
+    throw e;
+  }
+};
+
+// 認証結果の処理を共通化
+const handleAuthResult = async (
+  userCredential: UserCredential,
+): Promise<User> => {
+  const user = userCredential.user;
+  await sendUserToDjango(user);
+  return user;
+};
+
+const signUp = async (email: string, password: string): Promise<User> => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password,
     );
-    const user = userCredential.user;
-    // ユーザー情報をDjangoバックエンドに送信
-    return user;
-  } catch (error) {
-    console.error('Error signing up:', error);
-    throw error;
+    return handleAuthResult(userCredential);
+  } catch (e) {
+    console.error('===サインアップエラー===', e);
+    throw e;
   }
-}
+};
 
-export async function signIn(email: string, password: string) {
+const signIn = async (email: string, password: string): Promise<User> => {
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password,
     );
-    const user = userCredential.user;
-    // ユーザー情報をDjangoバックエンドに送信
-    return user;
-  } catch (error) {
-    console.error('Error signing in:', error);
-    throw error;
+    return handleAuthResult(userCredential);
+  } catch (e) {
+    console.error('===サインインエラー===', e);
+    throw e;
   }
-}
+};
 
-export async function signOutUser() {
+const signOutUser = async (): Promise<void> => {
   try {
     await signOut(auth);
-    // ログアウト後の処理
-  } catch (error) {
-    console.error('Error signing out:', error);
-    throw error;
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } catch (e) {
+    console.error('===サインアウトエラー===', e);
+    throw e;
   }
-}
+};
+
+export { app, auth, signUp, signIn, signOutUser };
