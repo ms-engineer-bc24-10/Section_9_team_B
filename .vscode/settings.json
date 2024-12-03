@@ -1,0 +1,72 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+
+  // JavaScript/TypeScript関連の設定
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.workingDirectories": ["./frontend"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // Python関連の設定
+  "pylint.enabled": true,
+  "pylint.path": ["pylint"],
+  "[python]": {
+    "editor.wordBasedSuggestions": "allDocuments",
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  },
+
+  // ToDoTreeの設定
+  "todo-tree.general.tags": [
+    "HACK",
+    "FIXME",
+    "TODO",
+    "XXX",
+    "REVIEW",
+    "OPTIMIZE",
+    "CHANGED",
+    "NOTE",
+    "WARNING"
+  ],
+  "todo-tree.highlights.defaultHighlight": {
+    "foreground": "#FFFFFF",
+    "background": "#9580FF",
+    "type": "whole-line",
+    "iconColor": "#8AFF80",
+    "opacity": 45
+  },
+  "todo-tree.highlights.customHighlight": {
+    "HACK": { "icon": "shield" },
+    "FIXME": {
+      "icon": "flame",
+      "background": "#FF5555",
+      "iconColor": "#FF5555"
+    },
+    "TODO": { "icon": "tasklist" },
+    "XXX": {
+      "icon": "zap",
+      "background": "#FF5555",
+      "iconColor": "#FF5555"
+    },
+    "REVIEW": { "icon": "eye" },
+    "OPTIMIZE": {
+      "icon": "circle-slash",
+      "background": "#FF5555",
+      "iconColor": "#FF5555"
+    },
+    "CHANGED": { "icon": "pin" },
+    "NOTE": { "icon": "question" },
+    "WARNING": {
+      "icon": "alert",
+      "background": "#FF5555",
+      "iconColor": "#FF5555"
+    }
+  }
+}
