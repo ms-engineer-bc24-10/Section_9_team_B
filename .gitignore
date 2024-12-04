@@ -2,3 +2,6 @@
 venv/
 *.pyc
 db.sqlite3
+
+# Firebase Service Account Key
+backend/serviceAccountKey.json
