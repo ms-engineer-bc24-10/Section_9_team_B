@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 import stripe
 import os
 from django.http import HttpResponseRedirect
