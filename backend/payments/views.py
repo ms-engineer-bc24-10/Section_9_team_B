@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
-# @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。認証機能と繋がるまではコメントアウトする。
+# @login_required  # TODO: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。認証機能と繋げてコメントアウトを外す。
 def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
