@@ -1,16 +1,36 @@
+import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from firebase_admin import auth
+from rest_framework.permissions import AllowAny
+from firebase_admin import auth as firebase_auth
 from .models import User
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+
+logger = logging.getLogger(__name__)
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class SignUpView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
+        logger.debug(f"Request headers: {request.headers}")
+        logger.debug(f"Request body: {request.data}")
+
         try:
             # Firebaseトークンを検証
-            id_token = request.headers.get("Authorization").split("Bearer ")[1]
-            decoded_token = auth.verify_id_token(id_token)
+            auth_header = request.headers.get("Authorization")
+            if not auth_header:
+                return JsonResponse(
+                    {"error": "No Authorization header"},
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
+
+            id_token = auth_header.split("Bearer ")[1]
+            decoded_token = firebase_auth.verify_id_token(id_token)
             uid = decoded_token["uid"]
             email = decoded_token["email"]
 
@@ -19,14 +39,18 @@ class SignUpView(APIView):
                 username=uid, defaults={"email": email, "role": "user"}
             )
 
-            return Response(
-                {"message": "User created successfully"}, status=status.HTTP_201_CREATED
+            return JsonResponse(
+                {"message": "User created successfully", "user_id": user.id},
+                status=status.HTTP_201_CREATED,
             )
         except ValueError as e:
-            return Response(
-                {"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST
+            logger.error(f"Invalid token: {str(e)}")
+            return JsonResponse(
+                {"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED
             )
         except Exception as e:
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            logger.error(f"Unexpected error: {str(e)}")
+            return JsonResponse(
+                {"error": "An unexpected error occurred"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

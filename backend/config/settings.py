@@ -175,4 +175,8 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 APPEND_SLASH = True

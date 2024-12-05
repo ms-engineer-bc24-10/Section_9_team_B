@@ -17,15 +17,32 @@ const fetchCsrfToken = async (): Promise<string> => {
   const response = await fetch('http://localhost:8000/api/csrf-token/', {
     credentials: 'include',
   });
+  if (!response.ok) {
+    throw new Error(`CSRF token fetch failed: ${response.statusText}`);
+  }
   const data = await response.json();
   return data.csrfToken;
+};
+
+// クッキーからCSRFトークンを取得する関数
+const getCsrfTokenFromCookie = (): string | null => {
+  const name = 'csrftoken=';
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const cookieArray = decodedCookie.split(';');
+  for (let i = 0; i < cookieArray.length; i++) {
+    const cookie = cookieArray[i].trim();
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length, cookie.length);
+    }
+  }
+  return null;
 };
 
 // ユーザー情報をDjangoバックエンドに送信
 const sendUserToDjango = async (user: User) => {
   try {
     const idToken = await user.getIdToken();
-    const csrfToken = await fetchCsrfToken();
+    const csrfToken = getCsrfTokenFromCookie() || (await fetchCsrfToken());
     const response = await fetch('http://localhost:8000/api/auth/signup/', {
       method: 'POST',
       headers: {
@@ -41,11 +58,14 @@ const sendUserToDjango = async (user: User) => {
     });
 
     if (!response.ok) {
-      const errorDetails = await response.json();
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
       throw new Error(
-        `===ユーザーデータのバックエンド送信失敗===: ${errorDetails.error || response.statusText}`,
+        `===ユーザーデータのバックエンド送信失敗===: ${response.statusText}`,
       );
     }
+    const data = await response.json();
+    console.log('Success:', data);
   } catch (e) {
     console.error('===ユーザーデータのバックエンド送信でエラー発生===', e);
     throw e;
