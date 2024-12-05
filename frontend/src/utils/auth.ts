@@ -43,19 +43,31 @@ const sendUserToDjango = async (user: User) => {
   try {
     const idToken = await user.getIdToken();
     const csrfToken = getCsrfTokenFromCookie() || (await fetchCsrfToken());
-    const response = await fetch('http://localhost:8000/api/auth/signup/', {
+    const url = 'http://localhost:8000/api/auth/signup/';
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
+      'X-CSRFToken': csrfToken,
+    };
+    const body = JSON.stringify({
+      uid: user.uid,
+      email: user.email,
+    });
+
+    // リクエストの詳細をコンソールに出力
+    console.log('Request URL:', url);
+    console.log('Request Headers:', headers);
+    console.log('Request Body:', body);
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${idToken}`,
-        'X-CSRFToken': csrfToken,
-      },
-      body: JSON.stringify({
-        uid: user.uid,
-        email: user.email,
-      }),
+      headers,
+      body,
       credentials: 'include',
     });
+
+    // レスポンスの詳細をコンソールに出力
+    console.log('Response Status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -65,14 +77,14 @@ const sendUserToDjango = async (user: User) => {
       );
     }
     const data = await response.json();
-    console.log('Success:', data);
+    console.log('Success Response:', data);
   } catch (e) {
     console.error('===ユーザーデータのバックエンド送信でエラー発生===', e);
     throw e;
   }
 };
 
-// 認証結果の処理を共通化
+// 以下のコードは変更なし
 const handleAuthResult = async (
   userCredential: UserCredential,
 ): Promise<User> => {

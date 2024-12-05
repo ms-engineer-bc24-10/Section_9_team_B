@@ -21,7 +21,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -46,7 +47,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
 ]
 
@@ -138,6 +138,12 @@ REST_FRAMEWORK = {
 # Firebase用カスタムユーザーモデルの作成
 AUTH_USER_MODEL = "custom_auth.User"
 
+# 認証バックエンドの設定
+AUTHENTICATION_BACKENDS = [
+    "custom_auth.authentication.FirebaseAuthentication",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 # CORSの設定
 
 CORS_ORIGIN_WHITELIST = [
@@ -175,8 +181,32 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-]
+# CSRFの設定
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+
+CSRF_COOKIE_SECURE = False  # 開発環境ではFalse、本番環境ではTrue
+
+CSRF_COOKIE_HTTPONLY = False
+
+CSRF_USE_SESSIONS = False
+
+CSRF_COOKIE_SAMESITE = "Lax"
+
+# デバッグ用ログ設定
+if DEBUG:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+            },
+        },
+        "root": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+    }
 
 APPEND_SLASH = True
