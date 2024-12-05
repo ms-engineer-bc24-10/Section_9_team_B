@@ -2,4 +2,4 @@
 venv/
 *.pyc
 db.sqlite3
-backend/config/google_vision_key.json
+backend/google_vision_key.json

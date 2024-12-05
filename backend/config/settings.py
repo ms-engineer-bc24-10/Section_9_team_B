@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from decouple import config
-
+from google.oauth2 import service_account
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "garbage_analysis",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -118,7 +119,20 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 環境変数からGoogle Vision APIキーのパスを取得
-GOOGLE_APPLICATION_CREDENTIALS = config("GOOGLE_APPLICATION_CREDENTIALS")
+GOOGLE_CREDENTIALS_PATH = os.path.join(BASE_DIR, "google_vision_key.json")
+
+# Google Vision API 用の認証設定
+try:
+    cred = service_account.Credentials.from_service_account_file(
+        GOOGLE_CREDENTIALS_PATH
+    )
+    print("Google Vision API 認証情報が正常に読み込まれました。")
+except Exception as e:
+    cred = None
+    print(f"Google Vision API 認証情報の読み込みに失敗しました: {e}")
+
+# Google Cloud ライブラリが使用する環境変数に設定
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_CREDENTIALS_PATH
 
 # cors
 INSTALLED_APPS += [
