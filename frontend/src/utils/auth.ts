@@ -1,4 +1,3 @@
-import { firebaseConfig } from './firebase';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -8,27 +7,44 @@ import {
   UserCredential,
 } from 'firebase/auth';
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { firebaseConfig } from './firebase';
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
+
+// CSRFトークンを取得する関数
+const fetchCsrfToken = async (): Promise<string> => {
+  const response = await fetch('http://localhost:8000/api/csrf-token/', {
+    credentials: 'include',
+  });
+  const data = await response.json();
+  return data.csrfToken;
+};
 
 // ユーザー情報をDjangoバックエンドに送信
 const sendUserToDjango = async (user: User) => {
   try {
     const idToken = await user.getIdToken();
-    const response = await fetch('/api/auth/register', {
+    const csrfToken = await fetchCsrfToken();
+    const response = await fetch('http://localhost:8000/api/auth/signup/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${idToken}`,
+        'X-CSRFToken': csrfToken,
       },
       body: JSON.stringify({
         uid: user.uid,
         email: user.email,
       }),
+      credentials: 'include',
     });
+
     if (!response.ok) {
-      throw new Error('===ユーザーデータのバックエンド送信失敗===');
+      const errorDetails = await response.json();
+      throw new Error(
+        `===ユーザーデータのバックエンド送信失敗===: ${errorDetails.error || response.statusText}`,
+      );
     }
   } catch (e) {
     console.error('===ユーザーデータのバックエンド送信でエラー発生===', e);
@@ -40,8 +56,18 @@ const sendUserToDjango = async (user: User) => {
 const handleAuthResult = async (
   userCredential: UserCredential,
 ): Promise<User> => {
-  const user = userCredential.user;
-  await sendUserToDjango(user);
+  const { user } = userCredential;
+
+  try {
+    await sendUserToDjango(user);
+  } catch (error) {
+    console.error(
+      '===バックエンドへのユーザー情報送信中にエラーが発生===',
+      error,
+    );
+    throw error;
+  }
+
   return user;
 };
 
@@ -52,7 +78,7 @@ const signUp = async (email: string, password: string): Promise<User> => {
       email,
       password,
     );
-    return handleAuthResult(userCredential);
+    return await handleAuthResult(userCredential);
   } catch (e) {
     console.error('===サインアップエラー===', e);
     throw e;
@@ -66,7 +92,7 @@ const signIn = async (email: string, password: string): Promise<User> => {
       email,
       password,
     );
-    return handleAuthResult(userCredential);
+    return await handleAuthResult(userCredential);
   } catch (e) {
     console.error('===サインインエラー===', e);
     throw e;
@@ -76,7 +102,14 @@ const signIn = async (email: string, password: string): Promise<User> => {
 const signOutUser = async (): Promise<void> => {
   try {
     await signOut(auth);
-    await fetch('/api/auth/logout', { method: 'POST' });
+    const csrfToken = await fetchCsrfToken();
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken,
+      },
+      credentials: 'include',
+    });
   } catch (e) {
     console.error('===サインアウトエラー===', e);
     throw e;

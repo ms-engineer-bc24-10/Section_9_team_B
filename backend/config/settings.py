@@ -4,12 +4,10 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, auth
 
-# # Firebase Admin SDKの初期化
-# cred = credentials.Certificate("../serviceAccountKey.json")
-# firebase_admin.initialize_app(cred)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Firebase Admin SDKの初期化
 # serviceAccountKey.jsonファイルのパスを指定
 cred = credentials.Certificate(os.path.join(BASE_DIR, "serviceAccountKey.json"))
 firebase_admin.initialize_app(cred)
@@ -36,7 +34,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "apps.custom_auth",
+    "custom_auth",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -47,6 +46,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -129,9 +130,49 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # REST_FRAMEWORKの設定
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "apps.custom_auth.authentication.FirebaseAuthentication",
+        "custom_auth.authentication.FirebaseAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
 }
 
 # Firebase用カスタムユーザーモデルの作成
 AUTH_USER_MODEL = "custom_auth.User"
+
+# CORSの設定
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CORS_ALLOW_ALL_ORIGINS = (
+    True  # NOTE: 開発環境でのみ使用。本番環境では特定のオリジンのみを許可すること。
+)
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+APPEND_SLASH = True

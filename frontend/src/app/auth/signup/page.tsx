@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { signUp } from '../../../utils/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { signUp } from '../../../utils/auth';
 
-const SignUpPage = () => {
+function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -105,6 +105,6 @@ const SignUpPage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default SignUpPage;
