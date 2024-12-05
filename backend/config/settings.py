@@ -119,3 +119,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 環境変数からGoogle Vision APIキーのパスを取得
 GOOGLE_APPLICATION_CREDENTIALS = config("GOOGLE_APPLICATION_CREDENTIALS")
+
+# cors
+INSTALLED_APPS += [
+    "corsheaders",
+]
+
+MIDDLEWARE.insert(0, "corsheaders.middleware.CorsMiddleware")
+
+CORS_ALLOW_ALL_ORIGINS = True  # 開発中はすべてのオリジンを許可
