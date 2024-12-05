@@ -19,7 +19,7 @@ class SignUpView(APIView):
     def post(self, request):
         logger.debug(f"Request headers: {request.headers}")
         logger.debug(f"Request body: {request.data}")
-
+        print(f"===api呼び出し===")
         try:
             # Firebaseトークンを検証
             auth_header = request.headers.get("Authorization")
@@ -33,6 +33,8 @@ class SignUpView(APIView):
             decoded_token = firebase_auth.verify_id_token(id_token)
             uid = decoded_token["uid"]
             email = decoded_token["email"]
+
+            logger.debug(email)
 
             # ユーザーをDjangoデータベースに作成または取得
             user, created = User.objects.get_or_create(
