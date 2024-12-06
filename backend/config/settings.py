@@ -29,9 +29,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "garbage_analysis",
     "rest_framework",
+  	"payments",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -116,6 +120,7 @@ STATIC_URL = "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 環境変数からGoogle Vision APIキーのパスを取得
@@ -134,11 +139,27 @@ except Exception as e:
 # Google Cloud ライブラリが使用する環境変数に設定
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_CREDENTIALS_PATH
 
-# cors
-INSTALLED_APPS += [
-    "corsheaders",
+
+# Stripe API
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+
+
+# CORS 設定
+CORS_ALLOW_ALL_ORIGINS = True  # 開発中はすべてのオリジンを許可
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  # フロントエンドのオリジン
+    'http://127.0.0.1:3000',
 ]
 
-MIDDLEWARE.insert(0, "corsheaders.middleware.CorsMiddleware")
+# HTTP メソッドを制限する場合
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
 
-CORS_ALLOW_ALL_ORIGINS = True  # 開発中はすべてのオリジンを許可
+CORS_ALLOW_CREDENTIALS = True

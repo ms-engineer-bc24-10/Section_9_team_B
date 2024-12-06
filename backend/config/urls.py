@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # garbage_analysis アプリのルーティングを登録
     path("", include("garbage_analysis.urls")),
+    path('payments/', include('payments.urls')),
 ]
