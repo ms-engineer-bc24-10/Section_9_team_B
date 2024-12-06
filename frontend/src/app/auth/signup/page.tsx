@@ -1,4 +1,40 @@
-export default function SignupPage() {
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { signUp } from '../../../utils/auth';
+
+export default function SignUpPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    if (password !== confirmPassword) {
+      setError('パスワードが一致しません');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await signUp(email, password);
+      router.push('/');
+    } catch (error) {
+      setError('サインアップに失敗しました。もう一度お試しください。');
+      console.error('Signup error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       {/* ヘッダー */}
@@ -14,23 +50,7 @@ export default function SignupPage() {
         </p>
 
         {/* フォーム */}
-        <form>
-          {/* ユーザー名 */}
-          <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
-              ユーザー名
-            </label>
-            <input
-              type="text"
-              id="username"
-              placeholder="ユーザー名を入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-            />
-          </div>
-
+        <form onSubmit={handleSubmit}>
           {/* メールアドレス */}
           <div className="mb-4">
             <label
@@ -44,6 +64,9 @@ export default function SignupPage() {
               id="email"
               placeholder="メールアドレスを入力"
               className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
@@ -60,17 +83,48 @@ export default function SignupPage() {
               id="password"
               placeholder="パスワードを入力"
               className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
+
+          {/* パスワード（確認） */}
+          <div className="mb-4">
+            <label
+              htmlFor="confirm-password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              パスワード（確認）
+            </label>
+            <input
+              type="password"
+              id="confirm-password"
+              placeholder="パスワードを再入力"
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
           {/* 登録ボタン */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition"
+            className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition disabled:opacity-50"
+            disabled={loading}
           >
-            登録
+            {loading ? 'Processing...' : '登録'}
           </button>
         </form>
+
+        <div className="text-sm text-center mt-4">
+          <Link href="/auth/signin" className="text-blue-500 hover:underline">
+            既にアカウントをお持ちの方はこちら
+          </Link>
+        </div>
       </main>
     </div>
   );
