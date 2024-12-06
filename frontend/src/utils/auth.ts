@@ -84,7 +84,6 @@ const sendUserToDjango = async (user: User) => {
   }
 };
 
-// 以下のコードは変更なし
 const handleAuthResult = async (
   userCredential: UserCredential,
 ): Promise<User> => {
@@ -117,7 +116,7 @@ const signUp = async (email: string, password: string): Promise<User> => {
   }
 };
 
-const signIn = async (email: string, password: string): Promise<User> => {
+const logIn = async (email: string, password: string): Promise<User> => {
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
@@ -126,12 +125,12 @@ const signIn = async (email: string, password: string): Promise<User> => {
     );
     return await handleAuthResult(userCredential);
   } catch (e) {
-    console.error('===サインインエラー===', e);
+    console.error('===ログインエラー===', e);
     throw e;
   }
 };
 
-const signOutUser = async (): Promise<void> => {
+const logOutUser = async (): Promise<void> => {
   try {
     await signOut(auth);
     const csrfToken = await fetchCsrfToken();
@@ -143,9 +142,9 @@ const signOutUser = async (): Promise<void> => {
       credentials: 'include',
     });
   } catch (e) {
-    console.error('===サインアウトエラー===', e);
+    console.error('===ログアウトエラー===', e);
     throw e;
   }
 };
 
-export { app, auth, signUp, signIn, signOutUser };
+export { app, auth, signUp, logIn, logOutUser };
