@@ -13,4 +13,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("custom_auth.urls")),
     path("api/csrf-token/", get_csrf_token, name="csrf_token"),
+    # garbage_analysis アプリのルーティングを登録
+    path("", include("garbage_analysis.urls")),
+    path('payments/', include('payments.urls')),
 ]

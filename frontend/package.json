@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "firebase": "^11.0.2",
+    "@stripe/stripe-js": "^5.2.0",
     "morgan": "^1.10.0",
     "next": "14.1.0",
     "react": "^18",
@@ -25,7 +26,7 @@
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
-    "eslint-config-next": "^14.2.19",
+    "eslint-config-next": "^14.1.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",

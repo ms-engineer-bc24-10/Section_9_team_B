@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signUp } from '../../../utils/auth';
 
-function SignUpPage() {
+export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,7 +26,6 @@ function SignUpPage() {
 
     try {
       await signUp(email, password);
-      // 成功時の処理（ホームページへリダイレクト）
       router.push('/');
     } catch (error) {
       setError('サインアップに失敗しました。もう一度お試しください。');
@@ -37,74 +36,96 @@ function SignUpPage() {
   };
 
   return (
-    <div>
-      <div>
-        <div>
-          <h2>アカウントを作成</h2>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      {/* ヘッダー */}
+      <header className="w-full bg-blue-500 text-white py-4 text-center">
+        <h1 className="text-2xl font-bold">新規登録</h1>
+      </header>
+
+      {/* メインコンテンツ */}
+      <main className="w-full max-w-sm bg-white shadow rounded-lg p-6 mt-4">
+        <h2 className="text-xl font-bold mb-4">新規アカウント登録</h2>
+        <p className="text-sm text-gray-500 mb-6">
+          アカウント情報を入力してください。
+        </p>
+
+        {/* フォーム */}
         <form onSubmit={handleSubmit}>
-          <input type="hidden" name="remember" defaultValue="true" />
-          <div>
-            <div>
-              <label htmlFor="email-address">メールアドレス</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="メールアドレス"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                パスワード
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                placeholder="パスワード"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="sr-only">
-                パスワード（確認）
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                placeholder="パスワード（確認）"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+          {/* メールアドレス */}
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              メールアドレス
+            </label>
+            <input
+              type="email"
+              id="email"
+              placeholder="メールアドレスを入力"
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
-          {error && <div>{error}</div>}
-
-          <div>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Processing...' : 'サインアップ'}
-            </button>
+          {/* パスワード */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              パスワード
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="パスワードを入力"
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
+
+          {/* パスワード（確認） */}
+          <div className="mb-4">
+            <label
+              htmlFor="confirm-password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              パスワード（確認）
+            </label>
+            <input
+              type="password"
+              id="confirm-password"
+              placeholder="パスワードを再入力"
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
+          {/* 登録ボタン */}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : '登録'}
+          </button>
         </form>
 
-        <div className="text-sm text-center">
-          <Link href="/auth/signin">既にアカウントをお持ちの方はこちら</Link>
+        <div className="text-sm text-center mt-4">
+          <Link href="/auth/signin" className="text-blue-500 hover:underline">
+            既にアカウントをお持ちの方はこちら
+          </Link>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
-
-export default SignUpPage;

@@ -3,6 +3,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, auth
+from decouple import config
+from google.oauth2 import service_account
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,19 +37,22 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "custom_auth",
+    "garbage_analysis",
+    "rest_framework",
+  	"payments",
     "corsheaders",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -125,6 +130,7 @@ STATIC_URL = "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # REST_FRAMEWORKの設定
@@ -152,6 +158,7 @@ CORS_ORIGIN_WHITELIST = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    'http://127.0.0.1:3000',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = (
@@ -160,6 +167,7 @@ CORS_ALLOW_ALL_ORIGINS = (
 
 CORS_ALLOW_CREDENTIALS = True
 
+# HTTP メソッドを制限する場合
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -210,3 +218,31 @@ if DEBUG:
     }
 
 APPEND_SLASH = True
+
+# 環境変数からGoogle Vision APIキーのパスを取得
+GOOGLE_CREDENTIALS_PATH = os.path.join(BASE_DIR, "google_vision_key.json")
+
+# Google Vision API 用の認証設定
+try:
+    cred = service_account.Credentials.from_service_account_file(
+        GOOGLE_CREDENTIALS_PATH
+    )
+    print("Google Vision API 認証情報が正常に読み込まれました。")
+except Exception as e:
+    cred = None
+    print(f"Google Vision API 認証情報の読み込みに失敗しました: {e}")
+
+# Google Cloud ライブラリが使用する環境変数に設定
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_CREDENTIALS_PATH
+
+
+# Stripe API
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+
+
+
+
+
+
+

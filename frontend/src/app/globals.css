@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* カスタムスタイル (必要に応じて追加) */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
