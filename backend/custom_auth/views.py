@@ -32,19 +32,34 @@ class SignUpView(APIView):
             id_token = auth_header.split("Bearer ")[1]
             decoded_token = firebase_auth.verify_id_token(id_token)
             uid = decoded_token["uid"]
-            email = decoded_token["email"]
+            firebase_email = decoded_token["email"]
+            username = request.data.get("username")
+            email = request.data.get("email")
+
+            # Firebase のメールアドレスと入力されたメールアドレスが一致するか確認
+            if email != firebase_email:
+                return JsonResponse(
+                    {"error": "Email mismatch"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             logger.debug(email)
 
             # ユーザーをDjangoデータベースに作成または取得
-            user, created = User.objects.get_or_create(
-                username=uid, defaults={"email": email, "role": "user"}
-            )
+            try:
+                user = User.objects.create_user(
+                    username=username, email=email, firebase_uid=uid, role="user"
+                )
+                return JsonResponse(
+                    {"message": "User created successfully", "user_id": user.id},
+                    status=status.HTTP_201_CREATED,
+                )
+            except IntegrityError:
+                return JsonResponse(
+                    {"error": "Username or email already exists"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-            return JsonResponse(
-                {"message": "User created successfully", "user_id": user.id},
-                status=status.HTTP_201_CREATED,
-            )
         except ValueError as e:
             logger.error(f"Invalid token: {str(e)}")
             return JsonResponse(

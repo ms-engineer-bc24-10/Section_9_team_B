@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { signUp } from '../../../utils/auth';
 
 export default function SignUpPage() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,7 +26,7 @@ export default function SignUpPage() {
     }
 
     try {
-      await signUp(email, password);
+      await signUp(username, email, password);
       router.push('/');
     } catch (error) {
       setError('サインアップに失敗しました。もう一度お試しください。');
@@ -51,6 +52,25 @@ export default function SignUpPage() {
 
         {/* フォーム */}
         <form onSubmit={handleSubmit}>
+          {/* ユーザー名 */}
+          <div className="mb-4">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
+              ユーザー名
+            </label>
+            <input
+              type="text"
+              id="username"
+              placeholder="ユーザー名を入力"
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+
           {/* メールアドレス */}
           <div className="mb-4">
             <label
@@ -121,7 +141,7 @@ export default function SignUpPage() {
         </form>
 
         <div className="text-sm text-center mt-4">
-          <Link href="/auth/signin" className="text-blue-500 hover:underline">
+          <Link href="/home" className="text-blue-500 hover:underline">
             既にアカウントをお持ちの方はこちら
           </Link>
         </div>

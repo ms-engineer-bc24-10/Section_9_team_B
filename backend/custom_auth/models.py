@@ -8,6 +8,7 @@ class User(AbstractUser):
         ("admin", "Admin"),
     )
     role = models.CharField(max_length=10, choices=ROLES, default="user")
+    firebase_uid = models.CharField(max_length=128, unique=True, null=True, blank=True)
 
     groups = models.ManyToManyField(
         "auth.Group",
