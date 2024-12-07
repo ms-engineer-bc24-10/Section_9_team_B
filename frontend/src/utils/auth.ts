@@ -52,6 +52,7 @@ const sendUserToDjango = async (user: User) => {
     const body = JSON.stringify({
       uid: user.uid,
       email: user.email,
+      username: user.displayName || user.email.split('@')[0], // ユーザー名がない場合はメールアドレスの@前の部分を使用
     });
 
     // リクエストの詳細をコンソールに出力
@@ -104,6 +105,7 @@ const handleAuthResult = async (
 
 const signUp = async (email: string, password: string): Promise<User> => {
   try {
+    const trimmedEmail = email.trim(); // メールアドレスの前後の空白を除去
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
