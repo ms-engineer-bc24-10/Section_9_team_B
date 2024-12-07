@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "garbage_analysis",
   	"payments",
     "corsheaders",
+    "tourist_spots",
 ]
 
 MIDDLEWARE = [
