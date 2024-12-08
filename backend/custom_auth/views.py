@@ -8,8 +8,7 @@ from .models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
-from django.db import IntegrityError
-from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +21,7 @@ class SignUpView(APIView):
         logger.debug(f"Request headers: {request.headers}")
         logger.debug(f"Request body: {request.data}")
         logger.info("===api呼び出し===")
+
         try:
             # Firebaseトークンを検証
             auth_header = request.headers.get("Authorization")
@@ -40,19 +40,8 @@ class SignUpView(APIView):
 
             # usernameのバリデーション
             if not username:
-                return JsonResponse(
-                    {"error": "Username is required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            # ユーザー名の追加バリデーション
-            try:
-                User._meta.get_field("username").run_validators(username)
-            except ValidationError as e:
-                return JsonResponse(
-                    {"error": str(e)},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                # メールアドレスの@前の部分をデフォルトのユーザー名として使用
+                username = email.split("@")[0]
 
             # Firebase のメールアドレスと入力されたメールアドレスが一致するか確認
             if email != firebase_email:
@@ -61,25 +50,50 @@ class SignUpView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            logger.debug(f"Email: {email}")
-            logger.debug(f"Username: {username}")
-            logger.debug(f"Firebase UID: {firebase_uid}")
+            with transaction.atomic():
+                # メールアドレスでユーザーを検索
+                user, created = User.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        "username": username,
+                        "firebase_uid": firebase_uid,
+                        "role": "user",
+                    },
+                )
 
-            # ユーザーをDjangoデータベースに作成
-            user = User.objects.create_user(
-                username=username, email=email, firebase_uid=firebase_uid, role="user"
-            )
+                if not created:
+                    # 既存ユーザーの場合、Firebase UIDとユーザー名を更新
+                    user.firebase_uid = firebase_uid
+                    user.username = username
+                    user.save()
+                    message = "User updated successfully"
+                else:
+                    message = "User created successfully"
+
+            # 操作結果のログ出力
+            logger.info(f"User operation result: {message}")
             return JsonResponse(
-                {"message": "User created successfully", "user_id": user.id},
-                status=status.HTTP_201_CREATED,
+                {"message": message, "user_id": user.id},
+                status=status.HTTP_200_OK if not created else status.HTTP_201_CREATED,
             )
 
         except IntegrityError as e:
             logger.error(f"IntegrityError: {str(e)}")
-            return JsonResponse(
-                {"error": "Username or email already exists"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            if "email" in str(e):
+                return JsonResponse(
+                    {"error": "Email already exists"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            elif "username" in str(e):
+                return JsonResponse(
+                    {"error": "Username already exists"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                return JsonResponse(
+                    {"error": "User creation failed"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         except ValueError as e:
             logger.error(f"Invalid token: {str(e)}")
             return JsonResponse(
