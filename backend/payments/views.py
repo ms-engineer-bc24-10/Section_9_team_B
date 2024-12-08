@@ -14,7 +14,7 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
-# @login_required  # TODO: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。認証機能と繋げてコメントアウトを外す。
+@login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
@@ -45,13 +45,14 @@ def create_subscription(request):
             logger.debug(f"サブスクのStripe Session Metadata: {session.metadata}")
             return JsonResponse({"url": session.url})  # JSONでセッションURLを返す
         except Exception as e:
+            logger.error(f"サブスク作成エラー: {e}")
             return JsonResponse({"error": str(e)}, status=400)
     else:
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
-# @login_required  # TODO: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。認証機能と繋げてコメントアウトを外す。
+@login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_one_time_payment(request):
     """
     入場料（来場者→管理者）の決済セッションを作成
@@ -87,13 +88,14 @@ def create_one_time_payment(request):
 
             return JsonResponse({"url": session.url})
         except Exception as e:
+            logger.error(f"都度払い作成エラー: {e}")
             return JsonResponse({"error": str(e)}, status=400)
     else:
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
-# @login_required  # TODO: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。認証機能と繋げてコメントアウトを外す。
+@login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def stripe_webhook(request):
     """
     Stripe Webhookエンドポイント
@@ -105,14 +107,14 @@ def stripe_webhook(request):
     try:
         # Webhookイベントを検証
         event = stripe.Webhook.construct_event(payload, sig_header, WEBHOOK_SECRET)
-        logger.debug(f"受信したイベント: {event['type']}")
+        logger.debug(f"Webhook 受信したイベント: {event['type']}")
     except ValueError as e:
         # 無効なペイロード
-        logger.error("Invalid payload")
+        logger.error(f"Webhook 無効なペイロード: {e}")
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
         # 署名エラー
-        logger.error("Invalid signature")
+        logger.error(f"Webhook 署名エラー: {e}")
         return HttpResponse(status=400)
 
     # イベントタイプごとに処理
@@ -124,6 +126,7 @@ def stripe_webhook(request):
         # メタデータから必要な情報を取得
         user_id = metadata.get("user_id")
         is_participating = metadata.get("is_participating", "false") == "true"
+
         amount = session["amount_total"]  # 支払い金額（セント単位）
 
         # DBに登録
@@ -136,9 +139,9 @@ def stripe_webhook(request):
                 is_participating=is_participating,
                 stripe_session_id=session["id"],
             )
-            logger.info(f"取引を登録しました: {transaction}")
+            logger.info(f"取引をDB登録しました: {transaction}")
         except Exception as e:
-            logger.error(f"取引の登録に失敗しました: {e}")
+            logger.error(f"取引のDB登録に失敗しました: {e}")
             return HttpResponse(status=500)
 
     return HttpResponse(status=200)
