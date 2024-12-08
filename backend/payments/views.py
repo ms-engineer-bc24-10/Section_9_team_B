@@ -1,14 +1,17 @@
 import logging
 import stripe
 import os
-from django.http import JsonResponse
+import json  # JSONデータのパースに使用
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-import json  # JSONデータのパースに使用
+from payments.models import Transaction
 
 logger = logging.getLogger(__name__)
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+
+WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
 # @login_required  # TODO: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。認証機能と繋げてコメントアウトを外す。
@@ -87,3 +90,55 @@ def create_one_time_payment(request):
             return JsonResponse({"error": str(e)}, status=400)
     else:
         return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+@csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
+# @login_required  # TODO: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。認証機能と繋げてコメントアウトを外す。
+def stripe_webhook(request):
+    """
+    Stripe Webhookエンドポイント
+    """
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")  # Stripeの署名ヘッダー
+    event = None
+
+    try:
+        # Webhookイベントを検証
+        event = stripe.Webhook.construct_event(payload, sig_header, WEBHOOK_SECRET)
+        logger.debug(f"受信したイベント: {event['type']}")
+    except ValueError as e:
+        # 無効なペイロード
+        logger.error("Invalid payload")
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # 署名エラー
+        logger.error("Invalid signature")
+        return HttpResponse(status=400)
+
+    # イベントタイプごとに処理
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]  # Stripeセッションオブジェクト
+        metadata = session.get("metadata", {})
+        logger.debug(f"受信したメタデータ: {metadata}")
+
+        # メタデータから必要な情報を取得
+        user_id = metadata.get("user_id")
+        is_participating = metadata.get("is_participating", "false") == "true"
+        amount = session["amount_total"]  # 支払い金額（セント単位）
+
+        # DBに登録
+        try:
+            transaction = Transaction.objects.create(
+                user_id=user_id,
+                tourist_spot_id=None,  # TODO 関連付けを追加
+                amount=amount // 100,  # セント単位から円に変換
+                status="paid",
+                is_participating=is_participating,
+                stripe_session_id=session["id"],
+            )
+            logger.info(f"取引を登録しました: {transaction}")
+        except Exception as e:
+            logger.error(f"取引の登録に失敗しました: {e}")
+            return HttpResponse(status=500)
+
+    return HttpResponse(status=200)
