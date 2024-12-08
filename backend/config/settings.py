@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "custom_auth",
     "garbage_analysis",
-    "rest_framework",
   	"payments",
     "corsheaders",
 ]
