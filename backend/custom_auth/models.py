@@ -32,10 +32,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    ROLES = (
-        ("user", "User"),
-        ("operator", "Operator"),
-    )
+    ROLES = (("user", "User"), ("operator", "Operator"), ("developer", "Developer"))
     username_validator = RegexValidator(
         regex=r"^[\w.@+\-ぁ-んァ-ン一-龥]+$",
         message=_(
@@ -57,6 +54,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     firebase_uid = models.CharField(max_length=128, unique=True, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLES, null=True, blank=True)
 
+    auth_method = models.CharField(
+        max_length=10,
+        choices=[("email", "Email"), ("oauth", "OAuth")],
+        null=True,
+        blank=True,
+    )
+    oauth_provider = models.CharField(max_length=50, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -69,7 +77,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"Username: {self.username}, UID: {self.firebase_uid}, Email: {self.email}, Role: {self.get_role_display()}"
 
     def is_web_app_user(self):
-        return self.role in ["user", "operator"]
+        return self.role in ["user", "operator", "developer"]
 
     def is_operator(self):
         return self.role == "operator"

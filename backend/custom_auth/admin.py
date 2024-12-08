@@ -3,10 +3,20 @@ from .models import User
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("username", "email", "role", "firebase_uid")  # 表示したいフィールド
+    list_display = (
+        "id",
+        "username",
+        "email",
+        "role",
+        "firebase_uid",
+        "auth_method",
+        "oauth_provider",
+        "created_at",
+        "updated_at",
+    )  # 表示したいフィールド
     search_fields = ("username", "email")  # 検索可能なフィールド
     list_filter = ("role",)  # フィルタリング可能なフィールド
-    ordering = ("username",)  # デフォルトの並び順
+    ordering = ("id",)  # デフォルトの並び順
 
 
 # Userモデルを管理サイトに登録
