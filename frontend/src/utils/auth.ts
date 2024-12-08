@@ -74,7 +74,7 @@ const sendUserToDjango = async (user: User, username: string) => {
     const body = JSON.stringify({
       uid: user.uid,
       email: user.email,
-      username,
+      username, // FIXME:ユーザー名が送信されない
     });
 
     // リクエストの詳細をコンソールに出力

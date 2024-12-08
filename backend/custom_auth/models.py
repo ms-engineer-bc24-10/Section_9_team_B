@@ -13,6 +13,9 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
+        # FIXME:roleが指定されていない場合は'user'を設定したいけど反映されない
+        if "role" not in extra_fields:
+            extra_fields["role"] = "user"
         user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
