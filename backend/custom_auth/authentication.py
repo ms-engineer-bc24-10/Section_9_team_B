@@ -20,7 +20,10 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
             decoded_token = auth.verify_id_token(id_token)
             logger.debug(f"Token verified successfully. Decoded token: {decoded_token}")
             uid = decoded_token["uid"]
-            user, created = get_user_model().objects.get_or_create(username=uid)
+            user, created = get_user_model().objects.get_or_create(
+                email=decoded_token["email"],  # メールアドレスを使用
+                defaults={"firebase_uid": uid},  # UIDをデフォルト値として使用
+            )
             logger.info(f"User authenticated: {user.username}")
             return (user, None)
         except auth.InvalidIdTokenError as e:
