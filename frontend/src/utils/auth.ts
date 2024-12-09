@@ -116,6 +116,17 @@ const sendUserToDjango = async (user: User, username: string) => {
 
 const logIn = async (email: string, password: string): Promise<User> => {
   try {
+    const response = await fetch('http://localhost:8000/api/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error('ログイン失敗');
+    }
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,

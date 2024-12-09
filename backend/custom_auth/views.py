@@ -2,13 +2,14 @@ import logging
 import traceback
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from firebase_admin import auth as firebase_auth
 from .models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.db import IntegrityError, transaction
+from django.contrib.auth import login, authenticate
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +41,8 @@ class SignUpView(APIView):
 
             # usernameのバリデーション
             if not username:
-                # メールアドレスの@前の部分をデフォルトのユーザー名として使用
                 username = email.split("@")[0]
 
-            # Firebase のメールアドレスと入力されたメールアドレスが一致するか確認
             if email != firebase_email:
                 return JsonResponse(
                     {"error": "Email mismatch"},
@@ -51,7 +50,6 @@ class SignUpView(APIView):
                 )
 
             with transaction.atomic():
-                # メールアドレスでユーザーを検索
                 user, created = User.objects.get_or_create(
                     email=email,
                     defaults={
@@ -62,15 +60,22 @@ class SignUpView(APIView):
                 )
 
                 if not created:
-                    # 既存ユーザーの場合、Firebase UIDとユーザー名を更新
                     user.firebase_uid = firebase_uid
                     user.username = username
                     user.save()
-                    message = "User updated successfully"
-                else:
-                    message = "User created successfully"
 
-            # 操作結果のログ出力
+            user.backend = "custom_auth.authentication.FirebaseAuthentication"
+            login(request, user)
+
+            # トランザクション外でセッション操作を行う
+            login(request, user)
+            request.session["user_id"] = user.id
+            request.session.save()  # セッションを明示的に保存
+
+            message = (
+                "User created successfully" if created else "User updated successfully"
+            )
+
             logger.info(f"User operation result: {message}")
             return JsonResponse(
                 {"message": message, "user_id": user.id},
@@ -106,3 +111,35 @@ class SignUpView(APIView):
                 {"error": "An unexpected error occurred"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            request.session["user_id"] = user.id
+            request.session.save()
+            return JsonResponse({"message": "===ログイン成功===", "user_id": user.id})
+        else:
+            return JsonResponse(
+                {"error": "===ログイン失敗==="}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
+
+class ProtectedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return JsonResponse(
+            {
+                "message": "===認証済みユーザーのみアクセス可能===",
+                "user_id": request.user.id,
+            }
+        )

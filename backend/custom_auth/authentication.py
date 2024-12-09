@@ -24,6 +24,10 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
                 email=decoded_token["email"],  # メールアドレスを使用
                 defaults={"firebase_uid": uid},  # UIDをデフォルト値として使用
             )
+
+            # ユーザー認証時のバックエンドの指定
+            user.backend = "custom_auth.authentication.FirebaseAuthentication"
+
             logger.info(f"User authenticated: {user.username}")
             return (user, None)
         except auth.InvalidIdTokenError as e:

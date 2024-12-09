@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "custom_auth",
     "garbage_analysis",
-  	"payments",
+    "payments",
     "corsheaders",
 ]
 
@@ -237,3 +237,21 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_CREDENTIALS_PATH
 # Stripe API
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+
+# セッション認証
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ]
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 1209600  # 2週間（秒単位）
+SESSION_SAVE_EVERY_REQUEST = True
+
+# バックエンドの認証順序の指定
+AUTHENTICATION_BACKENDS = [
+    "custom_auth.authentication.FirebaseAuthentication",
+    "django.contrib.auth.backends.ModelBackend",
+]
