@@ -51,7 +51,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -157,7 +156,7 @@ CORS_ORIGIN_WHITELIST = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    'http://127.0.0.1:3000',
+    "http://127.0.0.1:3000",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = (
@@ -238,10 +237,3 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_CREDENTIALS_PATH
 # Stripe API
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
-
-
-
-
-
-
-
