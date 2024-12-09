@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FirebaseError } from 'firebase/app';
 import { signUp } from '../../../utils/auth';
 
 export default function SignUpPage() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,16 +20,35 @@ export default function SignUpPage() {
     setError('');
     setLoading(true);
 
-    if (password !== confirmPassword) {
-      setError('パスワードが一致しません');
+    const trimmedEmail = email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('有効なメールアドレスを入力してください');
       setLoading(false);
       return;
     }
 
     try {
-      await signUp(email, password);
+      await signUp(trimmedEmail, password);
       router.push('/');
     } catch (error) {
+      if (error instanceof FirebaseError) {
+        // Firebase特有のエラー処理
+        switch (error.code) {
+          case 'auth/invalid-email':
+            setError(
+              '無効なメールアドレス形式です。正しいメールアドレスを入力してください。',
+            );
+            break;
+          default:
+            setError('サインアップに失敗しました。もう一度お試しください。');
+        }
+      } else if (error instanceof Error) {
+        // その他のエラー
+        setError(error.message || '予期せぬエラーが発生しました。');
+      } else {
+        setError('予期せぬエラーが発生しました。');
+      }
       setError('サインアップに失敗しました。もう一度お試しください。');
       console.error('Signup error:', error);
     } finally {
@@ -51,6 +72,25 @@ export default function SignUpPage() {
 
         {/* フォーム */}
         <form onSubmit={handleSubmit}>
+          {/* ユーザー名 */}
+          <div className="mb-4">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
+              ユーザー名
+            </label>
+            <input
+              type="text"
+              id="username"
+              placeholder="ユーザー名を入力"
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+
           {/* メールアドレス */}
           <div className="mb-4">
             <label
@@ -121,7 +161,7 @@ export default function SignUpPage() {
         </form>
 
         <div className="text-sm text-center mt-4">
-          <Link href="/auth/signin" className="text-blue-500 hover:underline">
+          <Link href="/home" className="text-blue-500 hover:underline">
             既にアカウントをお持ちの方はこちら
           </Link>
         </div>

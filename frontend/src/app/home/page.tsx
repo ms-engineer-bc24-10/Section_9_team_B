@@ -1,7 +1,34 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../utils/firebase';
 
 export default function HomePage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // ログイン成功時の処理
+      router.push('/'); // TODO: ログイン後のリダイレクト先を指定
+    } catch (error) {
+      setError(
+        'ログインに失敗しました。メールアドレスとパスワードを確認してください。',
+      );
+      console.error('Login error:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       {/* ヘッダー */}
@@ -60,7 +87,7 @@ export default function HomePage() {
       {/* メールアドレスとパスワード */}
       <section className="w-full max-w-sm bg-white shadow rounded-lg p-6 mb-8">
         <h2 className="text-2xl font-bold text-center mb-6">ログイン</h2>
-        <form>
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -71,7 +98,10 @@ export default function HomePage() {
             <input
               type="email"
               id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              required
             />
           </div>
           <div className="mb-4">
@@ -84,9 +114,13 @@ export default function HomePage() {
             <input
               type="password"
               id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              required
             />
           </div>
+          {error && <p>{error}</p>}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition"
