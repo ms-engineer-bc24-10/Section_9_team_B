@@ -29,7 +29,7 @@ class GarbageBagUploadView(APIView):
 
             image_file = request.FILES["image"]
 
-            # 画像を一時保存
+            # NOTE:画像 /tmp/ディレクトリに一時保存
             file_path = f"/tmp/{image_file.name}"
             with open(file_path, "wb+") as temp_file:
                 for chunk in image_file.chunks():
