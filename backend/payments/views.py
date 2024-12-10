@@ -13,7 +13,7 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-@csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
+# @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
 # @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_subscription(request):
     """
@@ -49,7 +49,7 @@ def create_subscription(request):
                 success_url="http://localhost:3000/payment/success",  # Next.jsで作った成功時のページへリダイレクト
                 cancel_url="http://localhost:3000/payment/cancel",    # Next.jsで作ったキャンセル時のページへリダイレクト
             )
-            logger.debug(f"サブスクのStripe Session Metadata: {session.metadata}")
+            logger.debug(f"サブスクのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}") #NOTE: ログを1行で表示して読みやすくする
             return JsonResponse({"url": session.url})  # JSONでセッションURLを返す
         except Exception as e:
             logger.error(f"サブスク作成エラー: {e}")
@@ -58,7 +58,7 @@ def create_subscription(request):
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-@csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
+# @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
 # @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_one_time_payment(request):
     """
@@ -98,7 +98,7 @@ def create_one_time_payment(request):
                 success_url="http://localhost:3000/payment/success",
                 cancel_url="http://localhost:3000/payment/cancel",
             )
-            logger.debug(f"都度払いのStripe Session Metadata: {session.metadata}")
+            logger.debug(f"都度払いのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}")
 
             return JsonResponse({"url": session.url})
         except Exception as e:
@@ -108,7 +108,7 @@ def create_one_time_payment(request):
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-@csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
+@csrf_exempt  # NOTE: Stripe CLIからのWebhookはユーザーのブラウザを通さず直接リクエストを送ってくるため、CSRFトークンチェックは不要。
 # @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def stripe_webhook(request):
     """
@@ -135,20 +135,21 @@ def stripe_webhook(request):
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]  # Stripeセッションオブジェクト
         metadata = session.get("metadata", {})
-        logger.debug(f"受信したメタデータ: {metadata}")
+        logger.debug(f"受信したメタデータ: {json.dumps(session.metadata, separators=(',', ':'))}")
 
         # メタデータから必要な情報を取得
         user_id = metadata.get("user_id")
         is_participating = metadata.get("is_participating", "false") == "true"
 
-        amount = session["amount_total"]  # 支払い金額（セント単位）
+        amount = session["amount_total"]
+        logger.debug(f"支払い金額: {amount}円")
 
         # DBに登録
         try:
             transaction = Transaction.objects.create(
                 user_id=user_id,
                 tourist_spot_id=None,  # TODO 関連付けを追加
-                amount=amount // 100,  # セント単位から円に変換
+                amount=amount,
                 status="paid",
                 is_participating=is_participating,
                 stripe_session_id=session["id"],
