@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const LoginForm = () => (
+const function LoginForm = () => (
   <div className="flex flex-col gap-4 w-full max-w-md">
     <div>
       <label

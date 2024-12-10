@@ -1,7 +1,23 @@
+// src/components/Header.tsx
+import Link from 'next/link';
+
 export default function Header() {
   return (
-    <header className="w-full bg-blue-500 text-white py-4 text-center">
-      <h1 className="text-xl font-bold">ひろいっぽ</h1>
+    <header className="w-full bg-blue-500 text-white py-4 fixed top-0 left-0 z-10">
+      <div className="text-center">
+        <h1 className="text-xl font-bold">ひろいっぽ</h1>
+      </div>
+      <nav className="mt-2 flex justify-center space-x-4">
+        <Link href="/home" className="text-lg font-bold hover:underline">
+          Home
+        </Link>
+        <Link href="/garbage" className="text-lg font-bold hover:underline">
+          ゴミ判定ページ
+        </Link>
+        <Link href="/mypage" className="text-lg font-bold hover:underline">
+          マイページ
+        </Link>
+      </nav>
     </header>
   );
 }

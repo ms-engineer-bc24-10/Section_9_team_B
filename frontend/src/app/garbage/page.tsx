@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 
-export default function GarbageBagUpload() {
+export default function GarbageBagUp() {
   const [image, setImage] = useState<File | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!image) return;
 
     const formData = new FormData();
@@ -42,7 +42,9 @@ export default function GarbageBagUpload() {
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+          onChange={(event) =>
+            setImage(event.target.files ? event.target.files[0] : null)
+          }
         />
         <button type="submit">アップロード</button>
       </form>

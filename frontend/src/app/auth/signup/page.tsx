@@ -71,6 +71,7 @@ export default function SignUpPage() {
         </p>
 
         {/* フォーム */}
+
         <form onSubmit={handleSubmit}>
           {/* ユーザー名 */}
           <div className="mb-4">
@@ -92,22 +93,36 @@ export default function SignUpPage() {
           </div>
 
           {/* メールアドレス */}
+
+          <div className="mb-4">
+            <label
+              htmlFor="userName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              ユーザー名
+              <input
+                type="text"
+                id="userName"
+                placeholder="ユーザー名を入力"
+                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              />
+            </label>
+          </div>
+
+          {/* メールアドレス */}
           <div className="mb-4">
             <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
               メールアドレス
+              <input
+                type="email"
+                id="email"
+                placeholder="メールアドレスを入力"
+                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              />
             </label>
-            <input
-              type="email"
-              id="email"
-              placeholder="メールアドレスを入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
           </div>
 
           {/* パスワード */}
@@ -117,54 +132,31 @@ export default function SignUpPage() {
               className="block text-sm font-medium text-gray-700"
             >
               パスワード
+              <input
+                type="password"
+                id="password"
+                placeholder="パスワードを入力"
+                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              />
             </label>
-            <input
-              type="password"
-              id="password"
-              placeholder="パスワードを入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
           </div>
-
-          {/* パスワード（確認） */}
-          <div className="mb-4">
-            <label
-              htmlFor="confirm-password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              パスワード（確認）
-            </label>
-            <input
-              type="password"
-              id="confirm-password"
-              placeholder="パスワードを再入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
           {/* 登録ボタン */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition disabled:opacity-50"
-            disabled={loading}
+            className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition"
           >
-            {loading ? 'Processing...' : '登録'}
+            登録
           </button>
         </form>
+
 
         <div className="text-sm text-center mt-4">
           <Link href="/home" className="text-blue-500 hover:underline">
             既にアカウントをお持ちの方はこちら
           </Link>
         </div>
+
       </main>
     </div>
   );
