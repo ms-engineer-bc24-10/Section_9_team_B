@@ -14,13 +14,20 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
-@login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
+# @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
     """
     if request.method == "POST":
         user_id = request.user.id  # 認証済みのユーザーIDを取得
+        try:
+            csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
+            logger.info(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
+            logger.info(f"セッションから取得したユーザー: {request.user}")
+        except Exception as e:
+            logger.error(f"CSRFトークン検証エラー: {e}")
+
         try:
             session = stripe.checkout.Session.create(
                 payment_method_types=["card"],
@@ -52,13 +59,20 @@ def create_subscription(request):
 
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
-@login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
+# @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_one_time_payment(request):
     """
     入場料（来場者→管理者）の決済セッションを作成
     """
     if request.method == "POST":
         user_id = request.user.id  # 認証済みのユーザーIDを取得
+        try:
+            csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
+            logger.info(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
+            logger.info(f"セッションから取得したユーザー: {request.user}")
+        except Exception as e:
+            logger.error(f"CSRFトークン検証エラー: {e}")
+
         try:
             # フロントエンドからのJSONデータを取得
             data = json.loads(request.body)
@@ -95,7 +109,7 @@ def create_one_time_payment(request):
 
 
 @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックをスキップする。開発環境だけ。
-@login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
+# @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def stripe_webhook(request):
     """
     Stripe Webhookエンドポイント
