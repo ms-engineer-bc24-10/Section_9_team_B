@@ -1,15 +1,58 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
+import { getAuth } from 'firebase/auth';
 
 export default function MyPage() {
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (user) {
+          // Firebase IDトークンを取得
+          const idToken = await user.getIdToken();
+
+          // Djangoバックエンドからユーザー情報を取得
+          const response = await fetch('http://localhost:8000/api/auth/user/', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setUsername(data.username); // バックエンドから取得したusernameをセット
+          } else {
+            console.error('Failed to fetch user data:', response.statusText);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <>
       {/* ヘッダー */}
       <Header />
       <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4 pt-20 pb-20">
         {/* イベント紹介 */}
-        <h1 className="text-3xl font-bold mb-4">ようこそユーザーさん</h1>
+        <h1 className="text-3xl font-bold mb-4">
+          ようこそ{username || 'ゲスト'}さん
+        </h1>
         <h3 className="text-3xl font-bold mb-4">所有しているバッチ</h3>
         <p className="mb-5">↓バッチ一覧↓</p>
         <section>
