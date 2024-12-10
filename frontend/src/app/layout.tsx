@@ -9,6 +9,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   const pathname = usePathname();
 
   // ヘッダーを表示したいページを指定
@@ -19,6 +20,7 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen">
         {/* pathnameが指定したページに含まれる場合のみヘッダーを表示 */}
         {WithHeader.includes(pathname) && <Header />}
+
         <main className="flex-grow">{children}</main>
       </body>
     </html>
