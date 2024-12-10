@@ -2,7 +2,7 @@ import logging
 import traceback
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from firebase_admin import auth as firebase_auth
 from .models import User
 from django.views.decorators.csrf import csrf_exempt
@@ -106,3 +106,17 @@ class SignUpView(APIView):
                 {"error": "An unexpected error occurred"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return JsonResponse(
+            {
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+            }
+        )

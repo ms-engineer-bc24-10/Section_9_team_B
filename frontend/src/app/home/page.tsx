@@ -20,7 +20,7 @@ export default function HomePage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       // ログイン成功時の処理
-      router.push('/'); // TODO: ログイン後のリダイレクト先を指定
+      router.push('/mypage');
     } catch (error) {
       setError(
         'ログインに失敗しました。メールアドレスとパスワードを確認してください。',
