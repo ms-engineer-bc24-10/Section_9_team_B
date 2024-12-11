@@ -29,7 +29,7 @@ export default function SignUpPage() {
     }
 
     try {
-      await signUp(trimmedEmail, password);
+      await signUp(username, trimmedEmail, password);
       router.push('/mypage');
     } catch (error) {
       if (error instanceof FirebaseError) {

@@ -38,9 +38,9 @@ const getCsrfTokenFromCookie = (): string | null => {
 };
 
 const signUp = async (
+  username: String,
   email: string,
   password: string,
-  username: string,
 ): Promise<User> => {
   try {
     const trimmedEmail = email.trim(); // メールアドレスの前後の空白を除去
@@ -74,7 +74,7 @@ const sendUserToDjango = async (user: User, username: string) => {
     const body = JSON.stringify({
       uid: user.uid,
       email: user.email,
-      username, // FIXME:ユーザー名が送信されない
+      username,
     });
 
     // リクエストの詳細をコンソールに出力
