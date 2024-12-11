@@ -6,10 +6,23 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { getAuth } from 'firebase/auth';
 
+interface Stamp {
+  tourist_spot_id: number;
+  date: string;
+  points: number;
+}
 interface UserStamps {
   stamps: string[];
   total_points: number;
 }
+
+// 観光地IDとスタンプ画像のマッピング
+// NOTE: スタンプ画像は public/stamps/ に格納
+const stampImages: { [key: number]: string } = {
+  1: '/stamps/stamp1.png', // 富士山
+  2: '/stamps/stamp2.png', // 他の観光地
+  // 以下他の観光地のスタンプ画像を追加
+};
 
 export default function MyPage() {
   const [username, setUsername] = useState<string | null>(null);
@@ -79,6 +92,7 @@ export default function MyPage() {
     fetchUserData();
   }, []);
 
+  // TODO: バッチ→スタンプカードの仕組みに合うよう文言調整
   return (
     <>
       {/* ヘッダー */}
@@ -90,18 +104,23 @@ export default function MyPage() {
         </h1>
         <h3 className="text-3xl font-bold mb-4">所有しているバッチ</h3>
         <p className="mb-5">↓バッチ一覧↓</p>
-        <section>
+        <section className="flex flex-wrap justify-center gap-4 mb-8">
           {userStamps && userStamps.stamps.length > 0 ? (
-            userStamps.stamps.map((badge, index) => (
-              <span
-                key={index}
-                className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
-              >
-                {badge}
-              </span>
+            userStamps.stamps.map((stamp, index) => (
+              <div key={index} className="flex flex-col items-center">
+                <Image
+                  src={
+                    stampImages[stamp.tourist_spot_id] || '/stamps/default.png'
+                  }
+                  alt={`観光地${stamp.tourist_spot_id}のスタンプ`}
+                  width={100}
+                  height={100}
+                />
+                <p className="text-sm mt-2">{stamp.date}</p>
+              </div>
             ))
           ) : (
-            <p>獲得したバッジはありません</p>
+            <p>獲得したスタンプはありません</p>
           )}
         </section>
 

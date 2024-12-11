@@ -87,15 +87,16 @@ class UserStampsView(APIView):
 
         stamps = []
         total_points = 0
-        spot_visit_count = {}
 
         for bag in verified_bags:
-            spot_id = bag.tourist_spot_id
-            spot_visit_count[spot_id] = spot_visit_count.get(spot_id, 0) + 1
-
-            # 新しいバッジを追加
-            badge_name = f"観光地{spot_id}で{spot_visit_count[spot_id]}回目の参加"
-            stamps.append(badge_name)
+            # 新しいスタンプを追加
+            stamps.append(
+                {
+                    "tourist_spot_id": bag.tourist_spot_id,
+                    "date": bag.created_at.strftime("%Y-%m-%d"),
+                    "points": bag.points,
+                }
+            )
 
             # ポイントを加算
             total_points += bag.points
