@@ -1,18 +1,23 @@
 'use client';
 
 import { useState } from 'react';
+import fetchUserData from '@/utils/fetchUserData';
 
 export default function GarbageBagUp() {
   const [image, setImage] = useState<File | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
+    const userData = await fetchUserData();
+    console.log('### 取得したユーザー情報:', userData);
+
     event.preventDefault();
     if (!image) return;
 
     const formData = new FormData();
     formData.append('image', image);
     formData.append('tourist_spot_id', '1'); // 固定または選択可能に
+    formData.append('user_id', userData.userId);
 
     try {
       const response = await fetch(
