@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import apiClient from '@/utils/apiClient';
-import { getCsrfTokenFromCookie, fetchCsrfToken } from '@/utils/auth';
 
 interface PaymentButtonProps {
   endpoint: string;
