@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GarbageBagUploadView, UserBadgesView
+from .views import GarbageBagUploadView, UserStampsView
 
 urlpatterns = [
     path(
@@ -7,5 +7,5 @@ urlpatterns = [
         GarbageBagUploadView.as_view(),
         name="garbage-bag-upload",
     ),
-    path("user-badges/", UserBadgesView.as_view(), name="user-badges"),
+    path("user-stamps/", UserStampsView.as_view(), name="user-stamps"),
 ]

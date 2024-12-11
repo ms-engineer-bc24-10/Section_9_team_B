@@ -6,14 +6,14 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { getAuth } from 'firebase/auth';
 
-interface UserBadges {
-  badges: string[];
+interface UserStamps {
+  stamps: string[];
   total_points: number;
 }
 
 export default function MyPage() {
   const [username, setUsername] = useState<string | null>(null);
-  const [userBadges, setUserBadges] = useState<UserBadges | null>(null);
+  const [userStamps, setUserStamps] = useState<UserStamps | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,8 +49,8 @@ export default function MyPage() {
           }
 
           // バッジ情報を取得
-          const badgesResponse = await fetch(
-            'http://localhost:8000/api/garbage/user-badges/',
+          const stampsResponse = await fetch(
+            'http://localhost:8000/api/garbage/user-stamps/',
             {
               method: 'GET',
               headers: {
@@ -61,13 +61,13 @@ export default function MyPage() {
             },
           );
 
-          if (badgesResponse.ok) {
-            const badgesData = await badgesResponse.json();
-            setUserBadges(badgesData);
+          if (stampsResponse.ok) {
+            const stampsData = await stampsResponse.json();
+            setUserStamps(stampsData);
           } else {
             console.error(
-              'Failed to fetch badges data:',
-              badgesResponse.statusText,
+              'Failed to fetch stamps data:',
+              stampsResponse.statusText,
             );
           }
         }
@@ -91,8 +91,8 @@ export default function MyPage() {
         <h3 className="text-3xl font-bold mb-4">所有しているバッチ</h3>
         <p className="mb-5">↓バッチ一覧↓</p>
         <section>
-          {userBadges && userBadges.badges.length > 0 ? (
-            userBadges.badges.map((badge, index) => (
+          {userStamps && userStamps.stamps.length > 0 ? (
+            userStamps.stamps.map((badge, index) => (
               <span
                 key={index}
                 className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
@@ -115,7 +115,7 @@ export default function MyPage() {
               height={50}
             />
             <p className="text-sm">
-              point {userBadges ? userBadges.total_points : 0}P
+              point {userStamps ? userStamps.total_points : 0}P
             </p>
           </div>
         </section>
