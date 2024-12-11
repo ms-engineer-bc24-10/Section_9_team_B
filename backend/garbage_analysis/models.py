@@ -40,7 +40,17 @@ class GarbageBag(models.Model):
     height_cm = models.FloatField(default=0.0, verbose_name="高さ（cm）")
     area_cm2 = models.FloatField(default=0.0, verbose_name="面積（cm²）")
     created_at = models.DateTimeField(default=now, verbose_name="作成日時")
+    created_at_timestamp = models.BigIntegerField(
+        default=0, verbose_name="作成タイムスタンプ"
+    )
     updated_at = models.DateTimeField(auto_now=True, verbose_name="更新日時")
+
+    def save(self, *args, **kwargs):
+        # オブジェクト保存時にタイムスタンプを自動設定
+        if not self.id:  # 新規作成時のみ
+            self.created_at = timezone.now()
+            self.created_at_timestamp = int(self.created_at.timestamp())
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "ゴミ袋"
