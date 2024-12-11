@@ -6,8 +6,14 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { getAuth } from 'firebase/auth';
 
+interface UserBadges {
+  badges: string[];
+  total_points: number;
+}
+
 export default function MyPage() {
   const [username, setUsername] = useState<string | null>(null);
+  const [userBadges, setUserBadges] = useState<UserBadges | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -20,20 +26,49 @@ export default function MyPage() {
           const idToken = await user.getIdToken();
 
           // Djangoバックエンドからユーザー情報を取得
-          const response = await fetch('http://localhost:8000/api/auth/user/', {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-              'Content-Type': 'application/json',
+          const userResponse = await fetch(
+            'http://localhost:8000/api/auth/user/',
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${idToken}`,
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
             },
-            credentials: 'include',
-          });
+          );
 
-          if (response.ok) {
-            const data = await response.json();
+          if (userResponse.ok) {
+            const data = await userResponse.json();
             setUsername(data.username); // バックエンドから取得したusernameをセット
           } else {
-            console.error('Failed to fetch user data:', response.statusText);
+            console.error(
+              'Failed to fetch user data:',
+              userResponse.statusText,
+            );
+          }
+
+          // バッジ情報を取得
+          const badgesResponse = await fetch(
+            'http://localhost:8000/api/garbage/user-badges/',
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${idToken}`,
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            },
+          );
+
+          if (badgesResponse.ok) {
+            const badgesData = await badgesResponse.json();
+            setUserBadges(badgesData);
+          } else {
+            console.error(
+              'Failed to fetch badges data:',
+              badgesResponse.statusText,
+            );
           }
         }
       } catch (error) {
@@ -56,13 +91,18 @@ export default function MyPage() {
         <h3 className="text-3xl font-bold mb-4">所有しているバッチ</h3>
         <p className="mb-5">↓バッチ一覧↓</p>
         <section>
-          <span className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-            初めてゴミ拾ったバッジ
-          </span>
-          {/* 他のバッチ... */}
-          <span className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-            2回目ゴミ拾ったバッジ
-          </span>
+          {userBadges && userBadges.badges.length > 0 ? (
+            userBadges.badges.map((badge, index) => (
+              <span
+                key={index}
+                className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+              >
+                {badge}
+              </span>
+            ))
+          ) : (
+            <p>獲得したバッジはありません</p>
+          )}
         </section>
 
         <section className="mt-20">
@@ -74,7 +114,9 @@ export default function MyPage() {
               width={50}
               height={50}
             />
-            <p className="text-sm">point 20P</p>
+            <p className="text-sm">
+              point {userBadges ? userBadges.total_points : 0}P
+            </p>
           </div>
         </section>
 
