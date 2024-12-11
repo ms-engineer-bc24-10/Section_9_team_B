@@ -23,20 +23,12 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   const handlePayment = async () => {
     try {
-      const csrfToken = await fetchCsrfToken();
-
-      console.log('### 取得した CSRF トークン:', csrfToken);
-
       const bodyData: any = includeParticipation
         ? { is_participating: isParticipating }
         : {};
 
       const data = await apiClient(endpoint, {
         method: 'POST', // NOTE: POSTメソッドを指定しないと、GETメソッドと捉えられて405(Method Not Allowed)エラーが出るため
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken, // CSRFトークンをヘッダーに追加
-        },
         body: JSON.stringify(bodyData),
       });
 
