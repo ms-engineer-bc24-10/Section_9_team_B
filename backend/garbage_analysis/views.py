@@ -59,7 +59,7 @@ class GarbageBagUploadView(APIView):
             garbage_bag = GarbageBag.objects.create(
                 user_id=user_id,
                 tourist_spot_id=int(tourist_spot_id),
-                status="verified" if is_garbage else "returned",
+                status="verified" if is_garbage else "returned", #TODO: 画像アップロードが成功したらverifiedになる？ごみ検出できたらverifiedでは？
                 image_path=file_path,
             )
 
