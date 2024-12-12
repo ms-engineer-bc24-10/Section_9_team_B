@@ -1,8 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import GarbageBag
 from .google_vision import analyze_garbage
+from django.db.models import Count
 
 
 class GarbageBagUploadView(APIView):
@@ -64,3 +67,38 @@ class GarbageBagUploadView(APIView):
             return Response(
                 {"error": "サーバー内部でエラーが発生しました。"}, status=500
             )
+
+
+class UserStampsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"error": "ユーザー認証されていません"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # ユーザーの認証済みごみ袋を取得し、作成日時でソート
+        verified_bags = GarbageBag.objects.filter(
+            user=user, status="verified"
+        ).order_by("created_at")
+
+        stamps = []
+        total_points = 0
+
+        for bag in verified_bags:
+            # 新しいスタンプを追加
+            stamps.append(
+                {
+                    "tourist_spot_id": bag.tourist_spot_id,
+                    "date": bag.created_at.strftime("%Y-%m-%d"),
+                    "points": bag.points,
+                }
+            )
+
+            # ポイントを加算
+            total_points += bag.points
+
+        return Response({"stamps": stamps, "total_points": total_points})

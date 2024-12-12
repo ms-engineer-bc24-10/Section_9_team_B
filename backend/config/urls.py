@@ -15,5 +15,6 @@ urlpatterns = [
     path("api/csrf-token/", get_csrf_token, name="csrf_token"),
     # garbage_analysis アプリのルーティングを登録
     path("", include("garbage_analysis.urls")),
-    path('payments/', include('payments.urls')),
+    path("api/garbage/", include("garbage_analysis.urls")),
+    path("payments/", include("payments.urls")),
 ]
