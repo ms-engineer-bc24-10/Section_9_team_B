@@ -10,6 +10,9 @@ const config: Config = {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
       },
+      backgroundImage: {
+        fuji: "url('/img/fuji_background.jpg')",
+      },
     },
   },
   plugins: [],
