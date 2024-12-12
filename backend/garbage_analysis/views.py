@@ -1,9 +1,15 @@
+import logging
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import GarbageBag
 from .google_vision import analyze_garbage
+from django.db.models import Count
 
+logger = logging.getLogger(__name__)
 
 class GarbageBagUploadView(APIView):
     parser_classes = [MultiPartParser]
@@ -13,16 +19,18 @@ class GarbageBagUploadView(APIView):
             print("リクエストデータ:", request.data)
             print("ファイルデータ:", request.FILES)
 
-            # ユーザーIDを取得（認証未実装の場合は仮IDを使用）
-            user_id = (
-                request.user.id if request.user.is_authenticated else 1
-            )  # 仮のユーザーID
+            user_id = request.data.get("user_id")
+            if not user_id:
+                logger.error("エラー: ユーザーIDが指定されていません。")
+                return Response({"error": "ユーザーIDが指定されていません。"}, status=400)
 
             tourist_spot_id = request.data.get("tourist_spot_id")
             if not tourist_spot_id:
+                logger.error("エラー: 観光地IDが指定されていません。")
                 return Response({"error": "観光地IDが指定されていません。"}, status=400)
 
             if "image" not in request.FILES:
+                logger.error("エラー: 画像がアップロードされていません。")
                 return Response(
                     {"error": "画像がアップロードされていません。"}, status=400
                 )
@@ -64,3 +72,38 @@ class GarbageBagUploadView(APIView):
             return Response(
                 {"error": "サーバー内部でエラーが発生しました。"}, status=500
             )
+
+
+class UserStampsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"error": "ユーザー認証されていません"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # ユーザーの認証済みごみ袋を取得し、作成日時でソート
+        verified_bags = GarbageBag.objects.filter(
+            user=user, status="verified"
+        ).order_by("created_at")
+
+        stamps = []
+        total_points = 0
+
+        for bag in verified_bags:
+            # 新しいスタンプを追加
+            stamps.append(
+                {
+                    "tourist_spot_id": bag.tourist_spot_id,
+                    "date": bag.created_at.strftime("%Y-%m-%d"),
+                    "points": bag.points,
+                }
+            )
+
+            # ポイントを加算
+            total_points += bag.points
+
+        return Response({"stamps": stamps, "total_points": total_points})

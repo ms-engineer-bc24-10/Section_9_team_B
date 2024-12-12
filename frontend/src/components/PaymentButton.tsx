@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import apiClient from '@/utils/apiClient';
+import fetchUserData from '@/utils/fetchUserData';
+
 
 interface PaymentButtonProps {
   endpoint: string;
@@ -22,15 +24,16 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   const handlePayment = async () => {
     try {
-      const bodyData: any = includeParticipation
-        ? { is_participating: isParticipating }
-        : {};
+      const userData = await fetchUserData();
+      console.log('### 取得したユーザー情報:', userData);
+
+      const bodyData: any = {
+        user_id: userData.userId,
+        ...(includeParticipation && { is_participating: isParticipating }),
+      };
 
       const data = await apiClient(endpoint, {
         method: 'POST', // NOTE: POSTメソッドを指定しないと、GETメソッドと捉えられて405(Method Not Allowed)エラーが出るため
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(bodyData),
       });
 

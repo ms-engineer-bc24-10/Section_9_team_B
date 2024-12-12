@@ -15,10 +15,24 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const validateUsername = (username: string) => {
+    // NOTE: 英数字、アンダースコア、日本語文字を許可する正規表現
+    const usernameRegex = /^[\w\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+$/;
+    return usernameRegex.test(username);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    if (!validateUsername(username)) {
+      setError(
+        'ユーザー名は英数字、アンダースコア、日本語文字のみ使用できます。',
+      );
+      setLoading(false);
+      return;
+    }
 
     const trimmedEmail = email.trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,7 +43,7 @@ export default function SignUpPage() {
     }
 
     try {
-      await signUp(trimmedEmail, password);
+      await signUp(username, trimmedEmail, password);
       router.push('/mypage');
     } catch (error) {
       if (error instanceof FirebaseError) {

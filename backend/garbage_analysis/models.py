@@ -1,5 +1,6 @@
 from django.db import models
-from custom_auth.models import User  # NOTE:ユーザーモデルを外部キーに使用
+from django.conf import settings
+from django.utils.timezone import now
 
 
 class GarbageBag(models.Model):
@@ -8,25 +9,55 @@ class GarbageBag(models.Model):
     """
 
     STATUS_CHOICES = [
-        ("issued", "Issued"),
-        ("returned", "Returned"),
-        ("verified", "Verified"),
+        ("issued", "Issued"),  # 発行済
+        ("returned", "Returned"),  # 返却済
+        ("verified", "Verified"),  # 確認済
     ]
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="garbage_bags"
-    )  # NOTE:カスタムユーザーとのリレーション
-    tourist_spot_id = models.IntegerField()  # NOTE:外部の観光地IDを数値として保持
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
-    image_path = models.CharField(max_length=255, blank=True, null=True)
-    points = models.FloatField(default=0.0)
-    width_cm = models.FloatField(default=0.0)
-    height_cm = models.FloatField(default=0.0)
-    area_cm2 = models.FloatField(default=0.0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+        settings.AUTH_USER_MODEL,  # settings.pyで指定されているAUTH_USER_MODEL = "custom_auth.User"を参照
+        on_delete=models.CASCADE,
+        related_name="garbage_bags",
+        verbose_name="ユーザー",
+    )
+    tourist_spot = models.ForeignKey(
+        "tourist_spots.TouristSpot",
+        on_delete=models.CASCADE,
+        related_name="garbage_bags",
+        verbose_name="観光地",
+    )
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="issued",
+        verbose_name="ステータス",
+    )
+    image_path = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name="画像パス"
+    )
+    points = models.FloatField(default=0.0, verbose_name="ポイント")
+    width_cm = models.FloatField(default=0.0, verbose_name="幅（cm）")
+    height_cm = models.FloatField(default=0.0, verbose_name="高さ（cm）")
+    area_cm2 = models.FloatField(default=0.0, verbose_name="面積（cm²）")
+    created_at = models.DateTimeField(default=now, verbose_name="作成日時")
+    created_at_timestamp = models.BigIntegerField(
+        default=0, verbose_name="作成タイムスタンプ"
+    )
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="更新日時")
+
+    def save(self, *args, **kwargs):
+        # オブジェクト保存時にタイムスタンプを自動設定
+        if not self.id:  # 新規作成時のみ
+            self.created_at = timezone.now()
+            self.created_at_timestamp = int(self.created_at.timestamp())
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "ゴミ袋"
+        verbose_name_plural = "ゴミ袋"
 
     def __str__(self):
+        """管理画面で表示する文字列"""
         return f"User: {self.user.username}, TouristSpotID: {self.tourist_spot_id}, Points: {self.points}"
 
     def get_points_message(self):
