@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import apiClient from '@/utils/apiClient';
+import fetchUserData from '@/utils/fetchUserData';
 
 interface PaymentHistory {
   id: number;
@@ -19,28 +20,37 @@ export default function PaymentList() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchPaymentHistory = async () => {
-      try {
-        const data = await apiClient(
-          'http://localhost:8000//api/payment-history',
-        ); // TODO: バックエンドapiの指定
-        setPaymentHistory(data);
-      } catch (err) {
-        setError('決済履歴の取得に失敗しました');
-        console.error('Error fetching payment history:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 決済履歴を取得する関数
+  const fetchPaymentHistory = async () => {
+    try {
+      // ユーザー情報を取得
+      const userData = await fetchUserData();
+      console.log('取得したユーザー情報:', userData);
 
+      // 決済履歴APIを呼び出す
+      // TODO: apiエンドポイントの修正
+      const data = await apiClient(
+        `http://localhost:8000/api/payment-history?user_id=${userData.userId}`,
+      );
+      setPaymentHistory(data); // 決済履歴データを保存
+    } catch (err) {
+      setError('決済履歴の取得に失敗しました');
+      console.error('Error fetching payment history:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchPaymentHistory();
   }, []);
 
+  // テーブル行クリック時の処理
   const handleRowClick = (id: number) => {
     router.push(`/history/payment-detail/${id}`);
   };
 
+  // コンテンツレンダリング関数
   const renderContent = () => {
     if (loading) {
       return <div>Loading...</div>;
