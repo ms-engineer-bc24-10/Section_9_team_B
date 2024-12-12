@@ -8,14 +8,23 @@ export default function Header() {
         <h1 className="text-xl font-bold">ひろいっぽ</h1>
       </div>
       <nav className="mt-2 flex justify-center space-x-4">
-        <Link href="/home" className="text-lg font-bold hover:underline">
-          Home
-        </Link>
-        <Link href="/garbage" className="text-lg font-bold hover:underline">
-          ゴミ判定ページ
-        </Link>
         <Link href="/mypage" className="text-lg font-bold hover:underline">
           マイページ
+        </Link>
+        <Link
+          href="/garbage/recept"
+          className="text-lg font-bold hover:underline"
+        >
+          ごみ判定
+        </Link>
+        <Link
+          href="/payment/one-time-payment"
+          className="text-lg font-bold hover:underline"
+        >
+          予約
+        </Link>
+        <Link href="/home" className="text-lg font-bold hover:underline">
+          ログアウト
         </Link>
       </nav>
     </header>
