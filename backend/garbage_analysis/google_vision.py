@@ -160,7 +160,8 @@ def analyze_garbage(image_path):
             vertices = obj.bounding_poly.normalized_vertices
             if len(vertices) >= 4:
                 width = abs(vertices[1].x - vertices[0].x) * box_width_cm
-                height = abs(vertices[2].y - vertices[0].y) * box_height_cm
+                known_width_ratio = box_width_cm / abs(vertices[1].x - vertices[0].x)
+                height = abs(vertices[2].y - vertices[0].y) * known_width_ratio
                 area_cm2 = width * height
                 print(
                     f"ゴミ袋のBoundingBoxの幅: {width}cm, 高さ: {height}cm, 面積: {area_cm2}cm²"
