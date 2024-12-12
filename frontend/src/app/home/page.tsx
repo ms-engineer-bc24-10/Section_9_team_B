@@ -30,111 +30,125 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      {/* ヘッダー */}
-      <Header />
+    <div className="min-h-screen flex flex-col bg-blue-200">
+      {/* 富士山セクション */}
+      <div className="relative h-[400px] bg-[url('/img/fuji_background.jpg')] bg-cover bg-center">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <h1 className="text-white text-4xl font-bold drop-shadow-md">
+            ひろいっぽ
+          </h1>
+        </div>
+      </div>
 
       {/* イベント紹介 */}
-      <section className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-4">イベント紹介</h1>
-        <p>ごみ拾いをしてポイントを貯めよう！</p>
+      <section className="relative py-10 bg-blue-100">
+        <div className="max-w-3xl mx-auto bg-white bg-opacity-80 rounded-lg p-8 shadow-lg">
+          <h2 className="text-center text-3xl font-bold text-blue-800 mb-4">
+            イベント紹介
+            <p className="text-center text-gray-700">
+              本日は富士山にお越しいただきありがとうございます
+            </p>
+            <p>安全に十分気をつけて登山をお楽しみください！</p>
+            <p>「イベント情報」 </p>
+            <p>
+              現在、富士山でゴミ拾いミッションイベントを開催中
+              ゴミ拾いにご協力いただくと、お礼としてポイントプレゼント実施中！
+            </p>
+            <p> この機会にぜひご参加ください！！</p>
+          </h2>
+        </div>
       </section>
 
       {/* 登山可能日 */}
-      <section className="w-full max-w-lg bg-white shadow rounded-lg p-6 mb-8">
-        <h2 className="text-2xl font-bold mb-4">登山可能日</h2>
-        <div className="overflow-x-auto">
-          <table className="table-auto border-collapse border border-gray-300 w-full">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 px-4 py-2">日付</th>
-                <th className="border border-gray-300 px-4 py-2">曜日</th>
-                <th className="border border-gray-300 px-4 py-2">状態</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { date: '12/10', day: '日曜日', status: '可能' },
-                { date: '12/11', day: '月曜日', status: '可能' },
-                { date: '12/12', day: '火曜日', status: '不可' },
-                { date: '12/13', day: '水曜日', status: '可能' },
-                { date: '12/14', day: '木曜日', status: '不可' },
-                { date: '12/15', day: '金曜日', status: '可能' },
-                { date: '12/16', day: '土曜日', status: '可能' },
-              ].map((entry, index) => (
-                <tr
-                  key={index}
-                  className={`${
-                    entry.status === '可能' ? 'bg-green-100' : 'bg-red-100'
-                  }`}
-                >
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {entry.date}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {entry.day}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {entry.status}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <section className="py-4">
+        <div className="max-w-lg mx-auto">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-center text-2xl font-bold text-blue-500 mb-4">
+              登山可能日
+            </h2>
+            <div className="relative bg-blue-50 rounded-lg p-6 shadow-inner">
+              <div className="flex justify-center items-center">
+                {/* 簡易カレンダー */}
+                <div className="text-center">
+                  <div className="text-blue-500 text-sm">
+                    Su Mo Tu We Th Fr Sa
+                  </div>
+                  <div className="grid grid-cols-7 gap-2 mt-2">
+                    {Array.from({ length: 30 }, (_, i) => (
+                      <span
+                        key={i}
+                        className={`${
+                          [0, 6].includes((i + 1) % 7)
+                            ? 'text-red-300'
+                            : 'text-blue-500'
+                        }`}
+                      >
+                        {i + 1}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* メールアドレスとパスワード */}
-      <section className="w-full max-w-sm bg-white shadow rounded-lg p-6 mb-8">
-        <h2 className="text-2xl font-bold text-center mb-6">ログイン</h2>
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              メールアドレス
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              パスワード
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-              required
-            />
-          </div>
-          {error && <p>{error}</p>}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition"
-          >
+      <section className="flex items-center justify-center min-h-[50vh] bg-blue-200">
+        <div className="w-full max-w-sm bg-white shadow rounded-lg p-6 mb-4">
+          <h2 className="text-2xl font-bold text-center text-blue-500 mb-6">
             ログイン
-          </button>
-        </form>
+          </h2>
+          <form onSubmit={handleLogin}>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-blue-500"
+              >
+                メールアドレス
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full rounded  border-gray-300  shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-blue-500"
+              >
+                パスワード
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                required
+              />
+            </div>
+            {error && <p>{error}</p>}
+            <button
+              type="submit"
+              className="w-full bg-blue-300 text-white py-2 rounded shadow hover:bg-blue-400 transition"
+            >
+              ログイン
+            </button>
+          </form>
+        </div>
       </section>
 
       {/* 新規登録ボタン */}
-      <section className="text-center">
+      <section className="text-center mb-20">
         <a
           href="/auth/signup"
-          className="px-6 py-3 bg-green-500 text-white rounded shadow hover:bg-green-600 transition"
+          className="px-6 py-3 bg-white text-blue-500 rounded shadow hover:bg-blue-300 transition"
         >
           新規登録
         </a>
