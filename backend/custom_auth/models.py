@@ -13,7 +13,6 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
-        # FIXME:roleが指定されていない場合は'user'を設定したいけど反映されない
         if "role" not in extra_fields:
             extra_fields["role"] = "user"
         user = self.model(email=email, username=username, **extra_fields)
@@ -37,7 +36,7 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     ROLES = (("user", "User"), ("operator", "Operator"), ("developer", "Developer"))
     username_validator = RegexValidator(
-        regex=r"^[\w.@+\-ぁ-んァ-ン一-龥]+$",
+        regex=r"^[\w\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+$",
         message=_(
             "Enter a valid username. This value may contain only letters, "
             "numbers, and @/./+/-/_ characters."
