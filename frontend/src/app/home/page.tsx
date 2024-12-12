@@ -32,30 +32,34 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-blue-200">
       {/* 富士山セクション */}
-      <div className="relative h-[400px] bg-[url('/img/fuji_background.jpg')] bg-cover bg-center">
+      <div className="relative h-[200px] bg-[url('/img/fuji_background.jpg')] bg-cover bg-center">
         <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-white text-4xl font-bold drop-shadow-md">
+          <h1 className=" text-white text-3xl font-bold drop-shadow-md mt-14">
             ひろいっぽ
           </h1>
         </div>
       </div>
 
       {/* イベント紹介 */}
-      <section className="relative py-10 bg-blue-100">
-        <div className="max-w-3xl mx-auto bg-white bg-opacity-80 rounded-lg p-8 shadow-lg">
-          <h2 className="text-center text-3xl font-bold text-blue-800 mb-4">
+      <section className="relative py-10 bg-blue-50">
+        <div className="max-w-3xl mx-auto bg-white bg-opacity-90 rounded-lg p-8 shadow-md border border-blue-200">
+          <h2 className="text-center text-3xl font-bold text-blue-800 mb-6">
             イベント紹介
-            <p className="text-center text-gray-700">
-              本日は富士山にお越しいただきありがとうございます
-            </p>
-            <p>安全に十分気をつけて登山をお楽しみください！</p>
-            <p>「イベント情報」 </p>
-            <p>
-              現在、富士山でゴミ拾いミッションイベントを開催中
-              ゴミ拾いにご協力いただくと、お礼としてポイントプレゼント実施中！
-            </p>
-            <p> この機会にぜひご参加ください！！</p>
           </h2>
+          <p className="text-center text-gray-700 mb-4">
+            本日は富士山にお越しいただきありがとうございます
+          </p>
+          <p className="text-center text-gray-700 mb-4">
+            安全に十分気をつけて登山をお楽しみください！
+          </p>
+          <p className="text-center text-gray-700 mb-4">「イベント情報」</p>
+          <p className="text-center text-gray-700 mb-4">
+            現在、富士山でゴミ拾いミッションイベントを開催中。ゴミ拾いにご協力いただくと、
+            お礼としてポイントプレゼント実施中！
+          </p>
+          <p className="text-center text-gray-700">
+            この機会にぜひご参加ください！！
+          </p>
         </div>
       </section>
 
