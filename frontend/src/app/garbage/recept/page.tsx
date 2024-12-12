@@ -1,25 +1,36 @@
 'use client';
 
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import fetchUserData from '@/utils/fetchUserData';
 
 export default function GarbageBagUp() {
   const [image, setImage] = useState<File | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent) => {
-    const userData = await fetchUserData();
-    console.log('### 取得したユーザー情報:', userData);
-
     event.preventDefault();
-    if (!image) return;
+    if (!image) {
+      setError('画像を選択してください。');
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append('image', image);
-    formData.append('tourist_spot_id', '1'); // 固定または選択可能に
-    formData.append('user_id', userData.userId);
+    setStatus(null);
+    setError(null);
 
     try {
+      const userData = await fetchUserData();
+      console.log('### 取得したユーザー情報:', userData);
+
+      const formData = new FormData();
+      formData.append('image', image);
+      formData.append('tourist_spot_id', '1'); // 固定または選択可能に
+      formData.append('user_id', userData.userId);
+
       const response = await fetch(
         'http://localhost:8000/garbage-bags/upload/',
         {
@@ -33,15 +44,24 @@ export default function GarbageBagUp() {
       }
 
       const data = await response.json();
-      setStatus(data.status);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      setStatus('Error uploading image');
+
+      if (data.success) {
+        setStatus(data.status);
+        // アップロードが成功した場合、/garbage/complete に遷移
+        router.push('/garbage/complete');
+      } else {
+        // DBに登録されなかった場合
+        setError('情報が読み取れませんでした。別の画像をお試しください。');
+      }
+    } catch (e) {
+      console.error('Error uploading image:', e);
+      setError('画像のアップロードに失敗しました。もう一度お試しください。');
     }
   };
 
   return (
     <div>
+      <Header />
       <h1>ゴミ袋アップロード</h1>
       <form onSubmit={handleSubmit}>
         <input
@@ -54,6 +74,8 @@ export default function GarbageBagUp() {
         <button type="submit">アップロード</button>
       </form>
       {status && <p>ステータス: {status}</p>}
+      {error && <p>エラー: {error}</p>}
+      <Footer />
     </div>
   );
 }
