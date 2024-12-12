@@ -28,9 +28,6 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
 
       const data = await apiClient(endpoint, {
         method: 'POST', // NOTE: POSTメソッドを指定しないと、GETメソッドと捉えられて405(Method Not Allowed)エラーが出るため
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(bodyData),
       });
 

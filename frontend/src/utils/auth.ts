@@ -20,6 +20,7 @@ const fetchCsrfToken = async (): Promise<string> => {
     throw new Error(`CSRF token fetch failed: ${response.statusText}`);
   }
   const data = await response.json();
+  console.log('fetchCsrfTokenで取得したデータ: ', data);
   return data.csrfToken;
 };
 
@@ -145,4 +146,12 @@ const logOutUser = async (): Promise<void> => {
   }
 };
 
-export { app, auth, signUp, logIn, logOutUser };
+export {
+  fetchCsrfToken,
+  getCsrfTokenFromCookie,
+  app,
+  auth,
+  signUp,
+  logIn,
+  logOutUser,
+};
