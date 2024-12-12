@@ -22,7 +22,10 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
             uid = decoded_token["uid"]
             user, created = get_user_model().objects.get_or_create(
                 email=decoded_token["email"],  # メールアドレスを使用
-                defaults={"firebase_uid": uid},  # UIDをデフォルト値として使用
+                defaults={
+                    "firebase_uid": uid,  # UIDをデフォルト値として使用
+                    "role": "user",
+                },
             )
             logger.info(f"User authenticated: {user.username}")
             return (user, None)
