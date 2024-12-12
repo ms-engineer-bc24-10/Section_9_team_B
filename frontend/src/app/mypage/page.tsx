@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import fetchUserData from '@/utils/fetchUserData';
+import { auth } from '@/utils/firebase';
 
 interface Stamp {
   tourist_spot_id: number;
@@ -34,38 +35,37 @@ export default function MyPage() {
       try {
         const user = await fetchUserData(); // ユーザー情報を取得
         setUsername(user.username); // ユーザー名を状態に保存
+
+        // バッジ情報を取得
+        const badgeuser = auth.currentUser;
+        const idToken = await badgeuser.getIdToken();
+
+        const stampsResponse = await fetch(
+          'http://localhost:8000/api/garbage/user-stamps/',
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          },
+        );
+
+        if (stampsResponse.ok) {
+          const stampsData = await stampsResponse.json();
+          setUserStamps(stampsData);
+        } else {
+          console.error(
+            'Failed to fetch stamps data:',
+            stampsResponse.statusText,
+          );
+        }
       } catch (err: any) {
         console.error('MyPageでのエラー:', err.message);
         setError(err.message); // エラーメッセージを状態に保存
-            
-          // バッジ情報を取得
-          const stampsResponse = await fetch(
-            'http://localhost:8000/api/garbage/user-stamps/',
-            {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${idToken}`,
-                'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-            },
-          );
-
-          if (stampsResponse.ok) {
-            const stampsData = await stampsResponse.json();
-            setUserStamps(stampsData);
-          } else {
-            console.error(
-              'Failed to fetch stamps data:',
-              stampsResponse.statusText,
-            );
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
       }
     };
-
     loadUserData();
   }, []);
 
@@ -89,53 +89,30 @@ export default function MyPage() {
             >
               ホームページに戻る
             </a>
-        <h3 className="text-3xl font-bold mb-4">所有しているバッチ</h3>
-        <p className="mb-5">↓バッチ一覧↓</p>
-        <section className="flex flex-wrap justify-center gap-4 mb-8">
-          {userStamps && userStamps.stamps.length > 0 ? (
-            userStamps.stamps.map((stamp, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <Image
-                  src={
-                    stampImages[stamp.tourist_spot_id] || '/stamps/default.png'
-                  }
-                  alt={`観光地${stamp.tourist_spot_id}のスタンプ`}
-                  width={100}
-                  height={100}
-                />
-                <p className="text-sm mt-2">{stamp.date}</p>
-              </div>
-            ))
-          ) : (
-            <p>獲得したスタンプはありません</p>
-          )}
-        </section>
-
-        <section className="mt-20">
-          <div className="flex justify-center items-center space-x-2">
-            <Image
-              src="/leaf_01.png"
-              alt="葉っぱの画像"
-              layout="intrinsic"
-              width={50}
-              height={50}
-            />
-            <p className="text-sm">
-              point {userStamps ? userStamps.total_points : 0}P
-            </p>
           </div>
         ) : (
           <>
             <h3 className="text-3xl font-bold mb-4">所有しているバッチ</h3>
             <p className="mb-5">↓バッチ一覧↓</p>
-            <section>
-              <span className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                初めてゴミ拾ったバッジ
-              </span>
-              {/* 他のバッチ... */}
-              <span className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                2回目ゴミ拾ったバッジ
-              </span>
+            <section className="flex flex-wrap justify-center gap-4 mb-8">
+              {userStamps && userStamps.stamps.length > 0 ? (
+                userStamps.stamps.map((stamp, index) => (
+                  <div key={index} className="flex flex-col items-center">
+                    <Image
+                      src={
+                        stampImages[stamp.tourist_spot_id] ||
+                        '/stamps/default.png'
+                      }
+                      alt={`観光地${stamp.tourist_spot_id}のスタンプ`}
+                      width={100}
+                      height={100}
+                    />
+                    <p className="text-sm mt-2">{stamp.date}</p>
+                  </div>
+                ))
+              ) : (
+                <p>獲得したスタンプはありません</p>
+              )}
             </section>
 
             <section className="mt-20">
@@ -143,11 +120,12 @@ export default function MyPage() {
                 <Image
                   src="/leaf_01.png"
                   alt="葉っぱの画像"
-                  layout="intrinsic"
                   width={50}
                   height={50}
                 />
-                <p className="text-sm">point 20P</p>
+                <p className="text-sm">
+                  point {userStamps ? userStamps.total_points : 0}P
+                </p>
               </div>
             </section>
 
