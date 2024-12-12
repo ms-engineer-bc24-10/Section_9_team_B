@@ -23,6 +23,12 @@ export default function Header() {
         >
           予約
         </Link>
+        <Link
+          href="/history/payment-list"
+          className="text-lg font-bold hover:underline"
+        >
+          決済履歴
+        </Link>
         <Link href="/home" className="text-lg font-bold hover:underline">
           ログアウト
         </Link>
