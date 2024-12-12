@@ -1,7 +1,7 @@
 import logging
 import stripe
 import os
-import json  # JSONデータのパースに使用
+import json
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -14,17 +14,20 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 # @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
-# @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
     """
     if request.method == "POST":
-        user_id = request.user.id  # 認証済みのユーザーIDを取得
+        data = json.loads(request.body)
+        user_id = data.get("user_id")
+        if not user_id:
+            return JsonResponse({"error": "user_id が含まれていません。"}, status=400)
+        logger.info(f"リクエストボディから受け取った user_id: {user_id}")
+
         try:
             csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
             logger.info(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
-            logger.info(f"セッションから取得したユーザー: {request.user}")
         except Exception as e:
             logger.error(f"CSRFトークン検証エラー: {e}")
 
@@ -59,25 +62,27 @@ def create_subscription(request):
 
 
 # @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
-# @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def create_one_time_payment(request):
     """
     入場料（来場者→管理者）の決済セッションを作成
     """
     if request.method == "POST":
-        user_id = request.user.id  # 認証済みのユーザーIDを取得
+        data = json.loads(request.body)
+        user_id = data.get("user_id")
+        if not user_id:
+            return JsonResponse({"error": "user_id が含まれていません。"}, status=400)
+        is_participating = data.get("is_participating", False)
+        logger.info(f"リクエストボディから受け取った user_id: {user_id}")
+        logger.info(f"リクエストボディから受け取った 参加フラグ: {is_participating}")
+
+
         try:
             csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
             logger.info(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
-            logger.info(f"セッションから取得したユーザー: {request.user}")
         except Exception as e:
             logger.error(f"CSRFトークン検証エラー: {e}")
 
         try:
-            # フロントエンドからのJSONデータを取得
-            data = json.loads(request.body)
-            is_participating = data.get("is_participating", False)  # デフォルトはFalse
-
             session = stripe.checkout.Session.create(
                 payment_method_types=["card"],
                 mode="payment",
@@ -109,7 +114,6 @@ def create_one_time_payment(request):
 
 
 @csrf_exempt  # NOTE: Stripe CLIからのWebhookはユーザーのブラウザを通さず直接リクエストを送ってくるため、CSRFトークンチェックは不要。
-# @login_required  # NOTE: 認証済みのユーザーだけがこのビューを利用できるようにするためのデコレーター。
 def stripe_webhook(request):
     """
     Stripe Webhookエンドポイント
@@ -139,7 +143,7 @@ def stripe_webhook(request):
 
         # メタデータから必要な情報を取得
         user_id = metadata.get("user_id")
-        is_participating = metadata.get("is_participating", "false") == "true"
+        is_participating = metadata.get("is_participating", "false").lower() == "true"
 
         amount = session["amount_total"]
         logger.debug(f"支払い金額: {amount}円")
@@ -148,7 +152,7 @@ def stripe_webhook(request):
         try:
             transaction = Transaction.objects.create(
                 user_id=user_id,
-                tourist_spot_id=None,  # TODO 関連付けを追加
+                tourist_spot_id=1,  # TODO 関連付けを追加
                 amount=amount,
                 status="paid",
                 is_participating=is_participating,

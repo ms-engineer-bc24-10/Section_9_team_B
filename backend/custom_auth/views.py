@@ -3,6 +3,7 @@ import traceback
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
 from firebase_admin import auth as firebase_auth
 from .models import User
 from django.views.decorators.csrf import csrf_exempt
@@ -112,11 +113,31 @@ class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        return JsonResponse(
-            {
-                "username": user.username,
-                "email": user.email,
-                "role": user.role,
-            }
-        )
+        try:
+            user = request.user
+            if not user.is_authenticated:
+                logger.warning("未認証ユーザーがアクセスを試みました。")
+                raise AuthenticationFailed("認証情報が提供されていません。")
+
+            logger.info(f"認証済みユーザーがアクセス: ユーザーID={user.id}, ユーザー名={user.username}, メール={user.email}, ロール={user.role}")
+            return JsonResponse(
+                {
+                    "user_id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": user.role,
+                },
+                status=200,
+            )
+        except AuthenticationFailed as auth_error:
+            logger.error(f"認証エラー: {auth_error}")
+            return JsonResponse(
+                {"error": str(auth_error)},
+                status=401,
+            )
+        except Exception as e:
+            logger.critical(f"予期しないエラーが発生しました: {e}")
+            return JsonResponse(
+                {"error": "サーバー内部エラーが発生しました。"},
+                status=500,
+            )
