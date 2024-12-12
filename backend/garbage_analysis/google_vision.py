@@ -5,14 +5,14 @@ import os
 def analyze_garbage(image_path):
     """
     画像からゴミ袋およびその中身を分類し、ラベル情報を取得し、
-    ゴミ袋のサイズを判定する。
+    ゴミ袋の面積に基づいてポイントを計算する。
 
     Args:
         image_path (str): 画像ファイルのパス
 
     Returns:
         dict: 検出されたゴミ袋や内容物のラベル情報、
-              ゴミ袋のサイズを含む辞書
+              面積に基づくポイントを含む辞書
     """
     # 環境変数でGoogle Cloud認証情報を設定
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
@@ -167,21 +167,15 @@ def analyze_garbage(image_path):
                 )
                 estimated_bag_area = max(estimated_bag_area, area_cm2)
 
-    if estimated_bag_area >= 50:
-        garbage_bag_size = "大"
-    elif estimated_bag_area >= 30:
-        garbage_bag_size = "中"
-    else:
-        garbage_bag_size = "小"
-
-    print(f"ゴミ袋のサイズは: {garbage_bag_size}")
+    points = round(estimated_bag_area)
+    print(f"獲得ポイント: {points}ポイント")
 
     return {
         "labels": detected_garbage_labels,
         "objects": garbage_objects,
         "raw_labels": raw_labels,
         "garbage_bag_detected": is_garbage_bag_detected,
-        "garbage_bag_size": garbage_bag_size,
         "bag_area_cm2": estimated_bag_area,
+        "points": points,
         "box_dimensions_cm": {"width": box_width_cm, "height": box_height_cm},
     }
