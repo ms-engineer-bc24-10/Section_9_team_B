@@ -41,11 +41,16 @@ export default function HomePage() {
       </div>
 
       {/* イベント紹介 */}
-      <section className="relative py-10 bg-blue-50">
-        <div className="max-w-3xl mx-auto bg-white bg-opacity-90 rounded-lg p-8 shadow-md border border-blue-200">
-          <h2 className="text-center text-3xl font-bold text-blue-800 mb-6">
-            イベント紹介
-          </h2>
+      <section className="relative max-w-xl py-10 bg-blue-80">
+        {/* 丸いフレームの追加 */}
+        <div className="bg-blue-100 rounded-full p-7 shadow-md"></div>
+
+        <h2 className="text-center text-2xl font-bold text-blue-800 mb-5 relative -top-10">
+          イベント紹介
+        </h2>
+
+        {/* イベント紹介の文用の枠 */}
+        <div className="max-w-xl mx-auto bg-blue-100 bg-opacity-90 rounded-lg p-3 shadow-md border border-blue-200">
           <p className="text-center text-gray-700 mb-4">
             本日は富士山にお越しいただきありがとうございます
           </p>
@@ -54,17 +59,19 @@ export default function HomePage() {
           </p>
           <p className="text-center text-gray-700 mb-4">「イベント情報」</p>
           <p className="text-center text-gray-700 mb-4">
-            現在、富士山でゴミ拾いミッションイベントを開催中。ゴミ拾いにご協力いただくと、
-            お礼としてポイントプレゼント実施中！
+            現在、富士山でゴミ拾いミッションイベントを開催中。
+          </p>
+          <p className="text-center text-gray-700 mb-4">
+            ゴミ拾いにご協力いただくと、 お礼としてポイントプレゼント実施中！
           </p>
           <p className="text-center text-gray-700">
-            この機会にぜひご参加ください！！
+            この機会にぜひご参加ください！
           </p>
         </div>
       </section>
 
       {/* 登山可能日 */}
-      <section className="py-4">
+      <section className="py-4 bg-blue-80">
         <div className="max-w-lg mx-auto">
           <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-center text-2xl font-bold text-blue-500 mb-4">
@@ -99,7 +106,7 @@ export default function HomePage() {
       </section>
 
       {/* メールアドレスとパスワード */}
-      <section className="flex items-center justify-center min-h-[50vh] bg-blue-200">
+      <section className="flex items-center justify-center min-h-[50vh] bg-blue-80">
         <div className="w-full max-w-sm bg-white shadow rounded-lg p-6 mb-4">
           <h2 className="text-2xl font-bold text-center text-blue-500 mb-6">
             ログイン
@@ -149,7 +156,7 @@ export default function HomePage() {
       </section>
 
       {/* 新規登録ボタン */}
-      <section className="text-center mb-20">
+      <section className="text-center  mb-20">
         <a
           href="/auth/signup"
           className="px-6 py-3 bg-white text-blue-500 rounded shadow hover:bg-blue-300 transition"
