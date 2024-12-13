@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 @ensure_csrf_cookie
 def get_csrf_token(request):
     csrf_token = request.COOKIES.get("csrftoken", "None")
@@ -21,4 +22,5 @@ urlpatterns = [
     path("", include("garbage_analysis.urls")),
     path("api/garbage/", include("garbage_analysis.urls")),
     path("payments/", include("payments.urls")),
+    path("api/", include("payments.urls")),
 ]
