@@ -14,7 +14,7 @@ class GarbageBagAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "tourist_spot")
     search_fields = ("user__username", "tourist_spot__name")
-    readonly_fields = ("created_at_timestamp", "updated_at")
+    readonly_fields = ("updated_at",)
     fieldsets = (
         (None, {"fields": ("user", "tourist_spot", "status", "points")}),
         ("画像情報", {"fields": ("image_path", "width_cm", "height_cm", "area_cm2")}),

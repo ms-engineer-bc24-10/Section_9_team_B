@@ -5,7 +5,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import fetchUserData from '@/utils/fetchUserData';
-import { auth } from '@/utils/firebase';
 
 interface Stamp {
   tourist_spot_id: number;
@@ -37,8 +36,7 @@ export default function MyPage() {
         setUsername(user.username); // ユーザー名を状態に保存
 
         // バッジ情報を取得
-        const badgeuser = auth.currentUser;
-        const idToken = await badgeuser.getIdToken();
+        const { idToken } = user;
 
         const stampsResponse = await fetch(
           'http://localhost:8000/api/garbage/user-stamps/',

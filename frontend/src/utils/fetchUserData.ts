@@ -33,6 +33,7 @@ async function fetchUserData() {
         username: data.username,
         email: data.email,
         role: data.role,
+        idToken,
       };
     }
     if (response.status === 401) {
