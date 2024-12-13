@@ -9,11 +9,10 @@ const config: Config = {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
-        'sky-light': '#d8e9fe',
-        'mountain-blue': '#bfdffe ',
       },
       backgroundImage: {
         fuji: "url('/img/fuji_background.jpg')",
+        signup: "url('/img/signup-background.png')",
       },
     },
   },

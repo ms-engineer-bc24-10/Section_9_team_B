@@ -71,16 +71,20 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center -4 bg-signup bg-cover bg-center">
       {/* ヘッダー */}
-      <header className="w-full bg-blue-500 text-white py-4 text-center">
+      <header className="fixed top-0 left-0 w-full w-full bg-blue-400 text-white py-4 text-center">
         <h1 className="text-2xl font-bold">新規登録</h1>
       </header>
 
       {/* メインコンテンツ */}
-      <main className="w-full max-w-sm bg-white shadow rounded-lg p-6 mt-4">
-        <h2 className="text-xl font-bold mb-4">新規アカウント登録</h2>
-        <p className="text-sm text-gray-500 mb-6">
+      <main className="w-full max-w-sm bg-white shadow rounded-lg p-6 mt-5 border-4 border-blue-300">
+        {/* 囲みデザイン */}
+        <div className="bg-blue-300 rounded-full px-10 py-5 mb-6 text-center shadow-md"></div>
+        <h2 className="text-xl font-bold mb-4 text-white text-center relative -top-14">
+          新規アカウント登録
+        </h2>
+        <p className="text-sm text-blue-500 text-center mb-6  relative -top-12">
           アカウント情報を入力してください。
         </p>
 
@@ -90,7 +94,7 @@ export default function SignUpPage() {
           <div className="mb-4">
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-blue-500 relative -top-10"
             >
               ユーザー名
             </label>
@@ -98,7 +102,7 @@ export default function SignUpPage() {
               type="text"
               id="username"
               placeholder="ユーザー名を入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              className="mt-1 block w-full rounded border-2 border-blue-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 relative -top-10"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -109,7 +113,7 @@ export default function SignUpPage() {
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-blue-500 relative -top-10"
             >
               メールアドレス
             </label>
@@ -117,7 +121,7 @@ export default function SignUpPage() {
               type="email"
               id="email"
               placeholder="メールアドレスを入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              className="mt-1 block w-full rounded border-2 border-blue-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 relative -top-10"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -128,7 +132,7 @@ export default function SignUpPage() {
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-blue-500 relative -top-10"
             >
               パスワード
             </label>
@@ -136,7 +140,7 @@ export default function SignUpPage() {
               type="password"
               id="password"
               placeholder="パスワードを入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              className="mt-1 block w-full rounded border-2 border-blue-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 relative -top-10"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -147,7 +151,7 @@ export default function SignUpPage() {
           <div className="mb-4">
             <label
               htmlFor="confirm-password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-blue-500 relative -top-10"
             >
               パスワード（確認）
             </label>
@@ -155,7 +159,7 @@ export default function SignUpPage() {
               type="password"
               id="confirm-password"
               placeholder="パスワードを再入力"
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              className="mt-1 block w-full rounded border-2 border-blue-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 relative -top-10"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -167,7 +171,7 @@ export default function SignUpPage() {
           {/* 登録ボタン */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded shadow hover:bg-blue-600 transition disabled:opacity-50"
+            className="w-full bg-blue-300 text-white py-2 rounded shadow hover:bg-blue-600 transition disabled:opacity-50"
             disabled={loading}
           >
             {loading ? 'Processing...' : '登録'}
