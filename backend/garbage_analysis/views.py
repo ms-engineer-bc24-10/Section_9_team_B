@@ -61,6 +61,10 @@ class GarbageBagUploadView(APIView):
                 tourist_spot_id=int(tourist_spot_id),
                 status="verified" if is_garbage else "returned", #TODO: 画像アップロードが成功したらverifiedになる？ごみ検出できたらverifiedでは？
                 image_path=file_path,
+                area_cm2=is_garbage.get("bag_area_cm2", 0),
+                height_cm=is_garbage.get("garbage_dimensions_cm", {}).get("height", 0),
+                width_cm=is_garbage.get("garbage_dimensions_cm", {}).get("width", 0),
+                points=is_garbage.get("points", 0),
             )
 
             print("GarbageBag モデルが作成されました:", garbage_bag.id)

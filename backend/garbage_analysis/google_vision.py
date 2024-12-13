@@ -176,7 +176,8 @@ def analyze_garbage(image_path):
         "objects": garbage_objects,
         "raw_labels": raw_labels,
         "garbage_bag_detected": is_garbage_bag_detected,
-        "bag_area_cm2": estimated_bag_area,
+        "bag_area_cm2": area_cm2,
         "points": points,
-        "box_dimensions_cm": {"width": box_width_cm, "height": box_height_cm},
+        "garbage_dimensions_cm": {"width": width, "height": height},
+        "box_dimensions_cm": {"box_width": box_width_cm, "box_height": box_height_cm},
     }
