@@ -49,25 +49,38 @@ export default function PaymentDetail({ params }: { params: { id: string } }) {
     fetchPaymentDetail();
   }, [params.id]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-  if (!paymentDetail) return <div>決済情報が見つかりません</div>;
+  const renderContent = () => {
+    if (loading) {
+      return <div>Loading...</div>;
+    }
+    if (error) {
+      return <div>{error}</div>;
+    }
+    if (!paymentDetail) {
+      return <div>決済情報が見つかりません</div>;
+    }
+    return (
+      <div>
+        <p>日付: {paymentDetail.date}</p>
+        <p>金額: {paymentDetail.amount}円</p>
+        <p>ステータス: {paymentDetail.status}</p>
+        <p>観光地: {paymentDetail.tourist_spot}</p>
+        <p>
+          ごみ拾い参加: {paymentDetail.is_participating ? '参加' : '不参加'}
+        </p>
+      </div>
+    );
+  };
 
   return (
     <div>
       <Header />
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
         <h1>決済詳細</h1>
-        <div>
-          <p>日付: {paymentDetail.date}</p>
-          <p>金額: {paymentDetail.amount}円</p>
-          <p>ステータス: {paymentDetail.status}</p>
-          <p>観光地: {paymentDetail.tourist_spot}</p>
-          <p>
-            ごみ拾い参加: {paymentDetail.is_participating ? '参加' : '不参加'}
-          </p>
-        </div>
-        <button onClick={() => router.back()}>戻る</button>
+        {renderContent()}
+        <button onClick={() => router.back()} style={{ marginTop: '20px' }}>
+          戻る
+        </button>
       </div>
       <Footer />
     </div>
