@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import fetchUserData from '@/utils/fetchUserData';
+
 interface UserData {
   userId: string | number;
   username: string;
@@ -12,8 +13,17 @@ interface UserData {
 }
 
 export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const userId = searchParams.get('user_id');
+  const isParticipating = searchParams.get('is_participating');
   const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // クエリパラメータがまだ取得できていない場合の処理
+  if (!userId || !isParticipating) {
+    return <div>データを読み込み中...</div>; // ローディングメッセージを表示
+  }
 
   useEffect(() => {
     const getUserData = async () => {
@@ -22,25 +32,22 @@ export default function SuccessPage() {
         setUserData(data);
       } catch (error) {
         console.error('ユーザーデータの取得に失敗しました:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     getUserData();
-  }, []);
+  }, [router]);
 
-  const handleReturnToMyPage = () => {
-    if (userData) {
-      router.push('/mypage');
-    } else {
-      console.error('ユーザーデータが利用できません。');
-      router.push('/home'); // ユーザーデータがない場合、ホーム画面へ遷移
-    }
-  };
+  if (loading) {
+    return <div>ユーザーデータを取得中...</div>; // ローディングメッセージを表示
+  }
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>支払いに成功しました！</h1>
-      <button onClick={handleReturnToMyPage}>マイページへ戻る</button>
+      <button onClick={() => router.push('/mypage')}>マイページへ戻る</button>
     </div>
   );
 }

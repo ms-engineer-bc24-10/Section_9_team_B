@@ -13,6 +13,7 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
+
 # @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
 def create_subscription(request):
     """
@@ -50,9 +51,11 @@ def create_subscription(request):
                     "user_id": str(user_id),  # メタデータにuser_idを追加
                 },
                 success_url="http://localhost:3000/payment/success",  # Next.jsで作った成功時のページへリダイレクト
-                cancel_url="http://localhost:3000/payment/cancel",    # Next.jsで作ったキャンセル時のページへリダイレクト
+                cancel_url="http://localhost:3000/payment/cancel",  # Next.jsで作ったキャンセル時のページへリダイレクト
             )
-            logger.debug(f"サブスクのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}") #NOTE: ログを1行で表示して読みやすくする
+            logger.debug(
+                f"サブスクのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}"
+            )  # NOTE: ログを1行で表示して読みやすくする
             return JsonResponse({"url": session.url})  # JSONでセッションURLを返す
         except Exception as e:
             logger.error(f"サブスク作成エラー: {e}")
@@ -74,7 +77,6 @@ def create_one_time_payment(request):
         is_participating = data.get("is_participating", False)
         logger.info(f"リクエストボディから受け取った user_id: {user_id}")
         logger.info(f"リクエストボディから受け取った 参加フラグ: {is_participating}")
-
 
         try:
             csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
@@ -98,12 +100,17 @@ def create_one_time_payment(request):
                 ],
                 metadata={
                     "user_id": str(user_id),  # メタデータにuser_idを追加
-                    "is_participating": str(is_participating).lower(),  # メタデータにフラグを追加
+                    "is_participating": str(
+                        is_participating
+                    ).lower(),  # メタデータにフラグを追加
                 },
-                success_url="http://localhost:3000/payment/success",
+                # success_url="http://localhost:3000/payment/success",
+                success_url=f"http://localhost:3000/payment/success?user_id={user_id} &is_participating={is_participating}",  # ユーザー情報保持した状態でsuccessページへ遷移
                 cancel_url="http://localhost:3000/payment/cancel",
             )
-            logger.debug(f"都度払いのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}")
+            logger.debug(
+                f"都度払いのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}"
+            )
 
             return JsonResponse({"url": session.url})
         except Exception as e:
@@ -139,7 +146,9 @@ def stripe_webhook(request):
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]  # Stripeセッションオブジェクト
         metadata = session.get("metadata", {})
-        logger.debug(f"受信したメタデータ: {json.dumps(session.metadata, separators=(',', ':'))}")
+        logger.debug(
+            f"受信したメタデータ: {json.dumps(session.metadata, separators=(',', ':'))}"
+        )
 
         # メタデータから必要な情報を取得
         user_id = metadata.get("user_id")
