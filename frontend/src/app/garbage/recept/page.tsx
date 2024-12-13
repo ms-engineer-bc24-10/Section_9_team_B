@@ -38,19 +38,13 @@ export default function GarbageBagUp() {
         },
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
 
-      if (data.success) {
-        setStatus(data.status);
-        // アップロードが成功した場合、/garbage/complete に遷移
+      if (response.ok && data.success) {
+        setStatus(`アップロード成功: ${data.points}ポイント獲得`);
         router.push('/garbage/complete');
       } else {
-        // DBに登録されなかった場合
-        setError('情報が読み取れませんでした。別の画像をお試しください。');
+        setError(data.error || '画像のアップロードに失敗しました。');
       }
     } catch (e) {
       console.error('Error uploading image:', e);
@@ -72,8 +66,8 @@ export default function GarbageBagUp() {
         />
         <button type="submit">アップロード</button>
       </form>
-      {status && <p>ステータス: {status}</p>}
-      {error && <p>エラー: {error}</p>}
+      {status && <p> {status}</p>}
+      {error && <p> {error}</p>}
       <Footer />
     </div>
   );

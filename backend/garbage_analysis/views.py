@@ -66,25 +66,28 @@ class GarbageBagUploadView(APIView):
                     "verified" if is_garbage else "returned"
                 ),  # TODO: 画像アップロードが成功したらverifiedになる？ごみ検出できたらverifiedでは？
                 image_path=file_path,
-                points=is_garbage.get(
-                    "points", 0
-                ),  # Google Vision APIから取得したポイントを保存
+                area_cm2=is_garbage.get("bag_area_cm2", 0),
+                height_cm=is_garbage.get("garbage_dimensions_cm", {}).get("height", 0),
+                width_cm=is_garbage.get("garbage_dimensions_cm", {}).get("width", 0),
+                points=is_garbage.get("points", 0),
             )
 
             print("GarbageBag モデルが作成されました:", garbage_bag.id)
 
             return Response(
                 {
+                    "success": True,
                     "id": garbage_bag.id,
                     "status": garbage_bag.status,
                     "points": garbage_bag.points,
                 }
-            )  # 獲得ポイントを追加
+            )
 
         except Exception as e:
             print("一般的なエラー:", e)
             return Response(
-                {"error": "サーバー内部でエラーが発生しました。"}, status=500
+                {"success": False, "error": "サーバー内部でエラーが発生しました。"},
+                status=500,
             )
 
 

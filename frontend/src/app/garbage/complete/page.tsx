@@ -51,6 +51,7 @@ export default function CashbackPage() {
           <p className="text-red-500">{error}</p>
         ) : (
           <div>
+            <h1 className="text-2xl font-bold">Thank You</h1>
             <h2 className="text-xl font-bold mb-4">
               🎉 {points} ポイント獲得！ 🎉
             </h2>
