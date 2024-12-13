@@ -11,6 +11,7 @@ from django.db.models import Count
 
 logger = logging.getLogger(__name__)
 
+
 class GarbageBagUploadView(APIView):
     parser_classes = [MultiPartParser]
 
@@ -22,7 +23,9 @@ class GarbageBagUploadView(APIView):
             user_id = request.data.get("user_id")
             if not user_id:
                 logger.error("エラー: ユーザーIDが指定されていません。")
-                return Response({"error": "ユーザーIDが指定されていません。"}, status=400)
+                return Response(
+                    {"error": "ユーザーIDが指定されていません。"}, status=400
+                )
 
             tourist_spot_id = request.data.get("tourist_spot_id")
             if not tourist_spot_id:
@@ -59,13 +62,24 @@ class GarbageBagUploadView(APIView):
             garbage_bag = GarbageBag.objects.create(
                 user_id=user_id,
                 tourist_spot_id=int(tourist_spot_id),
-                status="verified" if is_garbage else "returned", #TODO: 画像アップロードが成功したらverifiedになる？ごみ検出できたらverifiedでは？
+                status=(
+                    "verified" if is_garbage else "returned"
+                ),  # TODO: 画像アップロードが成功したらverifiedになる？ごみ検出できたらverifiedでは？
                 image_path=file_path,
+                points=is_garbage.get(
+                    "points", 0
+                ),  # Google Vision APIから取得したポイントを保存
             )
 
             print("GarbageBag モデルが作成されました:", garbage_bag.id)
 
-            return Response({"id": garbage_bag.id, "status": garbage_bag.status})
+            return Response(
+                {
+                    "id": garbage_bag.id,
+                    "status": garbage_bag.status,
+                    "points": garbage_bag.points,
+                }
+            )  # 獲得ポイントを追加
 
         except Exception as e:
             print("一般的なエラー:", e)
@@ -107,3 +121,23 @@ class UserStampsView(APIView):
             total_points += bag.points
 
         return Response({"stamps": stamps, "total_points": total_points})
+
+
+class LatestGarbageBagView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            # 認証済みユーザーの最新のゴミ袋データを取得
+            latest_garbage_bag = GarbageBag.objects.filter(user=request.user).latest(
+                "created_at"
+            )
+            return Response(
+                {
+                    "id": latest_garbage_bag.id,
+                    "status": latest_garbage_bag.status,
+                    "points": latest_garbage_bag.points,
+                }
+            )
+        except GarbageBag.DoesNotExist:
+            return Response({"error": "ゴミ袋データが見つかりませんでした"}, status=404)

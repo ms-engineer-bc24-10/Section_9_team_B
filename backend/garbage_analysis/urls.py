@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GarbageBagUploadView, UserStampsView
+from .views import GarbageBagUploadView, UserStampsView, LatestGarbageBagView
 
 urlpatterns = [
     path(
@@ -8,4 +8,9 @@ urlpatterns = [
         name="garbage-bag-upload",
     ),
     path("user-stamps/", UserStampsView.as_view(), name="user-stamps"),
+    path(
+        "api/garbage-bag/latest/",
+        LatestGarbageBagView.as_view(),
+        name="latest-garbage-bag",
+    ),
 ]
