@@ -42,7 +42,7 @@ export default function HomePage() {
       <section className="relative py-10 bg-blue-80 flex justify-center">
         <div className="w-full max-w-md flex flex-col items-center">
           {/* 丸いフレームの追加 */}
-          <div className="bg-slate-50 rounded-full p-5 shadow-md w-full max-w-sm mb-5 "></div>
+          <div className="bg-white rounded-full p-5 border-4 border-blue-300 w-full max-w-sm mb-5"></div>
 
           {/* イベント紹介タイトル */}
           <h2 className="text-center text-2xl font-bold text-blue-500 mb-5 relative -top-14">
@@ -50,7 +50,7 @@ export default function HomePage() {
           </h2>
 
           {/* イベント紹介の文用の枠 */}
-          <div className="bg-slate-50 bg-opacity-90 rounded-lg p-7 shadow-md border border-blue-200 text-center w-full max-w-[800px] relative -top-5 ">
+          <div className="bg-white bg-white rounded-lg p-7 shadow-md border-4 border-blue-300 text-center w-full max-w-[800px] relative -top-5 ">
             <p className="text-blue-500 mb-4">
               本日は富士山にお越しいただきありがとうございます
             </p>
@@ -114,7 +114,7 @@ export default function HomePage() {
             <div className="mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-blue-500"
+                className="block text-sm font-medium text-blue-500 "
               >
                 メールアドレス
               </label>
@@ -123,7 +123,7 @@ export default function HomePage() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded  border-gray-300  shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="mt-1 block w-full rounded  border-blue-300  shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 border-2 border-blue-300"
                 required
               />
             </div>
@@ -139,14 +139,14 @@ export default function HomePage() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="mt-1 block w-full rounded border-blue-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 border-2 border-blue-300"
                 required
               />
             </div>
             {error && <p>{error}</p>}
             <button
               type="submit"
-              className="w-full bg-blue-300 text-white py-2 rounded shadow hover:bg-blue-400 transition"
+              className="w-full bg-blue-300 text-white py-2 rounded shadow hover:bg-blue-400 transition "
             >
               ログイン
             </button>
