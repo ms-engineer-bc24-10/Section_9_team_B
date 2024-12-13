@@ -123,7 +123,7 @@ export default function HomePage() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded  border-gray-300  shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 border-2 border-blue-300"
+                className="mt-1 block w-full rounded  border-blue-300  shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 border-2 border-blue-300"
                 required
               />
             </div>
@@ -139,7 +139,7 @@ export default function HomePage() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 border-2 border-blue-300"
+                className="mt-1 block w-full rounded border-blue-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 border-2 border-blue-300"
                 required
               />
             </div>

@@ -102,7 +102,7 @@ export default function SignUpPage() {
               type="text"
               id="username"
               placeholder="ユーザー名を入力"
-              className="mt-1 block w-full rounded border-2 border-blue-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 relative -top-10"
+              className="mt-1 block w-full rounded border-2 border-blue-300 shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200 relative -top-10"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -171,7 +171,7 @@ export default function SignUpPage() {
           {/* 登録ボタン */}
           <button
             type="submit"
-            className="w-full bg-blue-300 text-white py-2 rounded shadow hover:bg-blue-600 transition disabled:opacity-50"
+            className="w-full bg-blue-300 text-white py-2 rounded shadow hover:bg-blue-400 transition disabled:opacity-50"
             disabled={loading}
           >
             {loading ? 'Processing...' : '登録'}
