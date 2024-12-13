@@ -178,7 +178,7 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
-# 決済履歴表示用
+# 決済履歴一覧
 class PaymentHistoryView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -197,3 +197,24 @@ class PaymentHistoryView(APIView):
         ]
 
         return Response(payment_history)
+
+
+# 決済履歴詳細
+class PaymentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, transaction_id):
+        try:
+            transaction = Transaction.objects.get(id=transaction_id, user=request.user)
+            detail = {
+                "id": transaction.id,
+                "date": transaction.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "amount": transaction.amount,
+                "status": transaction.status,
+                "tourist_spot": transaction.tourist_spot.name,
+                "is_participating": transaction.is_participating,
+                "stripe_session_id": transaction.stripe_session_id,
+            }
+            return Response(detail)
+        except Transaction.DoesNotExist:
+            return Response({"error": "詳細が見つかりません"}, status=404)

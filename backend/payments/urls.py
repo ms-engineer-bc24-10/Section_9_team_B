@@ -4,6 +4,7 @@ from .views import (
     create_one_time_payment,
     stripe_webhook,
     PaymentHistoryView,
+    PaymentDetailView,
 )
 
 urlpatterns = [
@@ -15,4 +16,9 @@ urlpatterns = [
     ),
     path("stripe-webhook/", stripe_webhook, name="stripe-webhook"),
     path("payment-history/", PaymentHistoryView.as_view(), name="payment-history"),
+    path(
+        "payment-history/<int:transaction_id>/",
+        PaymentDetailView.as_view(),
+        name="payment-detail",
+    ),
 ]
