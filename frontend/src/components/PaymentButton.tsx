@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import apiClient from '@/utils/apiClient';
 import fetchUserData from '@/utils/fetchUserData';
 
-
 interface PaymentButtonProps {
   endpoint: string;
   label: string;
@@ -25,7 +24,6 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   const handlePayment = async () => {
     try {
       const userData = await fetchUserData();
-      console.log('### 取得したユーザー情報:', userData);
 
       const bodyData: any = {
         user_id: userData.userId,

@@ -25,7 +25,6 @@ export default function PaymentList() {
     try {
       // ユーザー情報を取得
       const userData = await fetchUserData();
-      console.log('取得したユーザー情報:', userData);
 
       // 決済履歴APIを呼び出す
       // TODO: apiエンドポイントの修正

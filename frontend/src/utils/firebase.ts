@@ -1,9 +1,10 @@
 'use client';
+
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 // 環境変数の読み込み確認
-console.log('Firebase API Key:', process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
+// console.log('Firebase API Key:', process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
