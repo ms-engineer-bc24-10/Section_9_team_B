@@ -24,7 +24,6 @@ export default function GarbageBagUp() {
 
     try {
       const userData = await fetchUserData();
-      console.log('### 取得したユーザー情報:', userData);
 
       const formData = new FormData();
       formData.append('image', image);
