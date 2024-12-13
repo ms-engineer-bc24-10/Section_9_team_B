@@ -8,17 +8,23 @@ interface PaymentButtonProps {
   endpoint: string;
   label: string;
   includeParticipation?: boolean; // ごみ拾いフラグを含むか
+  includeDate?: boolean; // 日付選択を含むか
 }
 
 const PaymentButton: React.FC<PaymentButtonProps> = ({
   endpoint,
   label,
   includeParticipation = false,
+  includeDate = false,
 }) => {
   const [isParticipating, setIsParticipating] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsParticipating(event.target.checked);
+  };
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value);
   };
 
   const handlePayment = async () => {
@@ -28,6 +34,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       const bodyData: any = {
         user_id: userData.userId,
         ...(includeParticipation && { is_participating: isParticipating }),
+        ...(includeDate && { reservation_date: selectedDate }),
       };
 
       const data = await apiClient(endpoint, {
@@ -49,6 +56,18 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   return (
     <div>
+      {includeDate && (
+        <div>
+          <label htmlFor="reservation-date">予約日: </label>
+          <input
+            type="date"
+            id="reservation-date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            required
+          />
+        </div>
+      )}
       {includeParticipation && (
         <label style={{ marginBottom: '10px', display: 'block' }}>
           <input
