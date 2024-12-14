@@ -147,7 +147,7 @@ Google Cloud Vision API を利用して画像解析を行っています。
 
 Stripe の決済通知を受け取るため、以下の設定が必要です:
 
-1. **Stripe CLI を使用したテスト**:
+1. **Stripe CLI を使用した Webhook**:
 
    ```bash
    stripe listen --forward-to http://localhost:8000/payments/stripe-webhook/ --skip-verify --events checkout.session.completed,payment_intent.succeeded,payment_intent.payment_failed
@@ -194,4 +194,5 @@ Stripe の決済通知を受け取るため、以下の設定が必要です:
 
 - **秘密情報管理**: `.env`ファイル、`google_vision_key.json`、`serviceAccountKey.json`は git 管理から除外してください。
 - **データベース起動**: PostgreSQL コンテナが起動していることを確認してください。
+- **サーバーの起動 URL**: フロントエンドは localhost:3000、バックエンドは localhost:8000 で起動してください。
 - **ロギング**: `logging`モジュールで開発用ログを確認できます。

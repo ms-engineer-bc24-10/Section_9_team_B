@@ -46,16 +46,9 @@
 
    下記、環境変数欄も参考にしてください。
 
-4. Stripe CLIをセットアップ（Stripe関連機能を利用する場合のみ）:
+4. Stripe CLI Webhookリスナーを起動:
 
    ```bash
-   # Stripe CLIのインストール（macOSの場合）
-   brew install stripe/stripe-cli/stripe
-
-   # Stripe CLIにログイン
-   stripe login
-
-   # Webhookリスナーを起動
    stripe listen --forward-to http://localhost:8000/payments/stripe-webhook/ --skip-verify --events checkout.session.completed,payment_intent.succeeded,payment_intent.payment_failed
    ```
 
