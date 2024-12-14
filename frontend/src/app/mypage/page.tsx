@@ -32,12 +32,22 @@ export default function MyPage() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const user = await fetchUserData(); // ユーザー情報を取得
-        setUsername(user.username); // ユーザー名を状態に保存
+        // ローカルストレージからIDトークンを取得
+        let idToken = localStorage.getItem('firebaseIdToken');
+        let user;
+
+        // ローカルストレージにIDトークンがない場合は作成
+        if (!idToken) {
+          user = await fetchUserData();
+          idToken = user.idToken;
+          localStorage.setItem('firebaseIdToken', idToken);
+        } else {
+          user = await fetchUserData();
+        }
+
+        setUsername(user.username);
 
         // バッジ情報を取得
-        const { idToken } = user;
-
         const stampsResponse = await fetch(
           'http://localhost:8000/api/garbage/user-stamps/',
           {
