@@ -1,33 +1,25 @@
 import { auth } from './firebase';
-import { signInWithCustomToken } from 'firebase/auth';
+import { getIdToken } from 'firebase/auth';
 
 async function fetchUserData() {
   try {
     console.log('ユーザー情報を取得します...');
 
-    const storedToken = localStorage.getItem('firebaseIdToken');
-    let currentUser = auth.currentUser;
-
-    if (!currentUser && storedToken) {
-      try {
-        const userCredential = await signInWithCustomToken(auth, storedToken);
-        currentUser = userCredential.user;
-      } catch (error) {
-        console.error('保存されたトークンが無効です:', error);
-        localStorage.removeItem('firebaseIdToken');
-      }
-    }
+    const currentUser = auth.currentUser;
 
     if (!currentUser) {
       console.error('ユーザーが認証されていません。');
       throw new Error('ユーザーが認証されていません。ログインが必要です。');
     }
 
+    const idToken = await getIdToken(currentUser, true);
+    localStorage.setItem('firebaseIdToken', idToken);
+
     // Firebase ID トークンを取得
-    let idToken = await currentUser.getIdToken(/* forceRefresh */ true); // NOTE: リロード時にユーザーが未認証の場合にトークンを再取得する処理
+    // let idToken = await currentUser.getIdToken(/* forceRefresh */ true); // NOTE: リロード時にユーザーが未認証の場合にトークンを再取得する処理
 
     // トークンをローカルストレージに保存
-    localStorage.setItem('firebaseIdToken', idToken);
+    // localStorage.setItem('firebaseIdToken', idToken);
 
     const response = await fetch('http://localhost:8000/api/auth/user/', {
       method: 'GET',

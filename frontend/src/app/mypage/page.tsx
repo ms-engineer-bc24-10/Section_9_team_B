@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { auth } from '@/utils/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
@@ -28,62 +30,62 @@ export default function MyPage() {
   const [username, setUsername] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [userStamps, setUserStamps] = useState<UserStamps | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        // ローカルストレージからIDトークンを取得
-        let idToken = localStorage.getItem('firebaseIdToken');
-        let user;
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userData = await fetchUserData();
+          setUsername(userData.username);
 
-        // ローカルストレージにIDトークンがない場合は作成
-        if (!idToken) {
-          user = await fetchUserData();
-          idToken = user.idToken;
-          localStorage.setItem('firebaseIdToken', idToken);
-        } else {
-          user = await fetchUserData();
-        }
-
-        setUsername(user.username);
-
-        // バッジ情報を取得
-        const stampsResponse = await fetch(
-          'http://localhost:8000/api/garbage/user-stamps/',
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-              'Content-Type': 'application/json',
+          // スタンプ情報を取得
+          const stampsResponse = await fetch(
+            'http://localhost:8000/api/garbage/user-stamps/',
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${userData.idToken}`,
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
             },
-            credentials: 'include',
-          },
-        );
+          );
 
-        if (stampsResponse.ok) {
-          const stampsData = await stampsResponse.json();
-          setUserStamps(stampsData);
-        } else {
-          console.error(
-            'Failed to fetch stamps data:',
-            stampsResponse.statusText,
+          if (stampsResponse.ok) {
+            const stampsData = await stampsResponse.json();
+            setUserStamps(stampsData);
+          } else {
+            console.error(
+              'Failed to fetch stamps data:',
+              stampsResponse.statusText,
+            );
+            setError('スタンプ情報の取得に失敗しました。');
+          }
+        } catch (err) {
+          console.error('ユーザーデータの取得に失敗:', err);
+          setError(
+            'ユーザー情報の取得に失敗しました。再度ログインしてください。',
           );
         }
-      } catch (err: any) {
-        console.error('MyPageでのエラー:', err.message);
-        setError(err.message); // エラーメッセージを状態に保存
+      } else {
+        setError('ユーザーが認証されていません。ログインしてください。');
       }
-    };
-    loadUserData();
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   // TODO: バッチ→スタンプカードの仕組みに合うよう文言調整
   return (
     <>
-      {/* ヘッダー */}
       <Header />
       <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4 pt-20 pb-20">
-        {/* イベント紹介 */}
         <h1 className="text-3xl font-bold mb-4">
           ようこそ{username || 'ゲスト'}さん
         </h1>

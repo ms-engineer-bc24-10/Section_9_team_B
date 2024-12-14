@@ -1,7 +1,11 @@
 'use client';
 
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+} from 'firebase/auth';
 
 // 環境変数の読み込み確認
 // console.log('Firebase API Key:', process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
@@ -18,5 +22,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence);
 
 export { app, auth, firebaseConfig };
