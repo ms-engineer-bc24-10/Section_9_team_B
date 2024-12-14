@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import apiClient from '@/utils/apiClient';
 import fetchUserData from '@/utils/fetchUserData';
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated } from '@react-spring/web';
 
 export default function CashbackPage() {
   const [points, setPoints] = useState<number | null>(null);
@@ -22,7 +22,7 @@ export default function CashbackPage() {
   const springProps = useSpring({
     from: { transform: 'translateY(20px)', opacity: 0 },
     to: { transform: 'translateY(0px)', opacity: 1 },
-    config: { tension: 200, friction: 30, duration: 1500 },
+    config: { tension: 300, friction: 80, duration: 600 },
     delay: 500, // アニメーション開始までの遅延（ミリ秒）
   });
 
