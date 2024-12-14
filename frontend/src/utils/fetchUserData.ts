@@ -12,14 +12,10 @@ async function fetchUserData() {
       throw new Error('ユーザーが認証されていません。ログインが必要です。');
     }
 
-    const idToken = await getIdToken(currentUser, true);
-    localStorage.setItem('firebaseIdToken', idToken);
-
     // Firebase ID トークンを取得
-    // let idToken = await currentUser.getIdToken(/* forceRefresh */ true); // NOTE: リロード時にユーザーが未認証の場合にトークンを再取得する処理
-
+    const idToken = await getIdToken(currentUser, true);
     // トークンをローカルストレージに保存
-    // localStorage.setItem('firebaseIdToken', idToken);
+    localStorage.setItem('firebaseIdToken', idToken);
 
     const response = await fetch('http://localhost:8000/api/auth/user/', {
       method: 'GET',
