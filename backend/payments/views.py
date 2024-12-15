@@ -117,7 +117,8 @@ def create_one_time_payment(request):
                     "is_participating": str(is_participating).lower(),
                     "reservation_date": str(reservation_date),
                 },
-                success_url="http://localhost:3000/payment/success",
+                
+                success_url=f"http://localhost:3000/payment/success?user_id={user_id} &is_participating={is_participating}",  # ユーザー情報保持した状態でsuccessページへ遷移
                 cancel_url="http://localhost:3000/payment/cancel",
             )
             logger.debug(
