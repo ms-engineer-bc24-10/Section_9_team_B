@@ -19,6 +19,8 @@ WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 
 # @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
+
+
 def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
@@ -52,7 +54,9 @@ def create_subscription(request):
                     },
                 ],
                 metadata={
-                    "user_id": str(user_id),  # メタデータにuser_idを追加
+                    "user_id": str(
+                        user_id
+                    ),  # NOTE: メタデータにuser_idを追加することで、決済とユーザーを紐づける
                 },
                 success_url="http://localhost:3000/payment/success",  # Next.jsで作った成功時のページへリダイレクト
                 cancel_url="http://localhost:3000/payment/cancel",  # Next.jsで作ったキャンセル時のページへリダイレクト
@@ -68,19 +72,25 @@ def create_subscription(request):
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-# @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
 def create_one_time_payment(request):
     """
     入場料（来場者→管理者）の決済セッションを作成
     """
     if request.method == "POST":
         data = json.loads(request.body)
+
         user_id = data.get("user_id")
+        logger.info(f"リクエストボディから受け取った user_id: {user_id}")
         if not user_id:
             return JsonResponse({"error": "user_id が含まれていません。"}, status=400)
+
         is_participating = data.get("is_participating", False)
-        logger.info(f"リクエストボディから受け取った user_id: {user_id}")
         logger.info(f"リクエストボディから受け取った 参加フラグ: {is_participating}")
+
+        reservation_date = data.get("reservation_date")
+        logger.info(f"リクエストボディから受け取った 予約日: {reservation_date}")
+        if not reservation_date:
+            return JsonResponse({"error": "予約日 が含まれていません。"}, status=400)
 
         try:
             csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
@@ -103,10 +113,9 @@ def create_one_time_payment(request):
                     },
                 ],
                 metadata={
-                    "user_id": str(user_id),  # メタデータにuser_idを追加
-                    "is_participating": str(
-                        is_participating
-                    ).lower(),  # メタデータにフラグを追加
+                    "user_id": str(user_id),
+                    "is_participating": str(is_participating).lower(),
+                    "reservation_date": str(reservation_date),
                 },
                 success_url="http://localhost:3000/payment/success",
                 cancel_url="http://localhost:3000/payment/cancel",
@@ -156,6 +165,7 @@ def stripe_webhook(request):
         # メタデータから必要な情報を取得
         user_id = metadata.get("user_id")
         is_participating = metadata.get("is_participating", "false").lower() == "true"
+        reservation_date = metadata.get("reservation_date")
 
         amount = session["amount_total"]
         logger.debug(f"支払い金額: {amount}円")
@@ -169,6 +179,7 @@ def stripe_webhook(request):
                 status="paid",
                 is_participating=is_participating,
                 stripe_session_id=session["id"],
+                reservation_date=reservation_date,
             )
             logger.info(f"取引をDB登録しました: {transaction}")
         except Exception as e:
