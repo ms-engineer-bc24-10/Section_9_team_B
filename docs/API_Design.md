@@ -57,6 +57,7 @@
 
 ```json
 {
+  "uid": "string",
   "email": "string",
   "username": "string"
 }
