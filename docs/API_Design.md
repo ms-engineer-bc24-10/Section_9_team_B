@@ -35,7 +35,8 @@
 | 決済          | POST     | `/api/payments/create-subscription/`     | サブスクリプション決済の作成 |
 | 決済          | POST     | `/api/payments/create-one-time-payment/` | 都度払い決済の作成           |
 | 決済          | POST     | `/api/payments/stripe-webhook/`          | Stripe Webhook 受信          |
-| 観光地        | GET      | `/api/tourist-spots/<id>/`               | 特定観光地情報の取得         |
+| 観光地        | GET      | `/api/tourist-spots/`                    | 登録済み観光地一覧の取得     |
+| 観光地        | GET      | `/api/tourist-spots/<id>/`               | 特定の観光地情報の取得       |
 | 観光地        | POST     | `/api/tourist-spots/`                    | 新しい観光地情報の登録       |
 | CSRF トークン | GET      | `/api/csrf-token/`                       | CSRF トークンの取得          |
 
@@ -426,7 +427,7 @@
 
 ### 4. 観光地関連
 
-#### 4-1. 観光地一覧の取得 `GET /api/tourist-spots/`
+#### 4-1. 登録済み観光地一覧の取得 `GET /api/tourist-spots/`
 
 **【リクエスト】**
 
@@ -464,7 +465,52 @@
 
 ---
 
-#### 4-2. 新しい観光地の登録 `POST /api/tourist-spots/`
+#### 4-2. 特定の観光地情報の取得 `GET /api/tourist-spots/<id>/`
+
+**【リクエスト】**
+
+- **Header**:
+  - `Authorization: Bearer <Firebase ID Token>`
+
+**【レスポンス】**
+
+- **成功**:
+
+  - **ステータスコード**: `200 OK`
+  - **Body**:
+
+  ```json
+  {
+    "id": "integer",
+    "name": "string",
+    "entry_fee": "integer",
+    "operator_id": "integer"
+  }
+  ```
+
+- **失敗**:
+
+  - **ステータスコード**: `404 Not Found`
+  - **Body**:
+
+  ```json
+  {
+    "error": "Tourist spot not found"
+  }
+  ```
+
+  - **ステータスコード**: `401 Unauthorized`
+  - **Body**:
+
+  ```json
+  {
+    "error": "User not authenticated"
+  }
+  ```
+
+---
+
+#### 4-3. 新しい観光地情報の登録 `POST /api/tourist-spots/`
 
 **【リクエスト】**
 

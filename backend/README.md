@@ -77,6 +77,12 @@
    python manage.py runserver localhost:8000
    ```
 
+8. Stripe CLI の Webhook リスナーを起動:
+
+   ```bash
+   stripe listen --forward-to http://localhost:8000/payments/stripe-webhook/ --skip-verify --events checkout.session.completed,payment_intent.succeeded,payment_intent.payment_failed
+   ```
+
 ---
 
 ## 📦 主な依存ライブラリ
@@ -180,9 +186,15 @@ Stripe の決済通知を受け取るため、以下の設定が必要です:
 
 ### 決済関連 (`payments`)
 
-- `/payments/create-subscription/`: サブスクリプション決済の作成
-- `/payments/create-one-time-payment/`: 一回限りの決済の作成
-- `/payments/stripe-webhook/`: Stripe Webhook エンドポイント
+- `/api/payments/create-subscription/`: サブスクリプション決済の作成
+- `/api/payments/create-one-time-payment/`: 一回限りの決済の作成
+- `/api/payments/stripe-webhook/`: Stripe Webhook エンドポイント
+
+### 観光地関連 (`tourist_spots`)
+
+- `/api/tourist-spots/`: 登録済み観光地一覧の取得
+- `/api/tourist-spots/<id>/`: 特定観光地情報の取得
+- `/api/tourist-spots/`: 新しい観光地情報の登録
 
 ### CSRF トークン取得
 
