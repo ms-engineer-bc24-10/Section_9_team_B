@@ -10,6 +10,7 @@ import fetchUserData from '@/utils/fetchUserData';
 interface PaymentDetail {
   id: number;
   date: string;
+  reservation_date: string;
   amount: number;
   status: string;
   tourist_spot: string;
@@ -61,7 +62,8 @@ export default function PaymentDetail({ params }: { params: { id: string } }) {
     }
     return (
       <div>
-        <p>日付: {paymentDetail.date}</p>
+        <p>決済日付: {paymentDetail.date}</p>
+        <p>予約日付: {paymentDetail.reservation_date}</p>
         <p>金額: {paymentDetail.amount}円</p>
         <p>ステータス: {paymentDetail.status}</p>
         <p>観光地: {paymentDetail.tourist_spot}</p>

@@ -225,6 +225,7 @@ class PaymentDetailView(APIView):
                 "tourist_spot": transaction.tourist_spot.name,
                 "is_participating": transaction.is_participating,
                 "stripe_session_id": transaction.stripe_session_id,
+                "reservation_date": transaction.reservation_date.strftime("%Y-%m-%d"),
             }
             return Response(detail)
         except Transaction.DoesNotExist:
