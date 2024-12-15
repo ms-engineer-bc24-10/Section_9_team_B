@@ -3,11 +3,11 @@ import Link from 'next/link';
 
 export default function Header() {
   return (
-    <header className="w-full bg-blue-500 text-white py-4 fixed top-0 left-0 z-10">
+    <header className="w-full bg-blue-400 text-white py-4 fixed top-0 left-0 z-10">
       <div className="text-center">
         <h1 className="text-xl font-bold">ひろいっぽ</h1>
       </div>
-      <nav className="mt-2 flex justify-center space-x-4">
+      {/* <nav className="mt-2 flex justify-center space-x-4">
         <Link href="/mypage" className="text-lg font-bold hover:underline">
           マイページ
         </Link>
@@ -32,7 +32,7 @@ export default function Header() {
         <Link href="/home" className="text-lg font-bold hover:underline">
           ログアウト
         </Link>
-      </nav>
+      </nav> */}
     </header>
   );
 }

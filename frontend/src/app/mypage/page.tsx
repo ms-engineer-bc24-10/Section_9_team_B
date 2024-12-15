@@ -29,55 +29,132 @@ export default function MyPage() {
   const [error, setError] = useState<string | null>(null);
   const [userStamps, setUserStamps] = useState<UserStamps | null>(null);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const user = await fetchUserData(); // ユーザー情報を取得
-        setUsername(user.username); // ユーザー名を状態に保存
+  // useEffect(() => {
+  //   const loadUserData = async () => {
+  //     try {
+  //       const user = await fetchUserData(); // ユーザー情報を取得
+  //       setUsername(user.username); // ユーザー名を状態に保存
 
-        // バッジ情報を取得
-        const { idToken } = user;
+  //       // バッジ情報を取得
+  //       const { idToken } = user;
 
-        const stampsResponse = await fetch(
-          'http://localhost:8000/api/garbage/user-stamps/',
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-          },
-        );
+  //       const stampsResponse = await fetch(
+  //         'http://localhost:8000/api/garbage/user-stamps/',
+  //         {
+  //           method: 'GET',
+  //           headers: {
+  //             Authorization: `Bearer ${idToken}`,
+  //             'Content-Type': 'application/json',
+  //           },
+  //           credentials: 'include',
+  //         },
+  //       );
 
-        if (stampsResponse.ok) {
-          const stampsData = await stampsResponse.json();
-          setUserStamps(stampsData);
-        } else {
-          console.error(
-            'Failed to fetch stamps data:',
-            stampsResponse.statusText,
-          );
-        }
-      } catch (err: any) {
-        console.error('MyPageでのエラー:', err.message);
-        setError(err.message); // エラーメッセージを状態に保存
-      }
-    };
-    loadUserData();
-  }, []);
+  //       if (stampsResponse.ok) {
+  //         const stampsData = await stampsResponse.json();
+  //         setUserStamps(stampsData);
+  //       } else {
+  //         console.error(
+  //           'Failed to fetch stamps data:',
+  //           stampsResponse.statusText,
+  //         );
+  //       }
+  //     } catch (err: any) {
+  //       console.error('MyPageでのエラー:', err.message);
+  //       setError(err.message); // エラーメッセージを状態に保存
+  //     }
+  //   };
+  //   loadUserData();
+  // }, []);
 
   // TODO: バッチ→スタンプカードの仕組みに合うよう文言調整
   return (
     <>
       {/* ヘッダー */}
       <Header />
-      <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4 pt-20 pb-20">
+      <div
+        className="w-full h-full flex flex-col items-center bg-gray-100 p-4 pt-20 pb-20"
+        style={{ backgroundColor: '#bfdbfe' }}
+      >
+        {/* ボタンエリア */}
+        <div className="flex gap-4">
+          {[
+            { src: '/img/badge/my page.png', text: 'マイページ' },
+            { src: '/img/badge/gomi.png', text: 'ゴミ判別' },
+            { src: '/img/badge/reservation.png', text: '予約' },
+            { src: '/img/badge/payment_history.png', text: '決済履歴' },
+            { src: '/img/badge/logout_bo.png', text: 'ログアウト' },
+          ].map((item, index) => (
+            <div key={index} className="relative w-[150px] h-[150px]">
+              <Image
+                src={item.src}
+                width={150}
+                height={150}
+                alt={`${item.text}ボタン`}
+                className="object-cover"
+              />
+              <p
+                className="absolute text-white font-bold"
+                style={{
+                  top: '15px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '0.9rem',
+                }}
+              >
+                {item.text}
+              </p>
+            </div>
+          ))}
+        </div>
+
         {/* イベント紹介 */}
-        <h1 className="text-3xl font-bold mb-4">
+        <h1 className="text-3xl font-bold mb-4 text-white pt-20">
           ようこそ{username || 'ゲスト'}さん
         </h1>
 
+        {/* フレーム画像 */}
+        <div className="relative flex justify-center my-8">
+          <Image
+            src="/stamps/stamp_frame.png"
+            alt="スタンプフレーム"
+            layout="intrinsic"
+            width={1000}
+            height={1000}
+            className="z-0"
+          />
+          <h3 className="absolute top-12 left-1/2 transform -translate-x-1/2 text-white text-4xl font-bold z-20 mt-5">
+            所有しているバッジ
+          </h3>
+
+          {/* スタンプ画像 */}
+          <div className="absolute inset-0 flex items-center justify-center z-10 mt-20 ">
+            <div className="grid grid-cols-5 gap-4 w-4/5 h-2 transform -translate-y-40">
+              {[
+                '/stamps/1badge.png',
+                '/stamps/2badge.png',
+                '/stamps/3badge.png',
+                '/stamps/4badge.png',
+                '/stamps/5badge.png',
+              ].map((src, index) => (
+                <div
+                  key={index}
+                  className="rounded-lg flex items-center justify-center h-24 w-24 mt-32"
+                >
+                  <Image
+                    src={src}
+                    alt={`スタンプ ${index + 1}`}
+                    width={80}
+                    height={80}
+                    className="rounded-md"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* エラーメッセージ */}
         {error ? (
           <div className="text-center">
             <p className="text-red-500 mb-4">{error}</p>
@@ -90,97 +167,36 @@ export default function MyPage() {
           </div>
         ) : (
           <>
-            <h3 className="text-3xl font-bold mb-4">所有しているバッチ</h3>
-            <p className="mb-5">↓バッチ一覧↓</p>
-            <section className="flex flex-wrap justify-center gap-4 mb-8">
-              {userStamps && userStamps.stamps.length > 0 ? (
-                userStamps.stamps.map((stamp, index) => (
-                  <div key={index} className="flex flex-col items-center">
-                    <Image
-                      src={
-                        stampImages[stamp.tourist_spot_id] ||
-                        '/stamps/default.png'
-                      }
-                      alt={`観光地${stamp.tourist_spot_id}のスタンプ`}
-                      width={100}
-                      height={100}
-                    />
-                    <p className="text-sm mt-2">{stamp.date}</p>
-                  </div>
-                ))
-              ) : (
-                <p>獲得したスタンプはありません</p>
-              )}
-            </section>
-
+            {/*ポイント表示 */}
             <section className="mt-20">
               <div className="flex justify-center items-center space-x-2">
                 <Image
-                  src="/leaf_01.png"
+                  src="/img/point.png"
                   alt="葉っぱの画像"
-                  width={50}
-                  height={50}
+                  width={450}
+                  height={400}
                 />
-                <p className="text-sm">
-                  point {userStamps ? userStamps.total_points : 0}P
+                {/* ポイント数（画像の前面に表示） */}
+                <p className="absolute top-[170%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red text-3xl font-bold z-10 text-b text-gray-500">
+                  {userStamps ? userStamps.total_points : 0}
                 </p>
               </div>
             </section>
 
-            {/* 決済履歴 */}
-            <section className="mt-10 w-full max-w-4xl bg-white shadow rounded-lg p-6">
-              <h2 className="text-2xl font-bold mb-4">決済履歴</h2>
-              <table className="table-auto w-full border-collapse border border-gray-200">
-                <thead>
-                  <tr className="bg-gray-100 text-left">
-                    <th className="border border-gray-200 px-4 py-2">日付</th>
-                    <th className="border border-gray-200 px-4 py-2">内容</th>
-                    <th className="border border-gray-200 px-4 py-2">金額</th>
-                    <th className="border border-gray-200 px-4 py-2">状態</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    {
-                      date: '2024/12/01',
-                      description: 'ゴミ拾い参加費',
-                      amount: '¥1,000',
-                      status: '完了',
-                    },
-                    {
-                      date: '2024/12/02',
-                      description: '入山料',
-                      amount: '¥2,000',
-                      status: '未払い',
-                    },
-                    {
-                      date: '2024/12/03',
-                      description: 'キャッシュバック',
-                      amount: '-¥500',
-                      status: '完了',
-                    },
-                  ].map((entry) => (
-                    <tr key={entry.date} className="hover:bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-2">
-                        {entry.date}
-                      </td>
-                      <td className="border border-gray-200 px-4 py-2">
-                        {entry.description}
-                      </td>
-                      <td className="border border-gray-200 px-4 py-2">
-                        {entry.amount}
-                      </td>
-                      <td className="border border-gray-200 px-4 py-2">
-                        {entry.status}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
+            {/* 一番下に画像を追加 */}
+            <div className="w-full flex justify-center mb-10">
+              <Image
+                src="/img/mypage_sita.png" // 画像パスをここに設定
+                alt="一番下の画像"
+                width={1200} // 幅
+                height={300} // 高さ
+                className="object-contain"
+              />
+            </div>
           </>
         )}
       </div>
+      {/* フッター */}
       <Footer />
     </>
   );

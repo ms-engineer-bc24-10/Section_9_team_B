@@ -12,7 +12,8 @@ const config: Config = {
       },
       backgroundImage: {
         fuji: "url('/img/fuji_background.jpg')",
-        signup: "url('/img/signup-background.png')",
+        signup: "url('/img/cloudy.png')",
+        calendar: "url('/img/kumo_frame_new.png')",
       },
     },
   },

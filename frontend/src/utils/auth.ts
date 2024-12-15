@@ -101,7 +101,6 @@ const sendUserToDjango = async (user: User, username: string) => {
     console.log('Response Status:', response.status);
 
     if (!response.ok) {
-      const errorText = await response.text();
       console.error('Error response:', errorText);
       throw new Error(
         `===ユーザーデータのバックエンド送信失敗===: ${response.statusText}`,
