@@ -160,3 +160,32 @@ rewrites() {
 
 - フロントエンドとバックエンド、Stripe CLI Webhookリスナーを並行して起動してください。
 - 開発用環境変数を必ず設定してください（`.env`ファイルが必要）。
+
+### Linter & Formatter
+
+コードの一貫性と品質を保つために以下の Linter と Formatter を使用しています。
+
+- **Linter**: ESLint
+
+  - **スタイルガイド**: Airbnb
+  - **設定ファイル**: `frontend/.eslintrc.json`
+  - **適用範囲**: TypeScript（React.js）コード
+  - **スクリプト例**:
+    ```bash
+    # フロントエンドで ESLint を実行
+    cd frontend
+    npm run lint
+    ```
+
+- **Formatter**: Prettier
+
+  - **設定ファイル**: `frontend/.prettierrc`
+  - **適用範囲**: TypeScript ファイル全般
+  - **スクリプト例**:
+    ```bash
+    # フロントエンドで Prettier を実行
+    cd frontend
+    npm run format
+    ```
+
+- コードをコミットする前に Linter と Formatter を実行し、コードの品質を確認してください。

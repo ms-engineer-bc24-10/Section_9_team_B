@@ -137,6 +137,74 @@
 
 ---
 
+### Linter & Formatter
+
+このプロジェクトでは、コードの一貫性と品質を保つために以下の Linter と Formatter を使用しています。
+
+- **フロントエンド**
+
+- **Linter**: ESLint
+
+  - **スタイルガイド**: Airbnb
+  - **設定ファイル**: `frontend/.eslintrc.json`
+  - **適用範囲**: TypeScript（React.js）コード
+  - **スクリプト例**:
+    ```bash
+    # フロントエンドで ESLint を実行
+    cd frontend
+    npm run lint
+    ```
+
+- **Formatter**: Prettier
+  - **設定ファイル**: `frontend/.prettierrc`
+  - **適用範囲**: TypeScript ファイル全般
+  - **スクリプト例**:
+    ```bash
+    # フロントエンドで Prettier を実行
+    cd frontend
+    npm run format
+    ```
+
+---
+
+- **バックエンド**
+
+- **Linter**: Pylint
+
+  - **適用範囲**: Python（Django アプリケーション）
+  - **使用方法**:
+    - **VSCode の拡張機能を利用**:
+      - VSCode の Pylint 拡張機能をインストールすると、コードをリアルタイムでチェックできます。
+    - **コマンドラインでの実行**（オプション）:
+      - コマンドラインで使用する場合、以下のコマンドを実行する前に `pylint` をインストールしてください:
+        ```bash
+        pip install pylint
+        pylint backend/
+        ```
+
+- **Formatter**: Black
+  - **適用範囲**: Python ファイル全般
+  - **使用方法**:
+    - **VSCode の拡張機能を利用**:
+      - VSCode の Black Formatter 拡張機能をインストールすると、ファイル保存時に自動フォーマットが実行されます。
+    - **コマンドラインでの実行**（オプション）:
+      - コマンドラインで使用する場合、以下のコマンドを実行する前に `black` をインストールしてください:
+        ```bash
+        pip install black
+        black backend/
+        ```
+- VSCode の拡張機能を使用する場合、Pylint と Black をローカル環境にインストールする必要はありません。ただし、コマンドラインで実行する場合は、それぞれのツールを Python 環境にインストールしてください。
+
+---
+
+- **注意点**
+
+- フロントエンドは `npm` スクリプトを使用して Linter と Formatter を実行してください。
+- バックエンドは VSCode の拡張機能を有効化することで、リアルタイムのフィードバックを得られます。また、コマンドラインでも手動で実行可能です。
+- コードをコミットする前に Linter と Formatter を実行し、コードの品質を確認してください。
+
+---
+
 ### テスト
 
 テストはフロントエンド・バックエンド双方で実行できます。
