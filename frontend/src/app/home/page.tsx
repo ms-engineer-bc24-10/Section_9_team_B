@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
+import Image from 'next/image';
 
 export default function HomePage() {
   const [email, setEmail] = useState('');
@@ -39,10 +40,10 @@ export default function HomePage() {
         </div>
       </div>
       {/* イベント紹介 */}
-      <section className="relative py-10 bg-blue-80 flex justify-center">
-        <div className="w-full max-w-md flex flex-col items-center">
+      <section className="relative py-20 bg-blue-200 flex justify-center">
+        <div className="w-full  flex flex-col items-center ">
           {/* 丸いフレームの追加 */}
-          <div className="bg-white rounded-full p-5 border-4 border-blue-300 w-full max-w-sm mb-5"></div>
+          <div className="bg-blue-300 rounded-full p-5 border-4 border-blue-400 w-full max-w-sm mb-5"></div>
 
           {/* イベント紹介タイトル */}
           <h2 className="text-center text-2xl font-bold text-blue-500 mb-5 relative -top-14">
@@ -50,7 +51,7 @@ export default function HomePage() {
           </h2>
 
           {/* イベント紹介の文用の枠 */}
-          <div className="bg-white bg-white rounded-lg p-7 shadow-md border-4 border-blue-300 text-center w-full max-w-[800px] relative -top-5 ">
+          <div className="bg-blue-300 rounded-lg p-10  border-4 border-blue-400 text-center w-auto max-w-[1200px] relative -top-5 ">
             <p className="text-blue-500 mb-4">
               本日は富士山にお越しいただきありがとうございます
             </p>
@@ -70,33 +71,33 @@ export default function HomePage() {
       </section>
 
       {/* 登山可能日 */}
-      <section className="py-4 bg-blue-80">
+
+      <section className="relative flex items-center justify-center py-3 bg-blue-80 bg-cover bg-no-repeat bg-center bg-[150%]">
         <div className="max-w-lg mx-auto">
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-center text-2xl font-bold text-blue-500 mb-4 ">
+          <div className="grid place-items-center  rounded-lg p-6 h-1 w-60 bg-white ">
+            <h2 className="text-center text-2xl font-bold text-blue-500 mb-4 relative -top-4">
               登山可能日
             </h2>
-            <div className="relative bg-blue-50 rounded-lg p-6 shadow-inner">
-              <div className="flex justify-center items-center">
-                {/* 簡易カレンダー */}
-                <div className="text-center">
-                  <div className="text-blue-500 text-sm">
-                    Su Mo Tu We Th Fr Sa
-                  </div>
-                  <div className="grid grid-cols-7 gap-2 mt-2">
-                    {Array.from({ length: 30 }, (_, i) => (
-                      <span
-                        key={i}
-                        className={`${
-                          [0, 6].includes((i + 1) % 7)
-                            ? 'text-red-300'
-                            : 'text-blue-500'
-                        }`}
-                      >
-                        {i + 1}
-                      </span>
-                    ))}
-                  </div>
+
+            <div className="flex justify-center items-center bg-calendar bg-no-repeat bg-contain bg-center bg-[150%]">
+              {/* 簡易カレンダー */}
+              <div className="text-center mt-10">
+                <div className="text-blue-500 text-sm">
+                  Su Mo Tu We Th Fr Sa
+                </div>
+                <div className="grid grid-cols-7 gap-2 mt-2">
+                  {Array.from({ length: 30 }, (_, i) => (
+                    <span
+                      key={i}
+                      className={`${
+                        [0, 6].includes((i + 1) % 7)
+                          ? 'text-red-300'
+                          : 'text-blue-500'
+                      }`}
+                    >
+                      {i + 1}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -105,7 +106,7 @@ export default function HomePage() {
       </section>
 
       {/* メールアドレスとパスワード */}
-      <section className="flex items-center justify-center min-h-[50vh] bg-blue-80">
+      <section className="flex items-center justify-center min-h-[50vh] bg-blue-80 mt-60">
         <div className="w-full max-w-sm bg-white shadow rounded-lg p-6 mb-4">
           <h2 className="text-2xl font-bold text-center text-blue-500 mb-6">
             ログイン
@@ -163,6 +164,17 @@ export default function HomePage() {
           新規登録
         </a>
       </section>
+
+      {/* 一番下に画像を追加 */}
+      <div className="w-full flex justify-center mb-10">
+        <Image
+          src="/img/mypage_sita.png" // 画像パスをここに設定
+          alt="一番下の画像"
+          width={1200} // 幅
+          height={300} // 高さ
+          className="object-contain"
+        />
+      </div>
 
       {/* フッター */}
       <Footer />

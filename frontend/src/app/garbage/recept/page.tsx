@@ -70,28 +70,63 @@ export default function GarbageBagUp() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-blue-200 flex flex-col">
       <Header />
-      <h1>ごみ袋アップロード</h1>
-      <p>ごみ袋の大きさからポイントが算出されます</p>
-      <form onSubmit={handleSubmit}>
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-        <button type="submit">アップロード</button>
-      </form>
-      {preview && (
-        <div>
-          <h2>画像プレビュー</h2>
-          <Image
-            src={preview}
-            alt="プレビュー"
-            width={300}
-            height={300}
-            objectFit="contain"
+
+      {/* 背面にゴミ箱の画像を小さく、上に配置 */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 pointer-events-none mt-60 z-0">
+        <img
+          src="/img/garbade_gomi.png" // ゴミ箱の画像パス
+          alt="ゴミ箱"
+          className="w-20 h-24  "
+        />
+      </div>
+
+      <div className="flex flex-col items-center justify-center flex-grow">
+        <h1 className="text-white text-3xl font-bold mb-5 relative z-20">
+          ゴミ袋アップロード
+        </h1>
+        <p>ごみ袋の大きさからポイントが算出されます</p>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
           />
-        </div>
-      )}
-      {status && <p>{status}</p>}
-      {error && <p>{error}</p>}
+          <label
+            htmlFor="fileInput"
+            className="bg-blue-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-400 transition"
+          >
+            ファイル選択
+          </label>
+          {/* 選択されたファイル名を表示 */}
+          {image && <p className="mt-2 text-blue-700">{image.name}</p>}
+
+          <button
+            type="submit"
+            className="bg-white text-blue-500 px-4 py-2 rounded hover:bg-blue-300 transition mt-10"
+          >
+            アップロード
+          </button>
+        </form>
+        {preview && (
+          <div>
+            <h2>画像プレビュー</h2>
+            <Image
+              src={preview}
+              alt="プレビュー"
+              width={300}
+              height={300}
+              objectFit="contain"
+            />
+          </div>
+        )}
+        {status && <p className="text-green-500 mt-4">{status}</p>}
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+      </div>
+
       <Footer />
     </div>
   );

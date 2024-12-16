@@ -9,6 +9,7 @@ interface PaymentButtonProps {
   label: string;
   includeParticipation?: boolean; // ごみ拾いフラグを含むか
   includeDate?: boolean; // 日付選択を含むか
+  className?: string; // ここを追加（入場料を支払うボタン）
 }
 
 const PaymentButton: React.FC<PaymentButtonProps> = ({
@@ -16,6 +17,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   label,
   includeParticipation = false,
   includeDate = false,
+  className, // classNameをpropsから受け取る（入場料支払いボタン）
 }) => {
   const [isParticipating, setIsParticipating] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
@@ -57,23 +59,30 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   return (
     <div>
       {includeDate && (
-        <div>
-          <label htmlFor="reservation-date">予約日: </label>
+        <div className="fflex flex-col items-center bg-white rounded-lg px-6 py-4 w-full max-w-md shadow-md">
+          <label
+            htmlFor="reservation-date"
+            className="text-blue-500 font-bold text-lg mb-"
+          >
+            予約日
+          </label>
           <input
             type="date"
             id="reservation-date"
             value={selectedDate}
             onChange={handleDateChange}
             required
+            className="w-full p-4 text-lg  rounded-lg focus:outline-none focus:border-blue-500"
           />
         </div>
       )}
       {includeParticipation && (
-        <label style={{ marginBottom: '10px', display: 'block' }}>
+        <label className="flex justify-center items-center bg-white rounded-full px-4 py-2  text-blue-500 font-bold text-lg mt-10">
           <input
             type="checkbox"
             checked={isParticipating}
             onChange={handleCheckboxChange}
+            className=""
           />
           ごみ拾いに参加します
         </label>
@@ -82,13 +91,14 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         style={{
           padding: '10px 20px',
           fontSize: '16px',
-          backgroundColor: '#6772e5',
+          backgroundColor: 'bg-blue-400',
           color: 'white',
           border: 'none',
           borderRadius: '5px',
           cursor: 'pointer',
         }}
         onClick={handlePayment}
+        className={`bg-blue-400 text-white font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-400 transition ${className || ''}`} //入場料支払いボタン追加
       >
         {label}
       </button>

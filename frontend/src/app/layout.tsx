@@ -14,7 +14,7 @@ export default function RootLayout({
   const pathname = usePathname();
 
   // ヘッダーを表示したいページを指定
-  const WithHeader = ['/mypage', '/garbage'];
+  const WithHeader = ['/garbage'];
 
   // 認証状態を管理
   useEffect(() => {

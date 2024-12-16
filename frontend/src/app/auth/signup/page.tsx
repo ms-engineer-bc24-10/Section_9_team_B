@@ -71,20 +71,20 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center -4 bg-signup bg-cover bg-center">
+    <div className="absolute top-0 left-0 bottom-0 right-0 flex flex-col items-center justify-center bg-signup bg-cover bg-center">
       {/* ヘッダー */}
-      <header className="fixed top-0 left-0 w-full w-full bg-blue-400 text-white py-4 text-center">
+      <header className="fixed top-0 left-0 w-full bg-blue-400 text-white py-4 text-center">
         <h1 className="text-2xl font-bold">新規登録</h1>
       </header>
 
       {/* メインコンテンツ */}
-      <main className="w-full max-w-sm bg-white shadow rounded-lg p-6 mt-5 border-4 border-blue-300">
+      <main className="relative w-full max-w-sm bg-white shadow rounded-lg p-6 border-4 border-blue-300">
         {/* 囲みデザイン */}
         <div className="bg-blue-300 rounded-full px-10 py-5 mb-6 text-center shadow-md"></div>
         <h2 className="text-xl font-bold mb-4 text-white text-center relative -top-14">
           新規アカウント登録
         </h2>
-        <p className="text-sm text-blue-500 text-center mb-6  relative -top-12">
+        <p className="text-sm text-blue-500 text-center mb-6 relative -top-12">
           アカウント情報を入力してください。
         </p>
 

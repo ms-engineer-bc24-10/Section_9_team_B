@@ -77,8 +77,11 @@ export default function PaymentDetail({ params }: { params: { id: string } }) {
   return (
     <div>
       <Header />
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <h1>決済詳細</h1>
+      <div
+        className="flex flex-col items-center justify-center flex-grow"
+        style={{ textAlign: 'center', marginTop: '50px' }}
+      >
+        <h1 className="text-2xl text-white font-bold mb-4">決済詳細</h1>
         {renderContent()}
         <button onClick={() => router.back()} style={{ marginTop: '20px' }}>
           戻る
