@@ -1,18 +1,21 @@
 import { auth } from './firebase';
+import { getIdToken } from 'firebase/auth';
 
 async function fetchUserData() {
   try {
     console.log('ユーザー情報を取得します...');
 
-    const user = auth.currentUser;
+    const currentUser = auth.currentUser;
 
-    if (!user) {
+    if (!currentUser) {
       console.error('ユーザーが認証されていません。');
       throw new Error('ユーザーが認証されていません。ログインが必要です。');
     }
 
     // Firebase ID トークンを取得
-    const idToken = await user.getIdToken();
+    const idToken = await getIdToken(currentUser, true);
+    // トークンをローカルストレージに保存
+    localStorage.setItem('firebaseIdToken', idToken);
 
     const response = await fetch('http://localhost:8000/api/auth/user/', {
       method: 'GET',

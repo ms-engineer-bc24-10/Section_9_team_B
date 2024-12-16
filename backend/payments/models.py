@@ -34,6 +34,11 @@ class Transaction(models.Model):
         unique=True,
         verbose_name='StripeセッションID'
     )
+    reservation_date = models.DateField(
+        blank=True,
+        null=True, # NOTE: reservation_dateをモデルに追加する以前の古いデータはこのフィールドにNULLが入る。NULLを許容しておかないとマイグレーションエラーを起こすのでTrueとする。
+        verbose_name='予約日'
+    )
     created_at = models.DateTimeField(default=now, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 

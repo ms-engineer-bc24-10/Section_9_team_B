@@ -27,11 +27,15 @@ export default function PaymentList() {
       const userData = await fetchUserData();
 
       // 決済履歴APIを呼び出す
-      // TODO: apiエンドポイントの修正
       const data = await apiClient(
-        `http://localhost:8000/api/payment-history?user_id=${userData.userId}`,
+        'http://localhost:8000/api/payment-history/',
+        {
+          headers: {
+            Authorization: `Bearer ${userData.idToken}`,
+          },
+        },
       );
-      setPaymentHistory(data); // 決済履歴データを保存
+      setPaymentHistory(data);
     } catch (err) {
       setError('決済履歴の取得に失敗しました');
       console.error('Error fetching payment history:', err);

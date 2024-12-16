@@ -1,19 +1,52 @@
-// const SuccessPage: React.FC = () => (
-//   <div style={{ textAlign: 'center', marginTop: '50px' }}>
-//     <h1>支払いに成功しました！</h1>
-//   </div>
-// );
-
-// export default SuccessPage;
-
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import fetchUserData from '@/utils/fetchUserData';
 import Image from 'next/image';
 import Header from '@/components/Header'; // ヘッダーコンポーネント
 import Footer from '@/components/Footer'; // フッターコンポーネント
 
-const SuccessPage: React.FC = () => {
+interface UserData {
+  userId: string | number;
+  username: string;
+  email: string;
+  role: string;
+  idToken: string;
+}
+
+export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const userId = searchParams.get('user_id');
+  const isParticipating = searchParams.get('is_participating');
+  const router = useRouter();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // クエリパラメータがまだ取得できていない場合の処理
+  if (!userId || !isParticipating) {
+    return <div>データを読み込み中...</div>; // ローディングメッセージを表示
+  }
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const data = await fetchUserData();
+        setUserData(data);
+      } catch (error) {
+        console.error('ユーザーデータの取得に失敗しました:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUserData();
+  }, [router]);
+
+  if (loading) {
+    return <div>ユーザーデータを取得中...</div>; // ローディングメッセージを表示
+  }
+
   return (
     <div className="min-h-screen bg-blue-200 flex flex-col items-center justify-center">
       {/* ヘッダー */}
@@ -23,7 +56,7 @@ const SuccessPage: React.FC = () => {
       <h1 className="text-2xl text-blue-500 font-bold mb-4 flex items-center">
         🎉 支払いが成功しました 🎉
       </h1>
-
+      <button onClick={() => router.push('/mypage')}>マイページへ戻る</button>
       {/* 画像 */}
       <Image
         src="/img/payment_success.png" // 画像のパス。publicフォルダに画像を入れておく
@@ -42,6 +75,4 @@ const SuccessPage: React.FC = () => {
       <Footer />
     </div>
   );
-};
-
-export default SuccessPage;
+}

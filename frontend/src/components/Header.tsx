@@ -1,4 +1,3 @@
-// src/components/Header.tsx
 import Link from 'next/link';
 
 export default function Header() {
@@ -7,7 +6,7 @@ export default function Header() {
       <div className="text-center">
         <h1 className="text-xl font-bold">ひろいっぽ</h1>
       </div>
-      {/* <nav className="mt-2 flex justify-center space-x-4">
+      <nav className="mt-2 flex justify-center space-x-4">
         <Link href="/mypage" className="text-lg font-bold hover:underline">
           マイページ
         </Link>
@@ -32,7 +31,7 @@ export default function Header() {
         <Link href="/home" className="text-lg font-bold hover:underline">
           ログアウト
         </Link>
-      </nav> */}
+      </nav>
     </header>
   );
 }

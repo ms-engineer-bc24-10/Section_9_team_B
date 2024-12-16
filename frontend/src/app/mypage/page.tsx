@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { auth } from '@/utils/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import fetchUserData from '@/utils/fetchUserData';
+import Link from 'next/link';
 
 interface Stamp {
   tourist_spot_id: number;
@@ -28,50 +31,98 @@ export default function MyPage() {
   const [username, setUsername] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [userStamps, setUserStamps] = useState<UserStamps | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect(() => {
-  //   const loadUserData = async () => {
-  //     try {
-  //       const user = await fetchUserData(); // ユーザー情報を取得
-  //       setUsername(user.username); // ユーザー名を状態に保存
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const user = await fetchUserData(); // ユーザー情報を取得
+        setUsername(user.username); // ユーザー名を状態に保存
 
-  //       // バッジ情報を取得
-  //       const { idToken } = user;
+        // バッジ情報を取得
+        const { idToken } = user;
 
-  //       const stampsResponse = await fetch(
-  //         'http://localhost:8000/api/garbage/user-stamps/',
-  //         {
-  //           method: 'GET',
-  //           headers: {
-  //             Authorization: `Bearer ${idToken}`,
-  //             'Content-Type': 'application/json',
-  //           },
-  //           credentials: 'include',
-  //         },
-  //       );
+        const stampsResponse = await fetch(
+          'http://localhost:8000/api/garbage/user-stamps/',
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          },
+        );
 
-  //       if (stampsResponse.ok) {
-  //         const stampsData = await stampsResponse.json();
-  //         setUserStamps(stampsData);
-  //       } else {
-  //         console.error(
-  //           'Failed to fetch stamps data:',
-  //           stampsResponse.statusText,
-  //         );
-  //       }
-  //     } catch (err: any) {
-  //       console.error('MyPageでのエラー:', err.message);
-  //       setError(err.message); // エラーメッセージを状態に保存
-  //     }
-  //   };
-  //   loadUserData();
-  // }, []);
+        if (stampsResponse.ok) {
+          const stampsData = await stampsResponse.json();
+          setUserStamps(stampsData);
+        } else {
+          console.error(
+            'Failed to fetch stamps data:',
+            stampsResponse.statusText,
+          );
+        }
+      } catch (err: any) {
+        console.error('MyPageでのエラー:', err.message);
+        setError(err.message); // エラーメッセージを状態に保存
+      }
+    };
+    loadUserData();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userData = await fetchUserData();
+          setUsername(userData.username);
+
+          // スタンプ情報を取得
+          const stampsResponse = await fetch(
+            'http://localhost:8000/api/garbage/user-stamps/',
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${userData.idToken}`,
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            },
+          );
+
+          if (stampsResponse.ok) {
+            const stampsData = await stampsResponse.json();
+            setUserStamps(stampsData);
+          } else {
+            console.error(
+              'Failed to fetch stamps data:',
+              stampsResponse.statusText,
+            );
+            setError('スタンプ情報の取得に失敗しました。');
+          }
+        } catch (err) {
+          console.error('ユーザーデータの取得に失敗:', err);
+          setError(
+            'ユーザー情報の取得に失敗しました。再度ログインしてください。',
+          );
+        }
+      } else {
+        setError('ユーザーが認証されていません。ログインしてください。');
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   // TODO: バッチ→スタンプカードの仕組みに合うよう文言調整
   return (
     <>
-      {/* ヘッダー */}
-      <Header />
       <div
         className="w-full h-full flex flex-col items-center bg-gray-100 p-4 pt-20 pb-20"
         style={{ backgroundColor: '#bfdbfe' }}
@@ -79,31 +130,56 @@ export default function MyPage() {
         {/* ボタンエリア */}
         <div className="flex gap-4">
           {[
-            { src: '/img/badge/my page.png', text: 'マイページ' },
-            { src: '/img/badge/gomi.png', text: 'ゴミ判別' },
-            { src: '/img/badge/reservation.png', text: '予約' },
-            { src: '/img/badge/payment_history.png', text: '決済履歴' },
-            { src: '/img/badge/logout_bo.png', text: 'ログアウト' },
+            {
+              src: '/img/badge/my page.png',
+              text: 'マイページ',
+              href: '/mypage',
+            },
+            {
+              src: '/img/badge/gomi.png',
+              text: 'ごみ判別',
+              href: '/garbage/recept',
+            },
+            {
+              src: '/img/badge/reservation.png',
+              text: '予約',
+              href: '/payment/one-time-payment',
+            },
+            {
+              src: '/img/badge/payment_history.png',
+              text: '決済履歴',
+              href: '/history/payment-list',
+            },
+            {
+              src: '/img/badge/logout_bo.png',
+              text: 'ログアウト',
+              href: '/home',
+            },
           ].map((item, index) => (
             <div key={index} className="relative w-[150px] h-[150px]">
-              <Image
-                src={item.src}
-                width={150}
-                height={150}
-                alt={`${item.text}ボタン`}
-                className="object-cover"
-              />
-              <p
-                className="absolute text-white font-bold"
-                style={{
-                  top: '15px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  fontSize: '0.9rem',
-                }}
+              <Link
+                href={item.href}
+                className="flex flex-col items-center justify-center w-full h-full"
               >
-                {item.text}
-              </p>
+                <Image
+                  src={item.src}
+                  width={150}
+                  height={150}
+                  alt={`${item.text}ボタン`}
+                  className="object-cover"
+                />
+                <p
+                  className="absolute text-white font-bold"
+                  style={{
+                    top: '15px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  {item.text}
+                </p>
+              </Link>
             </div>
           ))}
         </div>

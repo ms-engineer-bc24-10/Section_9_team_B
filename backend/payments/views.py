@@ -6,6 +6,10 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from payments.models import Transaction
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Transaction
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +17,10 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
+
 # @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
+
+
 def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
@@ -47,12 +54,16 @@ def create_subscription(request):
                     },
                 ],
                 metadata={
-                    "user_id": str(user_id),  # メタデータにuser_idを追加
+                    "user_id": str(
+                        user_id
+                    ),  # NOTE: メタデータにuser_idを追加することで、決済とユーザーを紐づける
                 },
                 success_url="http://localhost:3000/payment/success",  # Next.jsで作った成功時のページへリダイレクト
-                cancel_url="http://localhost:3000/payment/cancel",    # Next.jsで作ったキャンセル時のページへリダイレクト
+                cancel_url="http://localhost:3000/payment/cancel",  # Next.jsで作ったキャンセル時のページへリダイレクト
             )
-            logger.debug(f"サブスクのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}") #NOTE: ログを1行で表示して読みやすくする
+            logger.debug(
+                f"サブスクのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}"
+            )  # NOTE: ログを1行で表示して読みやすくする
             return JsonResponse({"url": session.url})  # JSONでセッションURLを返す
         except Exception as e:
             logger.error(f"サブスク作成エラー: {e}")
@@ -61,20 +72,25 @@ def create_subscription(request):
         return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-# @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
 def create_one_time_payment(request):
     """
     入場料（来場者→管理者）の決済セッションを作成
     """
     if request.method == "POST":
         data = json.loads(request.body)
+
         user_id = data.get("user_id")
+        logger.info(f"リクエストボディから受け取った user_id: {user_id}")
         if not user_id:
             return JsonResponse({"error": "user_id が含まれていません。"}, status=400)
+
         is_participating = data.get("is_participating", False)
-        logger.info(f"リクエストボディから受け取った user_id: {user_id}")
         logger.info(f"リクエストボディから受け取った 参加フラグ: {is_participating}")
 
+        reservation_date = data.get("reservation_date")
+        logger.info(f"リクエストボディから受け取った 予約日: {reservation_date}")
+        if not reservation_date:
+            return JsonResponse({"error": "予約日 が含まれていません。"}, status=400)
 
         try:
             csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
@@ -97,13 +113,17 @@ def create_one_time_payment(request):
                     },
                 ],
                 metadata={
-                    "user_id": str(user_id),  # メタデータにuser_idを追加
-                    "is_participating": str(is_participating).lower(),  # メタデータにフラグを追加
+                    "user_id": str(user_id),
+                    "is_participating": str(is_participating).lower(),
+                    "reservation_date": str(reservation_date),
                 },
-                success_url="http://localhost:3000/payment/success",
+                
+                success_url=f"http://localhost:3000/payment/success?user_id={user_id} &is_participating={is_participating}",  # ユーザー情報保持した状態でsuccessページへ遷移
                 cancel_url="http://localhost:3000/payment/cancel",
             )
-            logger.debug(f"都度払いのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}")
+            logger.debug(
+                f"都度払いのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}"
+            )
 
             return JsonResponse({"url": session.url})
         except Exception as e:
@@ -139,11 +159,14 @@ def stripe_webhook(request):
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]  # Stripeセッションオブジェクト
         metadata = session.get("metadata", {})
-        logger.debug(f"受信したメタデータ: {json.dumps(session.metadata, separators=(',', ':'))}")
+        logger.debug(
+            f"受信したメタデータ: {json.dumps(session.metadata, separators=(',', ':'))}"
+        )
 
         # メタデータから必要な情報を取得
         user_id = metadata.get("user_id")
         is_participating = metadata.get("is_participating", "false").lower() == "true"
+        reservation_date = metadata.get("reservation_date")
 
         amount = session["amount_total"]
         logger.debug(f"支払い金額: {amount}円")
@@ -157,6 +180,7 @@ def stripe_webhook(request):
                 status="paid",
                 is_participating=is_participating,
                 stripe_session_id=session["id"],
+                reservation_date=reservation_date,
             )
             logger.info(f"取引をDB登録しました: {transaction}")
         except Exception as e:
@@ -164,3 +188,46 @@ def stripe_webhook(request):
             return HttpResponse(status=500)
 
     return HttpResponse(status=200)
+
+
+# 決済履歴一覧
+class PaymentHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        transactions = Transaction.objects.filter(user=user).order_by("-created_at")
+
+        payment_history = [
+            {
+                "id": t.id,
+                "date": t.created_at.strftime("%Y-%m-%d"),
+                "amount": t.amount,
+                "status": t.status,
+            }
+            for t in transactions
+        ]
+
+        return Response(payment_history)
+
+
+# 決済履歴詳細
+class PaymentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, transaction_id):
+        try:
+            transaction = Transaction.objects.get(id=transaction_id, user=request.user)
+            detail = {
+                "id": transaction.id,
+                "date": transaction.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "amount": transaction.amount,
+                "status": transaction.status,
+                "tourist_spot": transaction.tourist_spot.name,
+                "is_participating": transaction.is_participating,
+                "stripe_session_id": transaction.stripe_session_id,
+                "reservation_date": transaction.reservation_date.strftime("%Y-%m-%d"),
+            }
+            return Response(detail)
+        except Transaction.DoesNotExist:
+            return Response({"error": "詳細が見つかりません"}, status=404)

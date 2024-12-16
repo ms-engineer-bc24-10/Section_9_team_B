@@ -5,12 +5,29 @@ import Footer from '@/components/Footer';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import fetchUserData from '@/utils/fetchUserData';
+import Image from 'next/image';
 
 export default function GarbageBagUp() {
   const [image, setImage] = useState<File | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    setImage(file);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -27,7 +44,7 @@ export default function GarbageBagUp() {
 
       const formData = new FormData();
       formData.append('image', image);
-      formData.append('tourist_spot_id', '1'); // 固定または選択可能に
+      formData.append('tourist_spot_id', '1');
       formData.append('user_id', userData.userId);
 
       const response = await fetch(
@@ -69,14 +86,13 @@ export default function GarbageBagUp() {
         <h1 className="text-white text-3xl font-bold mb-5 relative z-20">
           ゴミ袋アップロード
         </h1>
+        <p>ごみ袋の大きさからポイントが算出されます</p>
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <input
             id="fileInput"
             type="file"
             accept="image/*"
-            onChange={(event) =>
-              setImage(event.target.files ? event.target.files[0] : null)
-            }
+            onChange={handleImageChange}
             className="hidden"
           />
           <label
@@ -95,6 +111,18 @@ export default function GarbageBagUp() {
             アップロード
           </button>
         </form>
+        {preview && (
+          <div>
+            <h2>画像プレビュー</h2>
+            <Image
+              src={preview}
+              alt="プレビュー"
+              width={300}
+              height={300}
+              objectFit="contain"
+            />
+          </div>
+        )}
         {status && <p className="text-green-500 mt-4">{status}</p>}
         {error && <p className="text-red-500 mt-4">{error}</p>}
       </div>
