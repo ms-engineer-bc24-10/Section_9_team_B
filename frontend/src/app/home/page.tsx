@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header'; // Header をインポート
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import Image from 'next/image';
@@ -31,19 +32,23 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-blue-200">
-      {/* 富士山セクション */}
-      <div className="relative h-[200px] bg-[url('/img/fuji_background.jpg')] bg-cover bg-center">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className=" text-white text-3xl font-bold drop-shadow-md mt-14">
-            ひろいっぽ
-          </h1>
+      {/* ヘッダー */}
+      <Header />
+
+      {/* 富士山セクション (丸い枠) */}
+      <div className="relative flex justify-center items-center mt-10">
+        {/* 丸いフレーム */}
+        <div className="w-[300px] h-[200px] rounded-full  flex items-center justify-center ">
+          {/* 富士山画像 */}
+          <div className="w-full h-full bg-[url('/img/fuji_background.jpg')] bg-cover bg-center" />
         </div>
       </div>
+
       {/* イベント紹介 */}
       <section className="relative py-20 bg-blue-200 flex justify-center">
         <div className="w-full  flex flex-col items-center ">
           {/* 丸いフレームの追加 */}
-          <div className="bg-blue-300 rounded-full p-5 border-4 border-blue-400 w-full max-w-sm mb-5"></div>
+          <div className="bg-white rounded-full p-5 border-2 border-blue-400 w-full w-48 mb-5"></div>
 
           {/* イベント紹介タイトル */}
           <h2 className="text-center text-2xl font-bold text-blue-500 mb-5 relative -top-14">
@@ -51,7 +56,7 @@ export default function HomePage() {
           </h2>
 
           {/* イベント紹介の文用の枠 */}
-          <div className="bg-blue-300 rounded-lg p-10  border-4 border-blue-400 text-center w-auto max-w-[1200px] relative -top-5 ">
+          <div className="bg-white rounded-full p-10  border-2 border-blue-400 text-center w-auto max-w-[1200px] relative -top-5 ">
             <p className="text-blue-500 mb-4">
               本日は富士山にお越しいただきありがとうございます
             </p>
@@ -74,12 +79,12 @@ export default function HomePage() {
 
       <section className="relative flex items-center justify-center py-3 bg-blue-80 bg-cover bg-no-repeat bg-center bg-[150%]">
         <div className="max-w-lg mx-auto">
-          <div className="grid place-items-center  rounded-lg p-6 h-1 w-60 bg-white ">
+          <div className="grid place-items-center  rounded-lg p-6 h-1 w-25 bg-white ">
             <h2 className="text-center text-2xl font-bold text-blue-500 mb-4 relative -top-4">
               登山可能日
             </h2>
 
-            <div className="flex justify-center items-center bg-calendar bg-no-repeat bg-contain bg-center bg-[150%]">
+            <div className="flex justify-center items-center bg-calendar bg-no-repeat bg-contain bg-center w-full bg-[200%]">
               {/* 簡易カレンダー */}
               <div className="text-center mt-10">
                 <div className="text-blue-500 text-sm">

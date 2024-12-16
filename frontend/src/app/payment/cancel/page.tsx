@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Footer from '@/components/Footer'; // Footerをインポート
 
 export default function CancelPage() {
   return (
@@ -9,7 +10,7 @@ export default function CancelPage() {
       </header>
 
       {/* メインコンテンツ */}
-      <main className="w-full max-w-md bg-white shadow rounded-lg p-6 mt-20 text-center">
+      <main className="w-full max-w-md bg-white shadow rounded-lg p-6 mt-20 text-center relative -top-20">
         <h2 className="text-xl font-bold text-blue-400 mb-4">
           決済がキャンセルされました
         </h2>
@@ -29,6 +30,9 @@ export default function CancelPage() {
           決済ページへ戻る
         </Link>
       </main>
+
+      {/* フッター */}
+      <Footer />
     </div>
   );
 }
