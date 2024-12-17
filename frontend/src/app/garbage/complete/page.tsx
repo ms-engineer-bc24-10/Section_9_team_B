@@ -72,7 +72,7 @@ export default function CashbackPage() {
             <br />
             <animated.div style={confettiAnimation}>
               <h2 className="text-2xl text-blue-400 font-bold mb-4">
-                🎉 {points} 10ポイント獲得! 🎉
+                🎉 {points} ポイント獲得! 🎉
               </h2>
             </animated.div>
             <br />
