@@ -25,9 +25,12 @@ export default function SuccessPage() {
 
   // クエリパラメータがまだ取得できていない場合の処理
   if (!userId || !isParticipating) {
-    return <div>データを読み込み中...</div>; // ローディングメッセージを表示
+    return (
+      <div className="flex justify-center items-center h-screen text-white text-xl">
+        データを読み込み中...
+      </div>
+    ); // ローディングメッセージを表示
   }
-
   useEffect(() => {
     const getUserData = async () => {
       try {

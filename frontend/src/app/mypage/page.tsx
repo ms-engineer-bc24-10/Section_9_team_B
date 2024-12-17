@@ -121,10 +121,18 @@ export default function MyPage() {
   }
 
   // TODO: バッチ→スタンプカードの仕組みに合うよう文言調整
+
   return (
     <>
+      {/* ヘッダー */}
+      <header className="w-full bg-blue-400 text-white py-4 fixed top-0 left-0 z-10">
+        <div className="text-center">
+          <h1 className="text-xl font-bold">ひろいっぽ</h1>
+        </div>
+      </header>
+
       <div
-        className="w-full h-full flex flex-col items-center bg-gray-100 p-4 pt-20 pb-20"
+        className="w-full h-full flex flex-col items-center bg-gray-100 p-2 pt-10 pb-10 text-xs"
         style={{ backgroundColor: '#bfdbfe' }}
       >
         {/* ボタンエリア */}
@@ -132,31 +140,29 @@ export default function MyPage() {
           {[
             {
               src: '/img/badge/my page.png',
-              text: 'マイページ',
               href: '/mypage',
             },
             {
               src: '/img/badge/gomi.png',
-              text: 'ごみ判別',
               href: '/garbage/recept',
             },
             {
               src: '/img/badge/reservation.png',
-              text: '予約',
               href: '/payment/one-time-payment',
             },
             {
               src: '/img/badge/payment_history.png',
-              text: '決済履歴',
               href: '/history/payment-list',
             },
             {
               src: '/img/badge/logout_bo.png',
-              text: 'ログアウト',
               href: '/home',
             },
           ].map((item, index) => (
-            <div key={index} className="relative w-[150px] h-[150px]">
+            <div
+              key={index}
+              className="relative w-[130px] h-[130px] text-center"
+            >
               <Link
                 href={item.href}
                 className="flex flex-col items-center justify-center w-full h-full"
@@ -199,13 +205,13 @@ export default function MyPage() {
             height={1000}
             className="z-0"
           />
-          <h3 className="absolute top-12 left-1/2 transform -translate-x-1/2 text-white text-4xl font-bold z-20 mt-5">
+          <h3 className="absolute top-7 left-1/2 transform -translate-x-1/2 text-white text-2xl font-bold z-10">
             所有しているバッジ
           </h3>
 
           {/* スタンプ画像 */}
-          <div className="absolute inset-0 flex items-center justify-center z-10 mt-20 ">
-            <div className="grid grid-cols-5 gap-4 w-4/5 h-2 transform -translate-y-40">
+          <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-8 -translate-y-4">
+            <div className="grid grid-cols-5 gap-x-20 grid-cols-5 gap-4 w-4/5 h-2 transform -translate-y-40">
               {[
                 '/stamps/1badge.png',
                 '/stamps/2badge.png',
@@ -220,8 +226,8 @@ export default function MyPage() {
                   <Image
                     src={src}
                     alt={`スタンプ ${index + 1}`}
-                    width={80}
-                    height={80}
+                    width={130}
+                    height={130}
                     className="rounded-md"
                   />
                 </div>
@@ -245,7 +251,7 @@ export default function MyPage() {
           <>
             {/*ポイント表示 */}
             <section className="mt-20">
-              <div className="flex justify-center items-center space-x-2">
+              <div className="flex justify-center items-center space-x-4 ">
                 <Image
                   src="/img/point.png"
                   alt="葉っぱの画像"
@@ -253,22 +259,24 @@ export default function MyPage() {
                   height={400}
                 />
                 {/* ポイント数（画像の前面に表示） */}
-                <p className="absolute top-[170%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red text-3xl font-bold z-10 text-b text-gray-500">
+                <p className="absolute top-[140%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red text-4xl font-bold z-20 text-b text-gray-500">
                   {userStamps ? userStamps.total_points : 0}
                 </p>
               </div>
             </section>
 
-            {/* 一番下に画像を追加 */}
+            {/* 一番下に画像を追加 
+            
             <div className="w-full flex justify-center mb-10">
               <Image
                 src="/img/mypage_sita.png" // 画像パスをここに設定
                 alt="一番下の画像"
-                width={1200} // 幅
-                height={300} // 高さ
+                width={500} // 幅
+                height={100} // 高さ
                 className="object-contain"
               />
             </div>
+            */}
           </>
         )}
       </div>
