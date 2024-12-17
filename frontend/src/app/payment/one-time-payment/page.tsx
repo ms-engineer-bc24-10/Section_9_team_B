@@ -8,20 +8,20 @@ import PaymentButton from '@/components/PaymentButton';
 
 function EntryFeePage() {
   return (
-    <div className="min-h-screen bg-blue-200 flex flex-col relative">
+    <div className="min-h-screen bg-blue-200 flex flex-col ">
       <Header />
 
       {/* コンテンツ部分 */}
-      <div className="flex flex-col items-center justify-center flex-grow space-y-6  ">
+      <div className="flex flex-col  items-center justify-center flex-grow space-y-6 ">
         {/* 入場料支払い画面タイトル */}
-        <div className="bg-white rounded-full px-8 py-3 relative -top-20 ">
+        <div className="bg-white rounded-full px-8 py-3 relative -top-5">
           <h1 className="text-blue-500 text-xl font-bold flex items-center “">
-            💰 入場料支払い画面
+            入場料支払い画面
           </h1>
         </div>
 
         {/* 支払いボタンエリア */}
-        <div className="w-full flex justify-center mt-20">
+        <div className=" w-full text-blue-500 flex justify-center justify-center mb-5">
           {' '}
           {/*下に下げて色をかえる（後で微調整）*/} {/* mt-10 で下に配置 */}
           <PaymentButton
@@ -29,18 +29,18 @@ function EntryFeePage() {
             label="入場料を支払う"
             includeParticipation // ごみ拾い参加フラグを表示
             includeDate // 予約日付選択を表示
-            className="bg-blue-400 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-500 transition"
+            // className="bg-blue-400 text-blue font-bold py-3 px8 rounded-full hover:bg-blue-500 transition"
           />
         </div>
       </div>
 
       {/* 一番下に画像を追加 */}
-      <div className="w-full flex justify-center mt-10 mb-10">
+      <div className="w-full flex justify-center mt-10 mb-10  relative -top-14">
         <Image
           src="/img/payment_frame2.png" // publicフォルダ内の画像パス
           alt="Footer Image" // 代替テキスト
-          width={900} // 横幅
-          height={500} // 高さ
+          width={150} // 横幅
+          height={150} // 高さ
         />
       </div>
       <Footer />

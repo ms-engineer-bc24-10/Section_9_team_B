@@ -24,13 +24,9 @@ body {
 }
 
 body {
+  /*背景がグレーになるのを変更 */
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #bfdbfe; /* Tailwindの bg-blue-200 に相当 */
 }
 
 @layer utilities {

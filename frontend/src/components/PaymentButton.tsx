@@ -59,7 +59,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   return (
     <div>
       {includeDate && (
-        <div className="fflex flex-col items-center bg-white rounded-lg px-6 py-4 w-full max-w-md shadow-md">
+        <div className="fflex flex-col items-center bg-white rounded-lg px-6 py-4 w-full max-w-md">
           <label
             htmlFor="reservation-date"
             className="text-blue-500 font-bold text-lg mb-"
@@ -89,16 +89,18 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       )}
       <button
         style={{
+          margin: 40,
+
           padding: '10px 20px',
           fontSize: '16px',
-          backgroundColor: 'bg-blue-400',
+          backgroundColor: 'bg-white',
           color: 'white',
           border: 'none',
           borderRadius: '5px',
           cursor: 'pointer',
         }}
         onClick={handlePayment}
-        className={`bg-blue-400 text-white font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-400 transition ${className || ''}`} //入場料支払いボタン追加
+        className={`bg-blue-400 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-400 transition ${className || ''}`} //入場料支払いボタン追加
       >
         {label}
       </button>

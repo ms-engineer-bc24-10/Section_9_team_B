@@ -5,6 +5,7 @@ import Link from 'next/link';
 import apiClient from '@/utils/apiClient';
 import fetchUserData from '@/utils/fetchUserData';
 import { useSpring, animated } from '@react-spring/web';
+import Image from 'next/image';
 
 export default function CashbackPage() {
   const [points, setPoints] = useState<number | null>(null);
@@ -55,28 +56,35 @@ export default function CashbackPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4">
-      <header className="w-full bg-blue-500 text-white py-4 text-center fixed top-0 left-0 z-10">
+    <div className="min-h-screen flex flex-col items-center bg--200 p-4">
+      <header className="w-full bg-blue-400 text-white py-4 text-center fixed top-0 left-0 z-10">
         <h1 className="text-2xl font-bold">Thank You</h1>
       </header>
 
-      <main className="w-full max-w-md bg-white shadow rounded-lg p-6 mt-20 text-center flex-grow">
+      <main className="w-full max-w-md rounded-lg p-6 mt-20 text-center flex-grow">
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
           <div>
-            <h1 className="text-xl font-bold">ごみ袋判定完了</h1>
+            <h1 className="text-xl text-white font-bold">ごみ袋判定完了</h1>
             <br />
             <animated.div style={confettiAnimation}>
-              <h2 className="text-2xl font-bold mb-4">
-                🎉 {points} ポイント獲得！ 🎉
+              <h2 className="text-2xl text-blue-400 font-bold mb-4">
+                🎉 {points} 10ポイント獲得! 🎉
               </h2>
             </animated.div>
             <br />
             <animated.div style={springProps}>
-              <span className="text-2xl">🌱　🌱　🌱　🌱　🌱　🌱</span>
+              <div className="flex justify-center space-x-4">
+                <Image
+                  src="/img/toppu_point.gif"
+                  alt="動く芽"
+                  width={200}
+                  height={200}
+                />
+              </div>
             </animated.div>
 
             <br />
@@ -85,7 +93,7 @@ export default function CashbackPage() {
 
         <Link
           href="/mypage"
-          className="px-6 py-3 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition inline-block"
+          className="px-6 py-3 bg-blue-400 text-white rounded hover:bg-blue-500 transition inline-block"
         >
           マイページへ戻る
         </Link>

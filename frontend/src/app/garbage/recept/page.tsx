@@ -82,12 +82,15 @@ export default function GarbageBagUp() {
         />
       </div>
 
-      <div className="flex flex-col items-center justify-center flex-grow">
+      <div className="flex flex-col items-center justify-center flex-grow text-white">
         <h1 className="text-white text-3xl font-bold mb-5 relative z-20">
           ゴミ袋アップロード
         </h1>
         <p>ごみ袋の大きさからポイントが算出されます</p>
-        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center mt-10"
+        >
           <input
             id="fileInput"
             type="file"

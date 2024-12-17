@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header'; // Header をインポート
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import Image from 'next/image';
@@ -31,27 +32,32 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-blue-200">
-      {/* 富士山セクション */}
-      <div className="relative h-[200px] bg-[url('/img/fuji_background.jpg')] bg-cover bg-center">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className=" text-white text-3xl font-bold drop-shadow-md mt-14">
-            ひろいっぽ
-          </h1>
+      {/* ヘッダー */}
+      <Header />
+
+      {/* 富士山セクション (丸い枠) */}
+
+      <div className="relative1 flex justify-center items-center mt-10">
+        {/* 丸いフレーム */}
+        <div className="  w-[500px] h-[320px] rounded-full  flex items-center justify-center ">
+          {/* 富士山画像 */}
+          <div className="  w-full h-full bg-[url('/img/fuji_background.jpg')] bg-cover bg-center" />
         </div>
       </div>
+
       {/* イベント紹介 */}
       <section className="relative py-20 bg-blue-200 flex justify-center">
         <div className="w-full  flex flex-col items-center ">
           {/* 丸いフレームの追加 */}
-          <div className="bg-blue-300 rounded-full p-5 border-4 border-blue-400 w-full max-w-sm mb-5"></div>
+          <div className="bg-white rounded-full p-5 border-2 border-blue-400  w-48 mb-5"></div>
 
           {/* イベント紹介タイトル */}
-          <h2 className="text-center text-2xl font-bold text-blue-500 mb-5 relative -top-14">
+          <h2 className="text-center text-2xl font-bold text-blue-500 mb-5 relative -top-14 ">
             イベント紹介
           </h2>
 
           {/* イベント紹介の文用の枠 */}
-          <div className="bg-blue-300 rounded-lg p-10  border-4 border-blue-400 text-center w-auto max-w-[1200px] relative -top-5 ">
+          <div className="bg-white  p-10  border-2 border-blue-400 text-center w-auto max-w-[1200px] relative -top-5 ">
             <p className="text-blue-500 mb-4">
               本日は富士山にお越しいただきありがとうございます
             </p>
@@ -63,29 +69,30 @@ export default function HomePage() {
               現在、富士山でゴミ拾いミッションイベントを開催中。
             </p>
             <p className="text-blue-500 mb-4">
-              ゴミ拾いにご協力いただくと、 お礼としてポイントプレゼント実施中！
+              ゴミ拾いにご協力いただくと、 <br />
+              お礼としてポイントプレゼント実施中！
             </p>
-            <p className="text-blue-500">この機会にぜひご参加ください！</p>
+            <p className="text-blue-500">この機会にぜひご参加ください</p>
           </div>
         </div>
       </section>
 
       {/* 登山可能日 */}
 
-      <section className="relative flex items-center justify-center py-3 bg-blue-80 bg-cover bg-no-repeat bg-center bg-[150%]">
+      <section className=" relative flex items-center justify-center py-3 bg-blue-80 bg-cover bg-no-repeat bg-center bg-[150%]">
         <div className="max-w-lg mx-auto">
-          <div className="grid place-items-center  rounded-lg p-6 h-1 w-60 bg-white ">
-            <h2 className="text-center text-2xl font-bold text-blue-500 mb-4 relative -top-4">
+          <div className="grid place-items-center  rounded-full p-6 h-1 w-30 bg-white border-2 border-blue-400">
+            <h2 className="text-center rounded-full text-2xl font-bold text-blue-500 mb-4 relative -top-4 ">
               登山可能日
             </h2>
 
-            <div className="flex justify-center items-center bg-calendar bg-no-repeat bg-contain bg-center bg-[150%]">
+            <div className=" cloudii justify-center items-center bg-calendar bg-no-repeat bg-contain bg-center  bg-[100%] ">
               {/* 簡易カレンダー */}
-              <div className="text-center mt-10">
-                <div className="text-blue-500 text-sm">
+              <div className="  text-center mt-4">
+                <div className=" text-blue-500 text-2xl ">
                   Su Mo Tu We Th Fr Sa
                 </div>
-                <div className="grid grid-cols-7 gap-2 mt-2">
+                <div className="  grid grid-cols-7 gap-2 mt-2">
                   {Array.from({ length: 30 }, (_, i) => (
                     <span
                       key={i}
@@ -106,8 +113,8 @@ export default function HomePage() {
       </section>
 
       {/* メールアドレスとパスワード */}
-      <section className="flex items-center justify-center min-h-[50vh] bg-blue-80 mt-60">
-        <div className="w-full max-w-sm bg-white shadow rounded-lg p-6 mb-4">
+      <section className="flex items-center justify-center min-h-[50vh] bg-blue-80 mt-60 ">
+        <div className="w-full max-w-sm bg-white shadow rounded-lg p-6 mb-4 border-2 border-blue-400">
           <h2 className="text-2xl font-bold text-center text-blue-500 mb-6">
             ログイン
           </h2>
