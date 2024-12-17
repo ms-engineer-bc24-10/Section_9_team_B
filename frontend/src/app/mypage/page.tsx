@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { auth } from '@/utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import fetchUserData from '@/utils/fetchUserData';
@@ -15,15 +14,18 @@ interface Stamp {
   points: number;
 }
 interface UserStamps {
-  stamps: string[];
+  stamps: Stamp[];
   total_points: number;
 }
 
 // 観光地IDとスタンプ画像のマッピング
 // NOTE: スタンプ画像は public/stamps/ に格納
 const stampImages: { [key: number]: string } = {
-  1: '/stamps/stamp1.png', // 富士山
-  2: '/stamps/stamp2.png', // 他の観光地
+  1: '/stamps/1badge.png', // 富士山
+  2: '/stamps/2badge.png', // 屋久島
+  3: '/stamps/3badge.png', // 青森
+  4: '/stamps/4badge.png', // 宮崎
+  5: '/stamps/5badge.png', // 長野
   // 以下他の観光地のスタンプ画像を追加
 };
 
@@ -206,26 +208,23 @@ export default function MyPage() {
             className="z-0"
           />
           <h3 className="absolute top-7 left-1/2 transform -translate-x-1/2 text-white text-2xl font-bold z-10">
-            所有しているバッジ
+            所有しているスタンプ
           </h3>
 
           {/* スタンプ画像 */}
           <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-8 -translate-y-4">
-            <div className="grid grid-cols-5 gap-x-20 grid-cols-5 gap-4 w-4/5 h-2 transform -translate-y-40">
-              {[
-                '/stamps/1badge.png',
-                '/stamps/2badge.png',
-                '/stamps/3badge.png',
-                '/stamps/4badge.png',
-                '/stamps/5badge.png',
-              ].map((src, index) => (
+            <div className="grid grid-cols-5 gap-x-20 gap-4 w-4/5 h-2 transform -translate-y-40">
+              {userStamps?.stamps.map((stamp, index) => (
                 <div
                   key={index}
                   className="rounded-lg flex items-center justify-center h-24 w-24 mt-32"
                 >
                   <Image
-                    src={src}
-                    alt={`スタンプ ${index + 1}`}
+                    src={
+                      stampImages[stamp.tourist_spot_id] ||
+                      '/stamps/default_stamp.png'
+                    }
+                    alt={`スタンプ ${stamp.tourist_spot_id}`}
                     width={130}
                     height={130}
                     className="rounded-md"
