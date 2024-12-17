@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import { useEffect } from 'react';
 import { initAuthStateObserver } from '@/utils/authStateObserver';
+import Head from 'next/head';
 
 export default function RootLayout({
   children,
@@ -24,6 +25,9 @@ export default function RootLayout({
 
   return (
     <html lang="ja">
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
       <body className="flex flex-col min-h-screen">
         {/* pathnameが指定したページに含まれる場合のみヘッダーを表示 */}
         {WithHeader.includes(pathname) && <Header />}
