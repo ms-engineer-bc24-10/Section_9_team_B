@@ -205,9 +205,6 @@ export default function MyPage() {
             height={1000}
             className="z-0"
           />
-          <h3 className="absolute top-7 left-1/2 transform -translate-x-1/2 text-white text-2xl font-bold z-10">
-            所有しているバッジ
-          </h3>
 
           {/* スタンプ画像 */}
           <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-8 -translate-y-4">
