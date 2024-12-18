@@ -119,7 +119,11 @@ export default function MyPage() {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen ">
+        <div className="text-2xl font-bold text-white">Loading...</div>
+      </div>
+    );
   }
 
   // TODO: バッチ→スタンプカードの仕組みに合うよう文言調整
@@ -208,22 +212,12 @@ export default function MyPage() {
 
           <div className="absolute inset-2 flex items-center justify-center z-10 mt-32 -translate-x-16 -translate-y-6">
             <div className="grid grid-cols-9 gap-20 grid-cols-5  w-2/3 h-2 transform -translate-y-40">
-              {/* 
-          <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-3 -translate-y-6">
-            <div className="grid grid-cols-5 gap-x-10 grid-cols-5  w-4/5 h-2 transform -translate-y-40">
-            */}
               {userStamps?.stamps.map((stamp, index) => (
                 <div
                   key={index}
                   className="rounded-lg flex items-center justify-center h-10 w-20 mt-28 "
                 >
                   <Image
-                    // src={src}
-                    //  alt={`スタンプ ${index + 1}`}
-                    // width={80}
-                    //  height={80}
-                    // className="rounded-md w-13s h-13"
-
                     src={
                       stampImages[stamp.tourist_spot_id] ||
                       '/stamps/default_stamp.png'
@@ -267,11 +261,6 @@ export default function MyPage() {
                 </p>
               </div>
             </section>
-
-            {/* ポイント数（画像の前面に表示） */}
-            {/* <p className="absolute left-1/2 top-3/4 transform -translate-x-1/2 -translate-y-1/2 text-red text-4xl font-bold z-20 text-b text-gray-500">
-                  {userStamps ? userStamps.total_points : 0}
-                </p> */}
           </>
         )}
       </div>
