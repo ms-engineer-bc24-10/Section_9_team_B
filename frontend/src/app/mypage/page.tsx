@@ -137,8 +137,7 @@ export default function MyPage() {
         style={{ backgroundColor: '#bfdbfe' }}
       >
         {/* ボタンエリア */}
-        {/* </div> <div className="flex gap-2 ml-8 transform translate-x-5"> */}
-        <div className="container mx-auto flex justify-center gap-2">
+        <div className="flex flex-wrap justify-center gap-0">
           {[
             {
               src: '/img/badge/my page.png',
@@ -161,18 +160,15 @@ export default function MyPage() {
               href: '/home',
             },
           ].map((item, index) => (
-            <div
-              key={index}
-              className="relative w-30 h-10 text-center -translate-x-12"
-            >
+            <div key={index} className="relative w-[92px] h-[92px] text-center">
               <Link
                 href={item.href}
                 className="flex flex-col items-center justify-center w-full h-full"
               >
                 <Image
                   src={item.src}
-                  width={150}
-                  height={150}
+                  width={92}
+                  height={92}
                   alt={`${item.text}ボタン`}
                   className="object-cover"
                 />
@@ -193,12 +189,12 @@ export default function MyPage() {
         </div>
 
         {/* イベント紹介 */}
-        <h1 className="text-2xl font-bold mb-2 text-white pt-20  text-center -translate-x-2">
+        <h1 className="text-2xl font-bold mb-2 text-white pt-20  text-center">
           ようこそ{username || 'ゲスト'}さん
         </h1>
 
         {/* フレーム画像 */}
-        <div className="relative flex justify-center my-5 w-[430px] h-[200px] -translate-x-2">
+        <div className="relative flex justify-center my-5 w-[430px] h-[200px]">
           <Image
             src="/stamps/stamp_frame.png"
             alt="スタンプフレーム"
