@@ -61,7 +61,7 @@ export default function PaymentDetail({ params }: { params: { id: string } }) {
       return <div>決済情報が見つかりません</div>;
     }
     return (
-      <div>
+      <div className="bg-white text-blue-500 font-bold rounded-xl  max-w-[800px] p-10 ml-0">
         <p>決済日付: {paymentDetail.date}</p>
         <p>予約日付: {paymentDetail.reservation_date}</p>
         <p>金額: {paymentDetail.amount}円</p>
