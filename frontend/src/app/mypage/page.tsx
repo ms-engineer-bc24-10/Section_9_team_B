@@ -126,15 +126,14 @@ export default function MyPage() {
 
   return (
     <>
-      {/* ヘッダー */}
       <header className="w-full bg-blue-400 text-white py-4 fixed top-0 left-0 z-10">
-        <div className="text-center">
-          <h1 className="text-xl font-bold">ひろいっぽ</h1>
+        <div className="flex h-full">
+          <h1 className="text-xl font-bold ml-40">ひろいっぽ</h1>
         </div>
       </header>
 
       <div
-        className="w-full h-full flex flex-col items-center bg-gray-100 p-2 pt-10 pb-10 text-xs"
+        className="w-full h-full flex flex-col items-center bg-gray-100 p-1 pt-5 pb-10 text-xs"
         style={{ backgroundColor: '#bfdbfe' }}
       >
         {/* ボタンエリア */}
@@ -163,7 +162,7 @@ export default function MyPage() {
           ].map((item, index) => (
             <div
               key={index}
-              className="relative w-[130px] h-[130px] text-center"
+              className="relative w-16 h-10 text-center -translate-x-12"
             >
               <Link
                 href={item.href}
@@ -193,28 +192,39 @@ export default function MyPage() {
         </div>
 
         {/* イベント紹介 */}
-        <h1 className="text-3xl font-bold mb-4 text-white pt-20">
+        <h1 className="text-2xl font-bold mb-2 text-white pt-20 -translate-x-10">
           ようこそ{username || 'ゲスト'}さん
         </h1>
 
         {/* フレーム画像 */}
-        <div className="relative flex justify-center my-8">
+        <div className="relative flex justify-center my-5 -translate-x-10">
           <Image
             src="/stamps/stamp_frame.png"
             alt="スタンプフレーム"
             layout="intrinsic"
-            width={1000}
-            height={1000}
+            width={300}
+            height={300}
             className="z-0"
           />
 
           {/* スタンプ画像 */}
-          <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-8 -translate-y-4">
-            <div className="grid grid-cols-5 gap-x-20 gap-4 w-4/5 h-2 transform -translate-y-40">
+{/* 
+          <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-3 -translate-y-6">
+            <div className="grid grid-cols-5 gap-x-10 grid-cols-5  w-4/5 h-2 transform -translate-y-40">
+              {[
+                '/stamps/1badge.png',
+                '/stamps/2badge.png',
+                '/stamps/3badge.png',
+                '/stamps/4badge.png',
+                '/stamps/5badge.png',
+              ].map((src, index) => (
+ */}
+          <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-3 -translate-y-6">
+            <div className="grid grid-cols-5 gap-x-10 grid-cols-5  w-4/5 h-2 transform -translate-y-40">
               {userStamps?.stamps.map((stamp, index) => (
                 <div
                   key={index}
-                  className="rounded-lg flex items-center justify-center h-24 w-24 mt-32"
+                  className="rounded-lg flex items-center justify-center h-10 w-10 mt-32"
                 >
                   <Image
                     src={
@@ -234,7 +244,7 @@ export default function MyPage() {
 
         {/* エラーメッセージ */}
         {error ? (
-          <div className="text-center">
+          <div className="text-center -translate-x-10">
             <p className="text-red-500 mb-4">{error}</p>
             <a
               href="/home"

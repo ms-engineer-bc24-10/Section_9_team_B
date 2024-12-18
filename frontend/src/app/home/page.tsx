@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header'; // Header をインポート
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import Image from 'next/image';
@@ -33,7 +32,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-blue-200">
       {/* ヘッダー */}
-      <Header />
+      <div className="text-xl font-bold text-center py-4 text-white bg-blue-400 fixed top-0 left-0 w-full z-10">
+        ひろいっぽ
+      </div>
 
       {/* 富士山セクション (丸い枠) */}
 
