@@ -127,17 +127,18 @@ export default function MyPage() {
   return (
     <>
       <header className="w-full bg-blue-400 text-white py-4 fixed top-0 left-0 z-10">
-        <div className="flex items-center justify-center h-full">
-          <h1 className="text-xl font-bold -translate-x-5">ひろいっぽ</h1>
+        <div className="container mx-auto flex items-center justify-center h-full">
+          <h1 className="text-xl font-bold">ひろいっぽ</h1>
         </div>
       </header>
 
       <div
-        className="w-full h-full flex flex-col items-center bg-gray-100 p-1 pt-5 pb-10 text-xs"
+        className="container mx-auto min-h-screen flex flex-col items-center bg-gray-100 p-1 pt-5 pb-10 text-xs"
         style={{ backgroundColor: '#bfdbfe' }}
       >
         {/* ボタンエリア */}
-        <div className="flex gap-2 ml-8 transform translate-x-5">
+        {/* </div> <div className="flex gap-2 ml-8 transform translate-x-5"> */}
+        <div className="container mx-auto flex justify-center gap-2">
           {[
             {
               src: '/img/badge/my page.png',
