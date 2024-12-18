@@ -21,7 +21,7 @@ function EntryFeePage() {
         </div>
 
         {/* 支払いボタンエリア */}
-        <div className=" w-full text-blue-500 flex justify-center justify-center mb-5">
+        <div className=" w-full text-blue-500 flex justify-center mb-5">
           {' '}
           {/*下に下げて色をかえる（後で微調整）*/} {/* mt-10 で下に配置 */}
           <PaymentButton
