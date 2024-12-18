@@ -26,9 +26,12 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <Head>
+        {/* ビューポートの幅をデバイスの画面幅に設定、モバイルデバイスでウェブサイトを閲覧する際にコンテンツが画面幅に合わせて適切に表示される */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {/* iOSデバイスでWebアプリをフルスクリーンモードで表示 */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
       </Head>
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen text-base leading-normal touch-manipulation">
         {/* pathnameが指定したページに含まれる場合のみヘッダーを表示 */}
         {WithHeader.includes(pathname) && <Header />}
 
