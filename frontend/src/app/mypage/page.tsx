@@ -254,7 +254,7 @@ export default function MyPage() {
           <>
             {/*ポイント表示 */}
             <section className="mt-20">
-              <div className="flex justify-center items-center space-x-4 ">
+              <div className="flex justify-center items-center space-x-4 relative">
                 <Image
                   src="/img/point.png"
                   alt="ポイントベース画像"
@@ -262,11 +262,16 @@ export default function MyPage() {
                   height={250}
                 />
                 {/* ポイント数（画像の前面に表示） */}
-                <p className="absolute top-[86%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold z-10 text-b text-gray-400 -translate-x-6">
+                <p className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 translate-y-4 text-2xl font-bold z-10 text-gray-400">
                   {userStamps ? userStamps.total_points : 0}
                 </p>
               </div>
             </section>
+
+            {/* ポイント数（画像の前面に表示） */}
+            {/* <p className="absolute left-1/2 top-3/4 transform -translate-x-1/2 -translate-y-1/2 text-red text-4xl font-bold z-20 text-b text-gray-500">
+                  {userStamps ? userStamps.total_points : 0}
+                </p> */}
           </>
         )}
       </div>
