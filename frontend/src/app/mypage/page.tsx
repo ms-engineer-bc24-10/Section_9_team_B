@@ -187,7 +187,6 @@ export default function MyPage() {
                   {item.text}
                 </p>
               </Link>
-              n
             </div>
           ))}
         </div>
@@ -212,30 +211,22 @@ export default function MyPage() {
 
           <div className="absolute inset-2 flex items-center justify-center z-10 mt-32 -translate-x-16 -translate-y-6">
             <div className="grid grid-cols-9 gap-20 grid-cols-5  w-2/3 h-2 transform -translate-y-40">
-
-              {[
-                '/stamps/1badge.png',
-                '/stamps/2badge.png',
-                '/stamps/3badge.png',
-                '/stamps/4badge.png',
-                '/stamps/5badge.png',
-              ].map((src, index) => (
- */}
+              {/* 
           <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-3 -translate-y-6">
             <div className="grid grid-cols-5 gap-x-10 grid-cols-5  w-4/5 h-2 transform -translate-y-40">
+            */}
               {userStamps?.stamps.map((stamp, index) => (
                 <div
                   key={index}
                   className="rounded-lg flex items-center justify-center h-10 w-20 mt-28 "
                 >
                   <Image
- {/* 
-                    src={src}
-                    alt={`スタンプ ${index + 1}`}
-                    width={80}
-                    height={80}
-                    className="rounded-md w-13s h-13"
-*/}
+                    // src={src}
+                    //  alt={`スタンプ ${index + 1}`}
+                    // width={80}
+                    //  height={80}
+                    // className="rounded-md w-13s h-13"
+
                     src={
                       stampImages[stamp.tourist_spot_id] ||
                       '/stamps/default_stamp.png'
@@ -244,7 +235,6 @@ export default function MyPage() {
                     width={130}
                     height={130}
                     className="rounded-md"
-
                   />
                 </div>
               ))}
@@ -280,23 +270,9 @@ export default function MyPage() {
                 </p>
               </div>
             </section>
-
-            {/* 一番下に画像を追加 
-            
-            <div className="w-full flex justify-center mb-10">
-              <Image
-                src="/img/mypage_sita.png" // 画像パスをここに設定
-                alt="一番下の画像"
-                width={500} // 幅
-                height={100} // 高さ
-                className="object-contain"
-              />
-            </div>
-            */}
           </>
         )}
       </div>
-
       {/* フッター */}
       <Footer />
     </>
