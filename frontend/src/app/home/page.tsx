@@ -66,9 +66,10 @@ export default function HomePage() {
               安全に十分気をつけて登山をお楽しみください！
             </p>
             <p className="text-blue-500 mb-4">「イベント情報」</p>
-            <p className="text-blue-500 mb-4">
-              現在、富士山でゴミ拾いミッションイベントを開催中。
+            <p className="text-blue-500">
+              現在、富士山でゴミ拾いミッションイベントを
             </p>
+            <p className="text-blue-500 mb-4">開催中。</p>
             <p className="text-blue-500 mb-4">
               ゴミ拾いにご協力いただくと、 <br />
               お礼としてポイントプレゼント実施中！
