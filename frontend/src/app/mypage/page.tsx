@@ -127,8 +127,8 @@ export default function MyPage() {
   return (
     <>
       <header className="w-full bg-blue-400 text-white py-4 fixed top-0 left-0 z-10">
-        <div className="flex h-full">
-          <h1 className="text-xl font-bold ml-40">ひろいっぽ</h1>
+        <div className="flex items-center justify-center h-full">
+          <h1 className="text-xl font-bold -translate-x-5">ひろいっぽ</h1>
         </div>
       </header>
 
@@ -137,7 +137,7 @@ export default function MyPage() {
         style={{ backgroundColor: '#bfdbfe' }}
       >
         {/* ボタンエリア */}
-        <div className="flex gap-4">
+        <div className="flex gap-2 ml-8 transform translate-x-5">
           {[
             {
               src: '/img/badge/my page.png',
@@ -162,7 +162,7 @@ export default function MyPage() {
           ].map((item, index) => (
             <div
               key={index}
-              className="relative w-16 h-10 text-center -translate-x-12"
+              className="relative w-30 h-10 text-center -translate-x-12"
             >
               <Link
                 href={item.href}
@@ -187,30 +187,32 @@ export default function MyPage() {
                   {item.text}
                 </p>
               </Link>
+              n
             </div>
           ))}
         </div>
 
         {/* イベント紹介 */}
-        <h1 className="text-2xl font-bold mb-2 text-white pt-20 -translate-x-10">
+        <h1 className="text-2xl font-bold mb-2 text-white pt-20  text-center -translate-x-2">
           ようこそ{username || 'ゲスト'}さん
         </h1>
 
         {/* フレーム画像 */}
-        <div className="relative flex justify-center my-5 -translate-x-10">
+        <div className="relative flex justify-center my-5 w-[430px] h-[200px] -translate-x-2">
           <Image
             src="/stamps/stamp_frame.png"
             alt="スタンプフレーム"
-            layout="intrinsic"
-            width={300}
-            height={300}
-            className="z-0"
+            layout="esponsive"
+            width={700}
+            height={700}
+            className=" z-0"
           />
 
           {/* スタンプ画像 */}
-{/* 
-          <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-3 -translate-y-6">
-            <div className="grid grid-cols-5 gap-x-10 grid-cols-5  w-4/5 h-2 transform -translate-y-40">
+
+          <div className="absolute inset-2 flex items-center justify-center z-10 mt-32 -translate-x-16 -translate-y-6">
+            <div className="grid grid-cols-9 gap-20 grid-cols-5  w-2/3 h-2 transform -translate-y-40">
+
               {[
                 '/stamps/1badge.png',
                 '/stamps/2badge.png',
@@ -224,9 +226,16 @@ export default function MyPage() {
               {userStamps?.stamps.map((stamp, index) => (
                 <div
                   key={index}
-                  className="rounded-lg flex items-center justify-center h-10 w-10 mt-32"
+                  className="rounded-lg flex items-center justify-center h-10 w-20 mt-28 "
                 >
                   <Image
+ {/* 
+                    src={src}
+                    alt={`スタンプ ${index + 1}`}
+                    width={80}
+                    height={80}
+                    className="rounded-md w-13s h-13"
+*/}
                     src={
                       stampImages[stamp.tourist_spot_id] ||
                       '/stamps/default_stamp.png'
@@ -235,6 +244,7 @@ export default function MyPage() {
                     width={130}
                     height={130}
                     className="rounded-md"
+
                   />
                 </div>
               ))}
@@ -244,7 +254,7 @@ export default function MyPage() {
 
         {/* エラーメッセージ */}
         {error ? (
-          <div className="text-center -translate-x-10">
+          <div className="text-center -translate-x-10 ml-10 pt-10">
             <p className="text-red-500 mb-4">{error}</p>
             <a
               href="/home"
@@ -260,12 +270,12 @@ export default function MyPage() {
               <div className="flex justify-center items-center space-x-4 ">
                 <Image
                   src="/img/point.png"
-                  alt="葉っぱの画像"
-                  width={450}
-                  height={400}
+                  alt="ポイントベース画像"
+                  width={250}
+                  height={250}
                 />
                 {/* ポイント数（画像の前面に表示） */}
-                <p className="absolute top-[140%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red text-4xl font-bold z-20 text-b text-gray-500">
+                <p className="absolute top-[86%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold z-10 text-b text-gray-400 -translate-x-6">
                   {userStamps ? userStamps.total_points : 0}
                 </p>
               </div>
@@ -286,6 +296,7 @@ export default function MyPage() {
           </>
         )}
       </div>
+
       {/* フッター */}
       <Footer />
     </>
