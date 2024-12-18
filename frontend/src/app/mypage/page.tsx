@@ -119,7 +119,11 @@ export default function MyPage() {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen ">
+        <div className="text-2xl font-bold text-white">Loading...</div>
+      </div>
+    );
   }
 
   // TODO: バッチ→スタンプカードの仕組みに合うよう文言調整
@@ -127,17 +131,17 @@ export default function MyPage() {
   return (
     <>
       <header className="w-full bg-blue-400 text-white py-4 fixed top-0 left-0 z-10">
-        <div className="flex items-center justify-center h-full">
-          <h1 className="text-xl font-bold -translate-x-5">ひろいっぽ</h1>
+        <div className="container mx-auto flex items-center justify-center h-full">
+          <h1 className="text-xl font-bold">ひろいっぽ</h1>
         </div>
       </header>
 
       <div
-        className="w-full h-full flex flex-col items-center bg-gray-100 p-1 pt-5 pb-10 text-xs"
+        className="container mx-auto min-h-screen flex flex-col items-center bg-gray-100 p-1 pt-5 pb-10 text-xs"
         style={{ backgroundColor: '#bfdbfe' }}
       >
         {/* ボタンエリア */}
-        <div className="flex gap-2 ml-8 transform translate-x-5">
+        <div className="flex flex-wrap justify-center gap-0">
           {[
             {
               src: '/img/badge/my page.png',
@@ -160,18 +164,15 @@ export default function MyPage() {
               href: '/home',
             },
           ].map((item, index) => (
-            <div
-              key={index}
-              className="relative w-30 h-10 text-center -translate-x-12"
-            >
+            <div key={index} className="relative w-[92px] h-[92px] text-center">
               <Link
                 href={item.href}
                 className="flex flex-col items-center justify-center w-full h-full"
               >
                 <Image
                   src={item.src}
-                  width={150}
-                  height={150}
+                  width={92}
+                  height={92}
                   alt={`${item.text}ボタン`}
                   className="object-cover"
                 />
@@ -187,18 +188,17 @@ export default function MyPage() {
                   {item.text}
                 </p>
               </Link>
-              n
             </div>
           ))}
         </div>
 
         {/* イベント紹介 */}
-        <h1 className="text-2xl font-bold mb-2 text-white pt-20  text-center -translate-x-2">
+        <h1 className="text-2xl font-bold mb-2 text-white pt-20  text-center">
           ようこそ{username || 'ゲスト'}さん
         </h1>
 
         {/* フレーム画像 */}
-        <div className="relative flex justify-center my-5 w-[430px] h-[200px] -translate-x-2">
+        <div className="relative flex justify-center my-5 w-[430px] h-[200px]">
           <Image
             src="/stamps/stamp_frame.png"
             alt="スタンプフレーム"
@@ -212,30 +212,12 @@ export default function MyPage() {
 
           <div className="absolute inset-2 flex items-center justify-center z-10 mt-32 -translate-x-16 -translate-y-6">
             <div className="grid grid-cols-9 gap-20 grid-cols-5  w-2/3 h-2 transform -translate-y-40">
-
-              {[
-                '/stamps/1badge.png',
-                '/stamps/2badge.png',
-                '/stamps/3badge.png',
-                '/stamps/4badge.png',
-                '/stamps/5badge.png',
-              ].map((src, index) => (
- */}
-          <div className="absolute inset-0 flex items-center justify-center z-10 mt-32 -translate-x-3 -translate-y-6">
-            <div className="grid grid-cols-5 gap-x-10 grid-cols-5  w-4/5 h-2 transform -translate-y-40">
               {userStamps?.stamps.map((stamp, index) => (
                 <div
                   key={index}
                   className="rounded-lg flex items-center justify-center h-10 w-20 mt-28 "
                 >
                   <Image
- {/* 
-                    src={src}
-                    alt={`スタンプ ${index + 1}`}
-                    width={80}
-                    height={80}
-                    className="rounded-md w-13s h-13"
-*/}
                     src={
                       stampImages[stamp.tourist_spot_id] ||
                       '/stamps/default_stamp.png'
@@ -244,7 +226,6 @@ export default function MyPage() {
                     width={130}
                     height={130}
                     className="rounded-md"
-
                   />
                 </div>
               ))}
@@ -267,7 +248,7 @@ export default function MyPage() {
           <>
             {/*ポイント表示 */}
             <section className="mt-20">
-              <div className="flex justify-center items-center space-x-4 ">
+              <div className="flex justify-center items-center space-x-4 relative">
                 <Image
                   src="/img/point.png"
                   alt="ポイントベース画像"
@@ -275,28 +256,14 @@ export default function MyPage() {
                   height={250}
                 />
                 {/* ポイント数（画像の前面に表示） */}
-                <p className="absolute top-[86%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold z-10 text-b text-gray-400 -translate-x-6">
+                <p className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 translate-y-4 text-2xl font-bold z-10 text-gray-400">
                   {userStamps ? userStamps.total_points : 0}
                 </p>
               </div>
             </section>
-
-            {/* 一番下に画像を追加 
-            
-            <div className="w-full flex justify-center mb-10">
-              <Image
-                src="/img/mypage_sita.png" // 画像パスをここに設定
-                alt="一番下の画像"
-                width={500} // 幅
-                height={100} // 高さ
-                className="object-contain"
-              />
-            </div>
-            */}
           </>
         )}
       </div>
-
       {/* フッター */}
       <Footer />
     </>
