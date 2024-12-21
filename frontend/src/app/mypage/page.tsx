@@ -7,7 +7,8 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import fetchUserData from '@/utils/fetchUserData';
 import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
+import { logOutUser } from '@/utils/auth';
 interface Stamp {
   tourist_spot_id: number;
   date: string;
@@ -34,6 +35,17 @@ export default function MyPage() {
   const [error, setError] = useState<string | null>(null);
   const [userStamps, setUserStamps] = useState<UserStamps | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  // ログアウト機能
+  const handleLogout = async () => {
+    try {
+      await logOutUser();
+      router.push('/home');
+    } catch (error) {
+      console.error('===ログアウトエラー===:', error);
+    }
+  };
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -161,33 +173,61 @@ export default function MyPage() {
             },
             {
               src: '/img/badge/logout_bo.png',
-              href: '/home',
+              onClick: handleLogout,
             },
           ].map((item, index) => (
             <div key={index} className="relative w-[92px] h-[92px] text-center">
-              <Link
-                href={item.href}
-                className="flex flex-col items-center justify-center w-full h-full"
-              >
-                <Image
-                  src={item.src}
-                  width={92}
-                  height={92}
-                  alt={`${item.text}ボタン`}
-                  className="object-cover"
-                />
-                <p
-                  className="absolute text-white font-bold"
-                  style={{
-                    top: '15px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    fontSize: '0.9rem',
-                  }}
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className="flex flex-col items-center justify-center w-full h-full"
                 >
-                  {item.text}
-                </p>
-              </Link>
+                  <Image
+                    src={item.src}
+                    width={92}
+                    height={92}
+                    alt={`${item.text}ボタン`}
+                    className="object-cover"
+                  />
+                  <p
+                    className="absolute text-white font-bold"
+                    style={{
+                      top: '15px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    {item.text}
+                  </p>
+                </Link>
+              ) : (
+                <button
+                  onClick={item.onClick}
+                  className="flex flex-col items-center justify-center w-full h-full"
+                >
+                  <Image
+                    src={item.src}
+                    width={92}
+                    height={92}
+                    alt={`${item.text}ボタン`}
+                    className="object-cover"
+                  />
+                  {item.text && (
+                    <p
+                      className="absolute text-white font-bold"
+                      style={{
+                        top: '15px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        fontSize: '0.9rem',
+                      }}
+                    >
+                      {item.text}
+                    </p>
+                  )}
+                </button>
+              )}
             </div>
           ))}
         </div>
