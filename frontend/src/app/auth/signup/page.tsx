@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FirebaseError } from 'firebase/app';
 import { signUp } from '../../../utils/auth';
+import { validateUsername, validateEmail } from '../../../utils/validation';
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
@@ -14,12 +15,6 @@ export default function SignUpPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const validateUsername = (username: string) => {
-    // NOTE: 英数字、アンダースコア、日本語文字を許可する正規表現
-    const usernameRegex = /^[\w\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+$/;
-    return usernameRegex.test(username);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +30,7 @@ export default function SignUpPage() {
     }
 
     const trimmedEmail = email.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
+    if (!validateEmail(trimmedEmail)) {
       setError('有効なメールアドレスを入力してください');
       setLoading(false);
       return;

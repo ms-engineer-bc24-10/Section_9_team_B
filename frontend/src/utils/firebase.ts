@@ -1,10 +1,11 @@
 'use client';
 
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import {
   getAuth,
   setPersistence,
   browserLocalPersistence,
+  Auth,
 } from 'firebase/auth';
 
 // 環境変数の読み込み確認
@@ -20,8 +21,25 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence);
+// const app = initializeApp(firebaseConfig);
+// const auth = getAuth(app);
+// setPersistence(auth, browserLocalPersistence);
+
+// テスト環境では空オブジェクトを返す
+const app =
+  process.env.NODE_ENV === 'test'
+    ? ({} as ReturnType<typeof initializeApp>) // 型キャストでエラー回避
+    : !getApps().length
+      ? initializeApp(firebaseConfig)
+      : getApp();
+
+const auth =
+  process.env.NODE_ENV === 'test'
+    ? ({} as Auth) // 型キャストでエラー回避
+    : getAuth(app);
+
+if (process.env.NODE_ENV !== 'test') {
+  setPersistence(auth, browserLocalPersistence);
+}
 
 export { app, auth, firebaseConfig };

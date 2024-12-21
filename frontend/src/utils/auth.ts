@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { firebaseConfig } from './firebase';
+import { error } from 'console';
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
@@ -39,7 +40,7 @@ const getCsrfTokenFromCookie = (): string | null => {
 };
 
 const signUp = async (
-  username: String,
+  username: string,
   email: string,
   password: string,
 ): Promise<User> => {
@@ -101,6 +102,10 @@ const sendUserToDjango = async (user: User, username: string) => {
     console.log('Response Status:', response.status);
 
     if (!response.ok) {
+      const errorText =
+        error instanceof Error
+          ? error.message
+          : '予期せぬエラーが発生しました。';
       console.error('Error response:', errorText);
       throw new Error(
         `===ユーザーデータのバックエンド送信失敗===: ${response.statusText}`,
