@@ -1,6 +1,6 @@
 'use client';
 
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import {
   getAuth,
   setPersistence,
@@ -21,25 +21,25 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
-// setPersistence(auth, browserLocalPersistence);
+// Firebase初期化
+const initializeFirebaseApp = (): FirebaseApp => {
+  if (process.env.NODE_ENV === 'test') {
+    return {} as FirebaseApp; // テスト環境では空オブジェクトを返す
+  }
+  return !getApps().length ? initializeApp(firebaseConfig) : getApp();
+};
 
-// テスト環境では空オブジェクトを返す
-const app =
-  process.env.NODE_ENV === 'test'
-    ? ({} as ReturnType<typeof initializeApp>) // 型キャストでエラー回避
-    : !getApps().length
-      ? initializeApp(firebaseConfig)
-      : getApp();
-
-const auth =
-  process.env.NODE_ENV === 'test'
-    ? ({} as Auth) // 型キャストでエラー回避
-    : getAuth(app);
-
-if (process.env.NODE_ENV !== 'test') {
+// 認証初期化
+const initializeFirebaseAuth = (app: FirebaseApp): Auth => {
+  if (process.env.NODE_ENV === 'test') {
+    return {} as Auth; // テスト環境では空オブジェクトを返す
+  }
+  const auth = getAuth(app);
   setPersistence(auth, browserLocalPersistence);
-}
+  return auth;
+};
+
+const app = initializeFirebaseApp();
+const auth = initializeFirebaseAuth(app);
 
 export { app, auth, firebaseConfig };

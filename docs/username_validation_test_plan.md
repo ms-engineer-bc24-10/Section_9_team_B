@@ -33,7 +33,7 @@
 
 ### テスト対象
 
-SignUpPage コンポーネント
+signup/page コンポーネント
 
 ### テストケース
 
@@ -68,8 +68,8 @@ SignUpPage コンポーネント
 
 ## テストファイル
 
-1. 単体テスト: `validateUsername.test.ts`
-2. 統合テスト: `SignUpPage.test.tsx`
+1. 単体テスト: `validation.test.ts`
+2. 統合テスト: `page.test.tsx`
 
 ## テスト実行コマンド
 

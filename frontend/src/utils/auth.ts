@@ -7,7 +7,6 @@ import {
 } from 'firebase/auth';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { firebaseConfig } from './firebase';
-import { error } from 'console';
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
@@ -102,20 +101,18 @@ const sendUserToDjango = async (user: User, username: string) => {
     console.log('Response Status:', response.status);
 
     if (!response.ok) {
-      const errorText =
-        error instanceof Error
-          ? error.message
-          : '予期せぬエラーが発生しました。';
+      const errorText = response.statusText || '予期せぬエラーが発生しました。';
       console.error('Error response:', errorText);
       throw new Error(
-        `===ユーザーデータのバックエンド送信失敗===: ${response.statusText}`,
+        `===ユーザーデータのバックエンド送信失敗===: ${errorText}`,
       );
     }
     const data = await response.json();
     console.log('Success Response:', data);
-  } catch (e) {
-    console.error('===ユーザーデータのバックエンド送信でエラー発生===', e);
-    throw e;
+  } catch (error) {
+    // catch 節内で error を使用
+    console.error('===ユーザーデータのバックエンド送信でエラー発生===', error);
+    throw error;
   }
 };
 
