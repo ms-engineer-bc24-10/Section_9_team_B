@@ -1,10 +1,11 @@
 'use client';
 
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import {
   getAuth,
   setPersistence,
   browserLocalPersistence,
+  Auth,
 } from 'firebase/auth';
 
 // 環境変数の読み込み確認
@@ -20,8 +21,25 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence);
+// Firebase初期化
+const initializeFirebaseApp = (): FirebaseApp => {
+  if (process.env.NODE_ENV === 'test') {
+    return {} as FirebaseApp; // テスト環境では空オブジェクトを返す
+  }
+  return !getApps().length ? initializeApp(firebaseConfig) : getApp();
+};
+
+// 認証初期化
+const initializeFirebaseAuth = (app: FirebaseApp): Auth => {
+  if (process.env.NODE_ENV === 'test') {
+    return {} as Auth; // テスト環境では空オブジェクトを返す
+  }
+  const auth = getAuth(app);
+  setPersistence(auth, browserLocalPersistence);
+  return auth;
+};
+
+const app = initializeFirebaseApp();
+const auth = initializeFirebaseAuth(app);
 
 export { app, auth, firebaseConfig };
