@@ -6,27 +6,16 @@ def analyze_garbage(image_path):
     """
     画像からゴミ袋およびその中身を分類し、ラベル情報を取得し、
     ゴミ袋の面積に基づいてポイントを計算する。
-
-    Args:
-        image_path (str): 画像ファイルのパス
-
-    Returns:
-        dict: 検出されたゴミ袋や内容物のラベル情報、
-              面積に基づくポイントを含む辞書
     """
-    # 環境変数でGoogle Cloud認証情報を設定
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
         "GOOGLE_APPLICATION_CREDENTIALS"
     )
 
-    # Google Vision APIクライアント
     client = vision.ImageAnnotatorClient()
 
-    # 画像の読み込み
     with open(image_path, "rb") as image_file:
         content = image_file.read()
     image = vision.Image(content=content)
-
     # ゴミ関連のキーワード
     garbage_keywords = [
         "trash",
@@ -98,7 +87,6 @@ def analyze_garbage(image_path):
         label.description.lower() for label in label_response.label_annotations
     ]
     print("検出されたラベル:", raw_labels)
-
     # ゴミ関連ラベルのフィルタリング
     detected_garbage_labels = [
         label for label in raw_labels if label in garbage_keywords
@@ -115,7 +103,7 @@ def analyze_garbage(image_path):
     garbage_objects = []
     for obj in objects:
         print(f"オブジェクトの名前: {obj.name}, スコア: {obj.score}")
-        if any(keyword in obj.name.lower() for keyword in garbage_keywords):
+        if obj.name.lower() in garbage_keywords:  # モックデータでも適用可能
             garbage_objects.append(obj.name.lower())
 
     # 箱の大きさを直接指定 (幅: 32.5cm, 高さ: 6.5cm)
@@ -155,6 +143,8 @@ def analyze_garbage(image_path):
 
     # BoundingBoxを利用したゴミ袋サイズ推定 (cm² で表示)
     estimated_bag_area = 0
+    area_cm2 = 0  # 初期化
+
     if is_garbage_bag_detected:  # ゴミ袋が検出された場合にのみ面積を計算
         for obj in objects:
             vertices = obj.bounding_poly.normalized_vertices
