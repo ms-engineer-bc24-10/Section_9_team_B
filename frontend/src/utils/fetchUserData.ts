@@ -1,14 +1,14 @@
-import { auth } from './firebase';
 import { getIdToken } from 'firebase/auth';
+import clientLogger from '@/utils/clientLogger';
+import { auth } from './firebase';
 
 async function fetchUserData() {
   try {
-    console.log('ユーザー情報を取得します...');
+    clientLogger.debug('ユーザー情報を取得します...');
 
-    const currentUser = auth.currentUser;
+    const { currentUser } = auth;
 
     if (!currentUser) {
-      console.error('ユーザーが認証されていません。');
       throw new Error('ユーザーが認証されていません。ログインが必要です。');
     }
 
@@ -28,7 +28,7 @@ async function fetchUserData() {
 
     if (response.ok) {
       const data = await response.json();
-      console.log(
+      clientLogger.debug(
         `ユーザー情報の取得に成功: ${data}ユーザーID=${data.user_id}, ユーザー名=${data.username}, メール=${data.email}, ロール=${data.role}}`,
       );
       return {
@@ -40,16 +40,15 @@ async function fetchUserData() {
       };
     }
     if (response.status === 401) {
-      console.error('認証エラー: ログインが必要です。');
       throw new Error('認証エラー: ログインが必要です。');
     } else {
-      console.error(
+      clientLogger.error(
         `サーバーエラー: ステータスコード=${response.status}, メッセージ=${response.statusText}`,
       );
       throw new Error(`サーバーエラー: ${response.statusText}`);
     }
   } catch (error) {
-    console.error(
+    clientLogger.error(
       `ユーザー情報の取得中に予期しないエラーが発生しました: ${error}`,
     );
     throw new Error(`${error}`);
