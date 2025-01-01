@@ -4,6 +4,7 @@ import os
 import json
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from payments.models import Transaction
 from rest_framework.views import APIView
@@ -25,6 +26,9 @@ def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
     """
+    stripe.api_base = settings.STRIPE_API_BASE
+    logger.debug(f"Stripe API Base: {stripe.api_base}")
+
     if request.method == "POST":
         logger.info(f"POSTリクエストを受信: {request.path}")
 
@@ -79,6 +83,9 @@ def create_one_time_payment(request):
     """
     入場料（来場者→管理者）の決済セッションを作成
     """
+    stripe.api_base = settings.STRIPE_API_BASE
+    logger.debug(f"Stripe API Base: {stripe.api_base}")
+    
     if request.method == "POST":
         logger.info(f"POSTリクエストを受信: {request.path}")
 

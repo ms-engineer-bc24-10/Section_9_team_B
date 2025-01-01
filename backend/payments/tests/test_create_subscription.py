@@ -4,7 +4,9 @@ from django.urls import reverse
 
 # TCS1-01: 正常なリクエスト
 @pytest.mark.django_db
-def test_create_subscription_success(client):
+def test_create_subscription_success(client, settings):
+    settings.STRIPE_API_BASE = "https://api.stripe.com"
+
     data = {
         "user_id": "12345"
     }
@@ -56,7 +58,9 @@ def test_create_subscription_invalid_method(client):
 
 #TCS1-04: Stripe API エラー
 @pytest.mark.django_db
-def test_create_subscription_stripe_api_error(client):
+def test_create_subscription_stripe_api_error(client, settings):
+    settings.STRIPE_API_BASE = "http://localhost:12111"
+
     data = {
         "user_id": "12345"
     }
