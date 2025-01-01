@@ -32,7 +32,7 @@ def create_subscription(request):
 
         user_id = data.get("user_id")
         if not user_id:
-            return JsonResponse({"error": "user_id が含まれていません。"}, status=400)
+            return JsonResponse({"error": "Invalid parameters"}, status=400)
         logger.info(f"リクエストボディから受け取った user_id: {user_id}")
 
         try:
