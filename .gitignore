@@ -12,3 +12,8 @@ backend/google_vision_key.json
 
 # Stripe関連
 stripe_webhook.log
+
+# テスト関連
+.env.test
+backend/tools/stripe-mock
+.coverage

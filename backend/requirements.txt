@@ -8,3 +8,6 @@ django-cors-headers==4.6.0
 stripe==11.3.0
 google-cloud-vision==3.8.1
 django-environ==0.11.2
+pytest==8.3.4
+pytest-django==4.9.0
+pytest-cov==6.0.0
