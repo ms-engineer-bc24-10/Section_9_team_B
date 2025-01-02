@@ -9,7 +9,52 @@
 フロントエンドの主な構成は以下の通りです:
 
 ```
-！！！！要追加！！！！
+frontend
+├── .env                # 環境変数ファイル
+├── .env.test           # テスト用環境変数ファイル
+├── .eslintrc.json      # ESLintの設定ファイル
+├── .gitignore          # Gitで無視するファイルやフォルダを定義
+├── .prettierrc         # Prettierの設定ファイル
+├── README.md           # フロントエンド部分の説明と使用方法
+├── jest.config.ts      # Jestテストの設定ファイル
+├── jest.setup.ts       # Jestテストのセットアップファイル
+├── next.config.mjs     # Next.jsの設定ファイル
+├── package-lock.json   # npm依存関係のロックファイル
+├── package.json        # プロジェクトの依存関係とスクリプト
+├── postcss.config.js   # PostCSSの設定ファイル
+├── public              # 公開用静的ファイル（画像やフォントなど）
+├── src                 # アプリケーションの主要なソースコード
+│   ├── app/            # Next.jsのApp Routerを使用したページ定義
+│   │   ├── auth/       # 認証関連のページ
+│   │   │   └── signup/ # ユーザー登録ページ
+│   │   │       └── __tests__/  # テストコード
+│   │   ├── garbage/    # ごみ解析関連のページ
+│   │   ├── history/    # 履歴関連のページ
+│   │   ├── home/       # ホームページ
+│   │   ├── layout.tsx  # アプリケーション全体のレイアウト
+│   │   ├── payment/    # 決済関連のページ
+│   │   ├── mypage/     # マイページ関連
+│   │   └── page.tsx    # ルートページ
+│   ├── components/     # 再利用可能なUIコンポーネント
+│   │   ├── Footer.tsx  # フッターコンポーネント
+│   │   ├── Header.tsx  # ヘッダーコンポーネント
+│   │   ├── LoginForm.tsx # ログインフォーム
+│   │   ├── Model.tsx   # モーダルコンポーネント
+│   │   └── PaymentButton.tsx # 支払いボタン
+│   └──  utils/          # ユーティリティ関数やAPIクライアント
+│       ├── __tests__/  # ユーティリティ関数のテスト
+│       │   └── validation.test.ts # バリデーションテスト
+│       ├── apiClient.ts # APIクライアント
+│       ├── auth.ts      # 認証関連のヘルパー
+│       ├── authStateObserver.ts # 認証状態を監視
+│       ├── clientLogger.ts # クライアントサイドロガー
+│       ├── fetchUserData.ts # ユーザーデータ取得
+│       ├── firebase.ts  # Firebase設定
+│       ├── logger.ts    # ログ機能
+│       └── validation.ts # 入力値バリデーション
+├── tailwind.config.ts  # Tailwind CSSの設定ファイル
+└── tsconfig.json       # TypeScriptの設定ファイル
+
 ```
 
 ---
@@ -74,7 +119,7 @@
 
 ## 🌟 環境変数
 
-以下の環境変数が必要です（（`.env`を**Section_9_team_B/frontend/ディレクトリのルート**に保存））:
+以下の環境変数が必要です（（`.env`と`.env.test`を**Section_9_team_B/frontend/ディレクトリのルート**に保存））:
 
 ### Firebase
 
@@ -189,3 +234,13 @@ rewrites() {
     ```
 
 - コードをコミットする前に Linter と Formatter を実行し、コードの品質を確認してください。
+
+### テスト
+
+Jest を使用して単体テストと統合テストを実行できます（`.env,test`ファイルが必要）。
+
+```
+npm test
+```
+
+コマンドを使用してテストを実行できます。
