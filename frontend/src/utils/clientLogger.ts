@@ -1,8 +1,8 @@
-import log from 'loglevel';
+import log, { LogLevelDesc } from 'loglevel';
 
 const clientLogger = log;
 
-// NOTE: カスタムフォーマットを作成
+// NOTE: みやすいログ出力のため、カスタムフォーマットを作成
 const originalFactory = clientLogger.methodFactory;
 clientLogger.methodFactory = function (methodName, logLevel, loggerName) {
   const rawMethod = originalFactory(methodName, logLevel, loggerName);
@@ -12,6 +12,9 @@ clientLogger.methodFactory = function (methodName, logLevel, loggerName) {
   };
 };
 
-clientLogger.setLevel(process.env.NODE_ENV === 'production' ? 'warn' : 'debug');
+const logLevel: LogLevelDesc =
+  (process.env.REACT_APP_LOG_LEVEL as LogLevelDesc) ||
+  (process.env.NODE_ENV === 'production' ? 'warn' : 'debug');
+clientLogger.setLevel(logLevel);
 
 export default clientLogger;
