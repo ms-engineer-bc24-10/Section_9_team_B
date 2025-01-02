@@ -18,6 +18,7 @@
   },
   "rules": {
     "no-alert": "error",
-    "id-length": ["error", { "max": 12 }]
+    "id-length": ["error", { "max": 30 }],
+    "react/require-default-props": "off" // NOTE: Airbnbのコーディング規約を適用したESLintから、オプショナルなプロパティにdefaultPropsを指定することを求められるが、defaultPropsはTypeScriptを使用する場合に非推奨のため無効化
   }
 }

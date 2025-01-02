@@ -8,18 +8,17 @@ import clientLogger from '@/utils/clientLogger';
 interface PaymentButtonProps {
   endpoint: string;
   label: string;
-  includeParticipation?: boolean; // ごみ拾いフラグを含むか
-  includeDate?: boolean; // 日付選択を含むか
+  includeParticipation?: boolean;
+  includeDate?: boolean;
   className?: string; // ここを追加（入場料を支払うボタン）
 }
-
-const PaymentButton: React.FC<PaymentButtonProps> = ({
+function PaymentButton({
   endpoint,
   label,
   includeParticipation = false,
   includeDate = false,
   className, // classNameをpropsから受け取る（入場料支払いボタン）
-}) => {
+}: PaymentButtonProps) {
   const [isParticipating, setIsParticipating] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
 
@@ -118,6 +117,6 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       </button>
     </div>
   );
-};
+}
 
 export default PaymentButton;
