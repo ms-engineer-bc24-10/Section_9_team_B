@@ -85,7 +85,7 @@ def create_one_time_payment(request):
     """
     stripe.api_base = settings.STRIPE_API_BASE
     logger.debug(f"Stripe API Base: {stripe.api_base}")
-    
+
     if request.method == "POST":
         logger.info(f"POSTリクエストを受信: {request.path}")
 
@@ -172,7 +172,7 @@ def stripe_webhook(request):
         session = event["data"]["object"]  # Stripeセッションオブジェクト
         metadata = session.get("metadata", {})
         logger.debug(
-            f"受信したメタデータ: {json.dumps(session.metadata, separators=(',', ':'))}"
+            f"受信したメタデータ: {json.dumps(metadata, separators=(',', ':'))}"
         )
 
         # メタデータから必要な情報を取得
@@ -198,6 +198,15 @@ def stripe_webhook(request):
         except Exception as e:
             logger.error("取引のDB登録に失敗しました", exc_info=True)
             return HttpResponse(status=500)
+
+    # 支払い失敗イベントを処理
+    elif event["type"] == "invoice.payment_failed":
+        invoice = event["data"]["object"]  # Stripeのインボイスオブジェクト
+        logger.info(f"Webhook 支払い失敗イベント: {event['type']}")
+        logger.debug(f"支払い失敗インボイスID: {invoice['id']}")
+
+    else:
+        logger.info(f"Webhook 未対応のイベント: {event['type']}")
 
     return HttpResponse(status=200)
 
