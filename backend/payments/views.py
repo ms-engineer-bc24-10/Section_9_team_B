@@ -19,9 +19,6 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 
-# @csrf_exempt  # NOTE: 外部リクエストが直接このエンドポイントを叩けるようにするデコレーター。CSRFトークンチェックを実装したのでコメントアウトする。
-
-
 def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
@@ -65,13 +62,13 @@ def create_subscription(request):
                         user_id
                     ),  # NOTE: メタデータにuser_idを追加することで、決済とユーザーを紐づける
                 },
-                success_url="http://localhost:3000/payment/success",  # Next.jsで作った成功時のページへリダイレクト
-                cancel_url="http://localhost:3000/payment/cancel",  # Next.jsで作ったキャンセル時のページへリダイレクト
+                success_url="http://localhost:3000/payment/success",
+                cancel_url="http://localhost:3000/payment/cancel",
             )
             logger.debug(
                 f"サブスクのStripe Session Metadata: {json.dumps(session.metadata, separators=(',', ':'))}"
             )  # NOTE: ログを1行で表示して読みやすくする
-            return JsonResponse({"url": session.url})  # JSONでセッションURLを返す
+            return JsonResponse({"url": session.url})  # NOTE: セッションURLをJSONで返さなければエラーになる
         except Exception as e:
             logger.error("サブスク作成エラー", exc_info=True)
             return JsonResponse({"error": str(e)}, status=400)
@@ -151,31 +148,26 @@ def stripe_webhook(request):
     Stripe Webhookエンドポイント
     """
     payload = request.body
-    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")  # Stripeの署名ヘッダー
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
     event = None
 
     try:
-        # Webhookイベントを検証
         event = stripe.Webhook.construct_event(payload, sig_header, WEBHOOK_SECRET)
         logger.info(f"Webhook 受信したイベント: {event['type']}")
     except ValueError as e:
-        # 無効なペイロード
         logger.error("Webhook 無効なペイロード", exc_info=True)
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
-        # 署名エラー
         logger.error("Webhook 署名エラー", exc_info=True)
         return HttpResponse(status=400)
 
-    # イベントタイプごとに処理
     if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]  # Stripeセッションオブジェクト
+        session = event["data"]["object"]
         metadata = session.get("metadata", {})
         logger.debug(
             f"受信したメタデータ: {json.dumps(metadata, separators=(',', ':'))}"
         )
 
-        # メタデータから必要な情報を取得
         user_id = metadata.get("user_id")
         is_participating = metadata.get("is_participating", "false").lower() == "true"
         reservation_date = metadata.get("reservation_date")
@@ -183,11 +175,10 @@ def stripe_webhook(request):
         amount = session["amount_total"]
         logger.info(f"支払い金額: {amount}円")
 
-        # DBに登録
         try:
             transaction = Transaction.objects.create(
                 user_id=user_id,
-                tourist_spot_id=1,  # TODO 関連付けを追加
+                tourist_spot_id=1,  # TODO ベタ書きではなく関連付けを追加したい
                 amount=amount,
                 status="paid",
                 is_participating=is_participating,
@@ -199,9 +190,8 @@ def stripe_webhook(request):
             logger.error("取引のDB登録に失敗しました", exc_info=True)
             return HttpResponse(status=500)
 
-    # 支払い失敗イベントを処理
     elif event["type"] == "invoice.payment_failed":
-        invoice = event["data"]["object"]  # Stripeのインボイスオブジェクト
+        invoice = event["data"]["object"]
         logger.info(f"Webhook 支払い失敗イベント: {event['type']}")
         logger.debug(f"支払い失敗インボイスID: {invoice['id']}")
 
