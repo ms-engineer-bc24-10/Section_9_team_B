@@ -1,12 +1,12 @@
-# API Design Document: ひろいっぽ
+# API 設計書: ひろいっぽ
 
-## Overview
+## 概要
 
 「ひろいっぽ」の API 設計書です。この設計書は、アプリケーションで提供される RESTful API エンドポイントと、それに関連するリクエスト・レスポンスの形式を網羅しています。
 
 ---
 
-## Base Information
+## ベース情報
 
 - **Base URL**: `http://localhost:8000/api`
 - **Scheme**: `HTTP`
