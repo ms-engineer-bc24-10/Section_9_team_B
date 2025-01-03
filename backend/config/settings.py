@@ -200,7 +200,9 @@ CSRF_USE_SESSIONS = False
 
 CSRF_COOKIE_SAMESITE = "Lax"
 
-# デバッグ用ログ設定
+
+# デバッグ用ログ設定（開発環境）
+
 if DEBUG:
     LOGGING = {
         "version": 1,
@@ -215,6 +217,52 @@ if DEBUG:
             "level": "DEBUG",
         },
     }
+else:  # 本番環境用ログ設定
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {message}",
+                "style": "{",
+            },
+            "simple": {
+                "format": "{levelname} {message}",
+                "style": "{",
+            },
+        },
+        "handlers": {
+            "file": {
+                "level": "INFO",
+                "class": "logging.FileHandler",
+                "filename": os.path.join(BASE_DIR, "logs", "app.log"),
+                "formatter": "verbose",
+            },
+            "error_file": {
+                "level": "ERROR",  # NOTE: エラーが埋もれないように別ファイルに保存
+                "class": "logging.FileHandler",
+                "filename": os.path.join(BASE_DIR, "logs", "errors.log"),
+                "formatter": "verbose",
+            },
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "simple",
+            },
+        },
+        "loggers": {
+            "django": {
+                "handlers": ["file", "console"],
+                "level": "INFO",
+                "propagate": True,
+            },
+            "django.request": {
+                "handlers": ["error_file"],
+                "level": "ERROR",
+                "propagate": False,
+            },
+        },
+    }
+
 
 APPEND_SLASH = True
 

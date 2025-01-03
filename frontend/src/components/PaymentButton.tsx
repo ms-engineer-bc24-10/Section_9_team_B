@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import apiClient from '@/utils/apiClient';
 import fetchUserData from '@/utils/fetchUserData';
+import clientLogger from '@/utils/clientLogger';
 
 interface PaymentButtonProps {
   endpoint: string;
@@ -30,8 +31,17 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   };
 
   const handlePayment = async () => {
+    clientLogger.info('支払いボタンがクリックされました', {
+      endpoint,
+      includeParticipation,
+      includeDate,
+      isParticipating,
+      selectedDate,
+    });
+
     try {
       const userData = await fetchUserData();
+      clientLogger.debug('取得したユーザーデータ:', userData);
 
       const bodyData: any = {
         user_id: userData.userId,
@@ -39,19 +49,31 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         ...(includeDate && { reservation_date: selectedDate }),
       };
 
+      clientLogger.debug('送信データ:', { endpoint, bodyData });
+
       const data = await apiClient(endpoint, {
         method: 'POST', // NOTE: POSTメソッドを指定しないと、GETメソッドと捉えられて405(Method Not Allowed)エラーが出るため
         body: JSON.stringify(bodyData),
       });
 
+      clientLogger.debug('APIレスポンス:', data);
+
       if (data.url) {
-        console.log('リダイレクト先 URL:', data.url);
+        clientLogger.debug('リダイレクトを実行します:', data.url);
         window.location.href = data.url;
       } else {
+        clientLogger.warn('レスポンスにURLが含まれていません:', data);
         alert('URLが取得できませんでした');
       }
     } catch (error) {
-      console.error('エラーが発生しました:', error);
+      clientLogger.error('支払い処理中にエラーが発生しました', {
+        endpoint,
+        error,
+        includeParticipation,
+        includeDate,
+        isParticipating,
+        selectedDate,
+      });
       alert('支払いに失敗しました。');
     }
   };
@@ -90,7 +112,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       <br />
       <button
         onClick={handlePayment}
-        className={`bg-blue-400 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-400 transition ${className || ''}`} //入場料支払いボタン追加
+        className={`bg-blue-400 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-400 transition ${className || ''}`} // 入場料支払いボタン追加
       >
         {label}
       </button>

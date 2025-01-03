@@ -26,7 +26,10 @@ def create_subscription(request):
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
     """
     if request.method == "POST":
+        logger.info(f"POSTリクエストを受信: {request.path}")
+
         data = json.loads(request.body)
+
         user_id = data.get("user_id")
         if not user_id:
             return JsonResponse({"error": "user_id が含まれていません。"}, status=400)
@@ -34,9 +37,9 @@ def create_subscription(request):
 
         try:
             csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
-            logger.info(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
+            logger.debug(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
         except Exception as e:
-            logger.error(f"CSRFトークン検証エラー: {e}")
+            logger.error("CSRFトークン検証エラー", exc_info=True)
 
         try:
             session = stripe.checkout.Session.create(
@@ -66,7 +69,7 @@ def create_subscription(request):
             )  # NOTE: ログを1行で表示して読みやすくする
             return JsonResponse({"url": session.url})  # JSONでセッションURLを返す
         except Exception as e:
-            logger.error(f"サブスク作成エラー: {e}")
+            logger.error("サブスク作成エラー", exc_info=True)
             return JsonResponse({"error": str(e)}, status=400)
     else:
         return JsonResponse({"error": "Invalid request method."}, status=405)
@@ -77,6 +80,8 @@ def create_one_time_payment(request):
     入場料（来場者→管理者）の決済セッションを作成
     """
     if request.method == "POST":
+        logger.info(f"POSTリクエストを受信: {request.path}")
+
         data = json.loads(request.body)
 
         user_id = data.get("user_id")
@@ -94,9 +99,9 @@ def create_one_time_payment(request):
 
         try:
             csrf_token = request.META.get("HTTP_X_CSRFTOKEN", "None")
-            logger.info(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
+            logger.debug(f"リクエストヘッダーから受け取った CSRF トークン: {csrf_token}")
         except Exception as e:
-            logger.error(f"CSRFトークン検証エラー: {e}")
+            logger.error("CSRFトークン検証エラー", exc_info=True)
 
         try:
             session = stripe.checkout.Session.create(
@@ -127,7 +132,7 @@ def create_one_time_payment(request):
 
             return JsonResponse({"url": session.url})
         except Exception as e:
-            logger.error(f"都度払い作成エラー: {e}")
+            logger.error("都度払い作成エラー", exc_info=True)
             return JsonResponse({"error": str(e)}, status=400)
     else:
         return JsonResponse({"error": "Invalid request method."}, status=405)
@@ -145,14 +150,14 @@ def stripe_webhook(request):
     try:
         # Webhookイベントを検証
         event = stripe.Webhook.construct_event(payload, sig_header, WEBHOOK_SECRET)
-        logger.debug(f"Webhook 受信したイベント: {event['type']}")
+        logger.info(f"Webhook 受信したイベント: {event['type']}")
     except ValueError as e:
         # 無効なペイロード
-        logger.error(f"Webhook 無効なペイロード: {e}")
+        logger.error("Webhook 無効なペイロード", exc_info=True)
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
         # 署名エラー
-        logger.error(f"Webhook 署名エラー: {e}")
+        logger.error("Webhook 署名エラー", exc_info=True)
         return HttpResponse(status=400)
 
     # イベントタイプごとに処理
@@ -169,7 +174,7 @@ def stripe_webhook(request):
         reservation_date = metadata.get("reservation_date")
 
         amount = session["amount_total"]
-        logger.debug(f"支払い金額: {amount}円")
+        logger.info(f"支払い金額: {amount}円")
 
         # DBに登録
         try:
@@ -184,7 +189,7 @@ def stripe_webhook(request):
             )
             logger.info(f"取引をDB登録しました: {transaction}")
         except Exception as e:
-            logger.error(f"取引のDB登録に失敗しました: {e}")
+            logger.error("取引のDB登録に失敗しました", exc_info=True)
             return HttpResponse(status=500)
 
     return HttpResponse(status=200)

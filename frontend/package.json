@@ -14,6 +14,7 @@
     "@react-spring/web": "^9.7.5",
     "@stripe/stripe-js": "^5.2.0",
     "firebase": "^11.0.2",
+    "loglevel": "^1.9.2",
     "morgan": "^1.10.0",
     "next": "14.1.0",
     "react": "^18",
