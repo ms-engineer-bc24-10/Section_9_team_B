@@ -9,7 +9,62 @@
 バックエンドの主な構成は以下の通りです:
 
 ```
-！！！！要追加！！！！
+backend/
+├── .env                    # 環境変数ファイル
+├── .env.test               # テスト用の環境変数ファイル
+├── .python-version         # 使用するPythonバージョンを指定
+├── README.md               # バックエンド部分の説明と使用方法
+├── compose.yml             # Docker Composeの設定ファイル
+├── config/                 # アプリケーション設定関連
+│   ├── __init__.py         # パッケージ初期化用
+│   ├── asgi.py             # ASGIサーバー設定
+│   ├── settings.py         # プロジェクト全体の設定
+│   ├── test_settings.py    # テスト専用の設定ファイル
+│   ├── urls.py             # URLルーティング設定
+│   └── wsgi.py             # WSGIサーバー設定
+├── custom_auth/            # カスタム認証機能
+│   ├── admin.py            # 管理画面設定
+│   ├── apis.py             # APIエンドポイント
+│   ├── authentication.py   # 認証処理
+│   ├── models.py           # データベースモデル
+│   ├── urls.py             # 認証関連のルーティング
+│   └── views.py            # 認証関連のビュー
+├── firebase_test.py        # Firebase連携テストスクリプト
+├── garbage_analysis/       # ごみ解析関連
+│   ├── __init__.py         # パッケージ初期化用
+│   ├── admin.py            # 管理画面設定
+│   ├── apps.py             # アプリケーション設定
+│   ├── google_vision.py    # Google Vision API連携
+│   ├── models.py           # データベースモデル
+│   ├── tests/              # テストスクリプト
+│   │   ├── test_google_vision.py
+│   │   └── test_views.py
+│   ├── urls.py             # ごみ解析関連のルーティング
+│   └── views.py            # ごみ解析関連のビュー
+├── google_vision_key.json  # Google Vision API認証キー
+├── logs/                   # ログファイル（本番環境用）
+│   ├── app.log             # アプリケーションログ
+│   └── errors.log          # エラーログ
+├── manage.py               # Django管理スクリプト
+├── payments/               # 決済関連
+│   ├── admin.py            # 管理画面設定
+│   ├── models.py           # データベースモデル
+│   ├── tests.py            # テストスクリプト
+│   ├── urls.py             # 決済関連のルーティング
+│   └── views.py            # 決済関連のビュー
+├── pytest.ini              # pytestの設定ファイル
+├── requirements.txt        # 必要なパッケージリスト
+├── serviceAccountKey.json  # Firebase管理者認証キー
+├── stripe_webhook.log      # Stripe Webhookテストログ
+├── tools/                  # ツール関連
+│   └── stripe-mock         # Stripeモックツール
+└── tourist_spots/          # 観光地情報管理
+    ├── admin.py            # 管理画面設定
+    ├── models.py           # データベースモデル
+    ├── tests.py            # テストスクリプト
+    ├── urls.py             # 観光地関連のルーティング
+    └── views.py            # 観光地関連のビュー
+
 ```
 
 ---
@@ -173,28 +228,24 @@ Stripe の決済通知を受け取るため、以下の設定が必要です:
 
 バックエンドで提供される API エンドポイントの詳細です。
 
-### 認証関連 (`custom_auth`)
+### 認証関連
 
 - `/api/auth/signup/`: ユーザー登録
 - `/api/auth/user/`: 認証済みユーザー情報取得
 
-### ごみ解析関連 (`garbage_analysis`)
+### ごみ解析関連
 
-- `/api/garbage/garbage-bags/upload/`: ごみ袋のアップロード
+- `/garbage-bags/upload/`: ごみ袋のアップロード
 - `/api/garbage/user-stamps/`: ユーザーのスタンプ情報取得
 - `/api/garbage/api/garbage-bag/latest/`: 最新のごみ袋情報取得
 
-### 決済関連 (`payments`)
+### 決済関連
 
-- `/api/payments/create-subscription/`: サブスクリプション決済の作成
-- `/api/payments/create-one-time-payment/`: 一回限りの決済の作成
-- `/api/payments/stripe-webhook/`: Stripe Webhook エンドポイント
-
-### 観光地関連 (`tourist_spots`)
-
-- `/api/tourist-spots/`: 登録済み観光地一覧の取得
-- `/api/tourist-spots/<id>/`: 特定観光地情報の取得
-- `/api/tourist-spots/`: 新しい観光地情報の登録
+- `/payments/create-subscription/`: サブスクリプション決済の作成
+- `/payments/create-one-time-payment/`: 一回限りの決済の作成
+- `/payments/stripe-webhook/`: Stripe Webhook エンドポイント
+- `/api/payment-history/`: 決済履歴 エンドポイント
+- `/api/payment-history/<int:transaction_id>/`: 決済詳細 エンドポイント
 
 ### CSRF トークン取得
 
@@ -239,3 +290,19 @@ Stripe の決済通知を受け取るため、以下の設定が必要です:
         ```
 - VSCode の拡張機能を使用する場合、Pylint と Black をローカル環境にインストールする必要はありません。ただし、コマンドラインで実行する場合は、それぞれのツールを Python 環境にインストールしてください。
 - コードをコミットする前に Linter と Formatter を実行し、コードの品質を確認してください。
+
+### テスト
+
+- Django 標準のテストフレームワークを利用して、API エンドポイントおよび機能のテストを行います。
+
+  ```
+  python manage.py test
+  ```
+
+- 決済機能については、Pytest を使用してテストを行います（`.env,test`ファイルが必要）。
+
+  ```
+  pytest payments/tests/ --cov=payments --cov-report=term-missing
+  ```
+
+  コマンドを使用すると、テストと同時に、カバレッジ測定と実行されなかったコード行をターミナルに表示させることができます。

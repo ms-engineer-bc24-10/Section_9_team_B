@@ -1,12 +1,12 @@
-# API Design Document: ひろいっぽ
+# API 設計書: ひろいっぽ
 
-## Overview
+## 概要
 
 「ひろいっぽ」の API 設計書です。この設計書は、アプリケーションで提供される RESTful API エンドポイントと、それに関連するリクエスト・レスポンスの形式を網羅しています。
 
 ---
 
-## Base Information
+## ベース情報
 
 - **Base URL**: `http://localhost:8000/api`
 - **Scheme**: `HTTP`
@@ -17,7 +17,7 @@
 
 - **ユーザー認証関連 (`custom_auth`)**: ユーザーの登録や認証に関するエンドポイント。
 - **ごみ解析関連 (`garbage_analysis`)**: ごみ袋の解析や関連データの取得を提供するエンドポイント。
-- **決済関連 (`payments`)**: 決済の作成や Webhook の受信に関するエンドポイント。
+- **決済関連 (`payments`)**: 決済の作成や Webhook の受信、決済履歴の照会に関するエンドポイント。
 - **観光地 (`tourist_spots`)**: 観光地の情報を管理するエンドポイント。
 - **CSRF トークン関連**: CSRF トークンを取得するエンドポイント。
 
@@ -25,20 +25,22 @@
 
 ## エンドポイント一覧
 
-| リソース      | メソッド | エンドポイント                           | 説明                         |
-| ------------- | -------- | ---------------------------------------- | ---------------------------- |
-| ユーザー      | POST     | `/api/auth/signup/`                      | ユーザー登録                 |
-| ユーザー      | GET      | `/api/auth/user/`                        | 認証済みユーザー情報の取得   |
-| ごみ解析      | POST     | `/api/garbage/garbage-bags/upload/`      | ごみ袋情報のアップロード     |
-| ごみ解析      | GET      | `/api/garbage/user-stamps/`              | ユーザーのスタンプ情報の取得 |
-| ごみ解析      | GET      | `/api/garbage/garbage-bag/latest/`       | 最新のごみ袋情報の取得       |
-| 決済          | POST     | `/api/payments/create-subscription/`     | サブスクリプション決済の作成 |
-| 決済          | POST     | `/api/payments/create-one-time-payment/` | 都度払い決済の作成           |
-| 決済          | POST     | `/api/payments/stripe-webhook/`          | Stripe Webhook 受信          |
-| 観光地        | GET      | `/api/tourist-spots/`                    | 登録済み観光地一覧の取得     |
-| 観光地        | GET      | `/api/tourist-spots/<id>/`               | 特定の観光地情報の取得       |
-| 観光地        | POST     | `/api/tourist-spots/`                    | 新しい観光地情報の登録       |
-| CSRF トークン | GET      | `/api/csrf-token/`                       | CSRF トークンの取得          |
+| リソース      | メソッド | エンドポイント                                    | 説明                         |
+| ------------- | -------- | ------------------------------------------------- | ---------------------------- |
+| ユーザー      | POST     | `/api/auth/signup/`                               | ユーザー登録                 |
+| ユーザー      | GET      | `/api/auth/user/`                                 | 認証済みユーザー情報の取得   |
+| ごみ解析      | POST     | `/api/garbage/garbage-bags/upload/`               | ごみ袋情報のアップロード     |
+| ごみ解析      | GET      | `/api/garbage/user-stamps/`                       | ユーザーのスタンプ情報の取得 |
+| ごみ解析      | GET      | `/api/garbage/garbage-bag/latest/`                | 最新のごみ袋情報の取得       |
+| 決済          | POST     | `/api/payments/create-subscription/`              | サブスクリプション決済の作成 |
+| 決済          | POST     | `/api/payments/create-one-time-payment/`          | 都度払い決済の作成           |
+| 決済          | POST     | `/api/payments/stripe-webhook/`                   | Stripe Webhook 受信          |
+| 決済          | GET      | `/api/payments/payment-history/`                  | 決済履歴の取得               |
+| 決済          | GET      | `/api/payments/payment-history/<transaction_id>/` | 決済詳細の取得               |
+| 観光地        | GET      | `/api/tourist-spots/`                             | 登録済み観光地一覧の取得     |
+| 観光地        | GET      | `/api/tourist-spots/<tourist_spot_id>/`           | 特定の観光地情報の取得       |
+| 観光地        | POST     | `/api/tourist-spots/`                             | 新しい観光地情報の登録       |
+| CSRF トークン | GET      | `/api/csrf-token/`                                | CSRF トークンの取得          |
 
 ---
 
@@ -426,6 +428,95 @@
 
 ---
 
+#### **3-4. 決済履歴の取得 `GET /api/payments/payment-history/`**
+
+**【リクエスト】**
+
+- **Header**:
+  - `Authorization: Bearer <Firebase ID Token>`
+
+**【レスポンス】**
+
+- **成功**:
+
+  - **ステータスコード**: `200 OK`
+  - **Body**:
+
+  ```json
+  {
+    "transactions": [
+      {
+        "transaction_id": "integer",
+        "amount": "integer",
+        "status": "string",
+        "reservation_date": "string",
+        "payment_date": "string"
+      }
+    ]
+  }
+  ```
+
+- **失敗**:
+
+  - **ステータスコード**: `401 Unauthorized`
+  - **Body**:
+
+  ```json
+  {
+    "error": "User not authenticated"
+  }
+  ```
+
+---
+
+#### **3-5. 決済詳細の取得 `GET /api/payments/payment-history/<transaction_id>/`**
+
+**【リクエスト】**
+
+- **Header**:
+  - `Authorization: Bearer <Firebase ID Token>`
+
+**【レスポンス】**
+
+- **成功**:
+
+  - **ステータスコード**: `200 OK`
+  - **Body**:
+
+  ```json
+  {
+    "transaction_id": "integer",
+    "amount": "integer",
+    "status": "string",
+    "reservation_date": "string",
+    "payment_date": "string",
+    "user_id": "integer",
+    "tourist_spot_id": "integer"
+  }
+  ```
+
+- **失敗**:
+
+  - **ステータスコード**: `404 Not Found`
+  - **Body**:
+
+  ```json
+  {
+    "error": "Transaction not found"
+  }
+  ```
+
+  - **ステータスコード**: `401 Unauthorized`
+  - **Body**:
+
+  ```json
+  {
+    "error": "User not authenticated"
+  }
+  ```
+
+---
+
 ### 4. 観光地関連
 
 #### 4-1. 登録済み観光地一覧の取得 `GET /api/tourist-spots/`
@@ -466,7 +557,7 @@
 
 ---
 
-#### 4-2. 特定の観光地情報の取得 `GET /api/tourist-spots/<id>/`
+#### 4-2. 特定の観光地情報の取得 `GET /api/tourist-spots/<tourist_spot_id>/`
 
 **【リクエスト】**
 

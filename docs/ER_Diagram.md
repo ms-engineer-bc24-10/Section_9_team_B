@@ -1,4 +1,4 @@
-# ER_Diagram
+# ER 図: ひろいっぽ
 
 ```mermaid
 erDiagram
