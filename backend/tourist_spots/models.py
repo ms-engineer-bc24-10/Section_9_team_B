@@ -5,7 +5,7 @@ class TouristSpot(models.Model):
     name = models.CharField(max_length=255, verbose_name="観光地の名前")
     entry_fee = models.PositiveIntegerField(verbose_name="入場料")
     operator = models.ForeignKey(
-        settings.AUTH_USER_MODEL,  # settings.pyで指定されているAUTH_USER_MODEL = "custom_auth.User"を参照
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="managed_tourist_spots",
         verbose_name="観光地運営者ユーザー",

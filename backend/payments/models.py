@@ -10,7 +10,7 @@ class Transaction(models.Model):
     ]
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,  # settings.pyで指定されているAUTH_USER_MODEL = "custom_auth.User"を参照
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='transactions',
         verbose_name='ユーザー'
