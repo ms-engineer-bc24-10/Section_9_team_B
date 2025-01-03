@@ -4,6 +4,7 @@ import os
 import json
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from payments.models import Transaction
 from rest_framework.views import APIView
@@ -25,6 +26,9 @@ def create_subscription(request):
     """
     アプリ利用料（管理者→開発者）のサブスクリプションセッションを作成
     """
+    stripe.api_base = settings.STRIPE_API_BASE
+    logger.debug(f"Stripe API Base: {stripe.api_base}")
+
     if request.method == "POST":
         logger.info(f"POSTリクエストを受信: {request.path}")
 
@@ -32,7 +36,7 @@ def create_subscription(request):
 
         user_id = data.get("user_id")
         if not user_id:
-            return JsonResponse({"error": "user_id が含まれていません。"}, status=400)
+            return JsonResponse({"error": "Invalid parameters"}, status=400)
         logger.info(f"リクエストボディから受け取った user_id: {user_id}")
 
         try:
@@ -79,6 +83,9 @@ def create_one_time_payment(request):
     """
     入場料（来場者→管理者）の決済セッションを作成
     """
+    stripe.api_base = settings.STRIPE_API_BASE
+    logger.debug(f"Stripe API Base: {stripe.api_base}")
+
     if request.method == "POST":
         logger.info(f"POSTリクエストを受信: {request.path}")
 
@@ -165,7 +172,7 @@ def stripe_webhook(request):
         session = event["data"]["object"]  # Stripeセッションオブジェクト
         metadata = session.get("metadata", {})
         logger.debug(
-            f"受信したメタデータ: {json.dumps(session.metadata, separators=(',', ':'))}"
+            f"受信したメタデータ: {json.dumps(metadata, separators=(',', ':'))}"
         )
 
         # メタデータから必要な情報を取得
@@ -191,6 +198,15 @@ def stripe_webhook(request):
         except Exception as e:
             logger.error("取引のDB登録に失敗しました", exc_info=True)
             return HttpResponse(status=500)
+
+    # 支払い失敗イベントを処理
+    elif event["type"] == "invoice.payment_failed":
+        invoice = event["data"]["object"]  # Stripeのインボイスオブジェクト
+        logger.info(f"Webhook 支払い失敗イベント: {event['type']}")
+        logger.debug(f"支払い失敗インボイスID: {invoice['id']}")
+
+    else:
+        logger.info(f"Webhook 未対応のイベント: {event['type']}")
 
     return HttpResponse(status=200)
 
